@@ -6,6 +6,7 @@
     <link rel = "stylesheet" href="style.css"> 
     <link rel = "stylesheet" href="research_tab.css">
     <link rel = "stylesheet" href="shop_tab.css">
+    <link rel = "stylesheet" href="resources.css">
     <title>Mage</title>
 </head>
 <body>
@@ -17,7 +18,24 @@
     <div class = "gameMain">
         <!-- Where resources will be displayed -->
         <div class = "gameMainLeft">
-            <div class = "knowledgeDisplay">Knowledge: <span id="knowledgeAmount">0</span></div>
+            <!-- Knowledge-->
+            <div class = "knowledgeDisplay" id = "knowledgeDisplay">
+                <div class = "resourceTitle">
+                    Knowledge:
+                </div>
+                <div class = "resourceAmount" id="knowledgeAmount">
+                    0
+                </div>
+            </div>
+            <!-- Gold-->
+            <div class = "goldDisplay" id="goldDisplay">
+                <div class = "resourceTitle">
+                    Gold:
+                </div>
+                <div class = "resourceAmount" id="goldAmount">
+                    5
+                </div>
+            </div>
         </div>
 
         <!-- Where most of the game will be displayed -->
@@ -39,6 +57,7 @@
 
                     <!-- Shop Tab -->
                     <div class = "shopTab" id = "shopTab">
+                        <button class = "shopBuyBtn" id = "buyOrbBtn">Buy Orb</button>
                     </div>
                 </div>
             </div>

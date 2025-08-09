@@ -1,11 +1,22 @@
 .shopTab {
     visibility: hidden;
+    display: none
+    flex-direction: row;
+    justify-content: center;
+    padding: 20px;
 }
 
 .shopTab.show {
     visibility: visible;
     display: flex;
-    flex-direction: row;
-    justify-content: center;
-    padding: 20px;
+}
+
+.shopBuyBtn {
+    font-size: 16px;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: white;
+}
+
+.shopBuyBtn:active {
+    background-color: lightgray;
 }

@@ -18,16 +18,6 @@
     padding: 4px
 }
 
-.knowledgeDisplay {
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 1s ease;
-}
-
-.knowledgeDisplay.show {
-    opacity: 1;
-    visibility: visible;
-}
 
 .gameMainCenter {
     width: 500px;
@@ -62,14 +52,14 @@
 }
 
 .tabLink {
-    color: lightgray;
+    color: gray;
     visibility: hidden;
     opacity: 0;
     transition: opacity 1s ease;
 }
 
-.tabLink.hover {
-    color:grey;
+.tabLink:hover {
+    color:rgb(84, 84, 84);
     white-space: pre;
 }
 

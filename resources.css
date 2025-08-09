@@ -1,0 +1,36 @@
+.resourceTitle {
+    width: 100px;
+}
+
+.resourceAmount {
+    width: 50px;
+}
+
+
+.knowledgeDisplay {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1s ease;
+}
+
+.knowledgeDisplay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.goldDisplay {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1s ease;
+}
+
+.goldDisplay.show {
+    opacity: 1;
+    visibility: visible;
+}

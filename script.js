@@ -1,4 +1,4 @@
-let DEBUG_MODE = false; // Set to false for normal gameplay
+let DEBUG_MODE = true; // Set to false for normal gameplay
 
 
 //This function is for waiiiting
@@ -31,7 +31,7 @@ function getRandomInt(min, max) {
 function researchClick() {
     //Knowledge visiblizer
     if (!knowledgeVisible) {
-        const knowledgeDisplay = document.querySelector('.knowledgeDisplay');
+        const knowledgeDisplay = document.getElementById('knowledgeDisplay');
         if (knowledgeDisplay) {
             knowledgeDisplay.classList.add('show');
             knowledgeVisible = true;
@@ -91,6 +91,7 @@ async function unlockOrb() {
     document.getElementById('researchTabBtn').classList.add('show');
     document.getElementById('shopSpace').classList.add('show');
     document.getElementById('shopTabBtn').classList.add('show');
+    document.getElementById('goldDisplay').classList.add('show');
 }
 
 //---------------------------//
