@@ -4,6 +4,8 @@
     <meta charset = "UTF-8">
     <meta name = "viewport" content="width=device-width, initial-scale=1.0">
     <link rel = "stylesheet" href="style.css"> 
+    <link rel = "stylesheet" href="research_tab.css">
+    <link rel = "stylesheet" href="shop_tab.css">
     <title>Mage</title>
 </head>
 <body>
@@ -21,9 +23,22 @@
         <!-- Where most of the game will be displayed -->
         <div class = "gameMainCenter">
             <div class = "centerContent" id = "centerContent">
+                <!--- Tab selector-->
                 <div class = "tabSelector">
-                    <div class = "gameMainCenterMain">
+                    <a href = "#" class = "tabLink" id = "researchTabBtn">Research</a>
+                    <span class = "tilde" id = "shopSpace"> ~ </span>
+                    <a href = "#" class = "tabLink" id = "shopTabBtn">Shop</a>
+                </div>
+
+                <!-- Switchable Window-->
+                <div class = "gameMainCenterMain">
+                    <!-- Research Tab -->
+                    <div class = "researchTab" id = "researchTab">
                         <button class = "researchBtn" id = "researchBtn">Research</button>
+                    </div>
+
+                    <!-- Shop Tab -->
+                    <div class = "shopTab" id = "shopTab">
                     </div>
                 </div>
             </div>

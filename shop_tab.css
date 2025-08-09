@@ -1,0 +1,11 @@
+.shopTab {
+    visibility: hidden;
+}
+
+.shopTab.show {
+    visibility: visible;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 20px;
+}

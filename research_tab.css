@@ -1,0 +1,16 @@
+.researchTab {
+    visibility: hidden;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 20px;
+}
+
+.researchTab.show {
+    visibility: visible;
+}
+
+.researchBtn {
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+}

@@ -30,11 +30,7 @@
 }
 
 .gameMainCenter {
-    display: flex;
-    flex-direction: row;
     width: 500px;
-    justify-content: center;
-    padding: 20px;
     border-left-style: solid;
     border-left-color: white;
     border-left-width: 1px;
@@ -42,21 +38,56 @@
     border-right-color: black;
     border-right-width: 1px;
 }
+.gameMainCenter.border {
+    border-left-color: black;
+}
 
 .centerContent {
-    opacity: 0;
     visibility: hidden;
+    opacity: 0;
     transition: opacity 1s ease;
 }
 
 .centerContent.show {
-    opacity: 1;
     visibility: visible;
+    opacity: 1;
 }
 
-.researchBtn {
-    font-size: 20px;
-    font-family: Arial, Helvetica, sans-serif
+.tabSelector {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.tabLink {
+    color: lightgray;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+
+.tabLink.hover {
+    color:grey;
+    white-space: pre;
+}
+
+.tabLink.show {
+    visibility: visible;
+    opacity: 1;
+}
+
+.tilde {
+    white-space: pre;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+
+.tilde.show {
+    visibility: visible;
+    opacity: 1;
 }
 
 .gameMainRight {
