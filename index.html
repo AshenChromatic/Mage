@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset = "UTF-8">
+    <meta name = "viewport" content="width=device-width, initial-scale=1.0">
+    <link rel = "stylesheet" href="style.css"> 
+    <title>Mage</title>
+</head>
+<body>
+
+    <div class="topBar">
+        <span> Mage </span> <span class = "ashenColor">by AshenChromatic</span>
+    </div>
+
+    <div class = "gameMain">
+        <!-- Where resources will be displayed -->
+        <div class = "gameMainLeft">
+            <div class = "knowledgeDisplay">Knowledge: <span id="knowledgeAmount">0</span></div>
+        </div>
+
+        <!-- Where most of the game will be displayed -->
+        <div class = "gameMainCenter">
+            <div class = "centerContent" id = "centerContent">
+                <div class = "tabSelector">
+                    <div class = "gameMainCenterMain">
+                        <button class = "researchBtn" id = "researchBtn">Research</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- This handles the log-->
+        <div class = "gameMainRight">
+            <div class = "gameMainRightHeader">
+                <div class = "logTitle">
+                    Log
+                </div>
+            </div>
+
+            <hr class="logDivider">
+
+            <div class = "log" id = "gameLog">
+                <!-- Log messages appear here -->
+            </div>
+        </div>
+    </div>
+    <script src= "script.js"></script>
+</body>
+</html>

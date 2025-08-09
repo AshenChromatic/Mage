@@ -1,0 +1,94 @@
+.topBar {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 16px;
+}
+
+.gameMain {
+    display: flex;
+    flex-direction: row;
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+}
+
+.gameMainLeft {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    padding: 4px
+}
+
+.knowledgeDisplay {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1s ease;
+}
+
+.knowledgeDisplay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.gameMainCenter {
+    display: flex;
+    flex-direction: row;
+    width: 500px;
+    justify-content: center;
+    padding: 20px;
+    border-left-style: solid;
+    border-left-color: white;
+    border-left-width: 1px;
+    border-right-style: solid;
+    border-right-color: black;
+    border-right-width: 1px;
+}
+
+.centerContent {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1s ease;
+}
+
+.centerContent.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.researchBtn {
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif
+}
+
+.gameMainRight {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.gameMainRightHeader {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    padding-top: 4px;
+    padding-bottom: 4px;
+
+}
+
+.logDivider {
+    margin: 0 16px;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-bottom-style: solid;
+    border-bottom-color: lightgrey;
+    border-bottom-width: 1px;
+}
+
+.log{
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.ashenColor {
+    color: #4c6876;
+}
