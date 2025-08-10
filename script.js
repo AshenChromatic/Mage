@@ -24,28 +24,63 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+
 //---------------------------//
 // Resources                 //
 //---------------------------//
+
+
 
 let knowledgeVisible = false;
 let orbVisible = false;
 
 let  resource = {
+    dummyResource: {
+        name: 'dummyResource',
+        amount: 0,
+        displayId: 'dummyResourceAmountVal',
+        max: 10,
+        visible: false
+    },
+    dummyGenerator: {
+        name: 'dummyGenerator',
+        amount: 1,
+        displayId: 'dummyGeneratorAmount',
+        generator: true,
+        generate: 'dummyResource',
+        rate: 1,
+        visible: false
+    },
     knowledge: {
         name: 'knowledge',
         amount: 0,
-        displayId: 'knowledgeAmount'
+        displayId: 'knowledgeAmount',
+        visible: false
     },
     gold: {
         name: 'gold',
         amount: 5,
-        displayId: 'goldAmount'
+        displayId: 'goldAmount',
+        visible: false
     },
     orb: {
         name: 'orb',
         amount: 0,
-        displayId: 'orbAmount'
+        displayId: 'orbAmount',
+        generator: true,
+        generate: 'mana',
+        rate: 1,
+        increaseMax: 'mana',
+        increaseMaxBy: 50,
+        visible: false
+    },
+    mana: {
+        name: 'mana',
+        amount: 0,
+        displayId: 'manaAmountVal',
+        displayMaxId: 'manaMax',
+        max: 0,
+        visible: false
     }
 };
 
@@ -56,11 +91,11 @@ let  resource = {
 
 function researchClick() {
     //Knowledge visiblizer
-    if (!knowledgeVisible) {
+    if (!resource.knowledge.visible) {
         const knowledgeDisplay = document.getElementById('knowledgeDisplay');
         if (knowledgeDisplay) {
             knowledgeDisplay.classList.add('show');
-            knowledgeVisible = true;
+            resource.knowledge.visible = true;
         }
     }
     //Knowledge increaserizer
@@ -133,6 +168,18 @@ function buy(resourceNeed, costs, resourceGet) {
     if (displayElement) {
         displayElement.innerHTML = resource[resourceGet].amount;
     }
+    //Increase max resource if applicable
+    if (resource[resourceGet].increaseMax && resource[resourceGet].increaseMaxBy) {
+        const target = resource[resource[resourceGet].increaseMax];
+        if (target) {
+            target.max += resource[resourceGet].increaseMaxBy;
+            const maxDisplayId = target.displayMaxId;
+            const maxDisplayElement = document.getElementById(maxDisplayId);
+            if (maxDisplayElement) {
+                maxDisplayElement.innerHTML = target.max;
+            }
+        }
+    }
 
     // Immediately update hover box state
     const hoverBoxBuy = document.getElementById('hoverBoxBuy');
@@ -146,16 +193,18 @@ function buy(resourceNeed, costs, resourceGet) {
 
 document.getElementById('buyOrbBtn').addEventListener('click', function() {
     const orbData = buyer.orb;
-    if (buy(orbData.resourceNeed, orbData.costs, orbData.resourceGet[0]) && orbVisible === false) {
-        console.log('Attempting to show orb');
-        const orbDisplay = document.getElementById('orbDisplay');
-        const orbDiv = document.getElementById('orbDiv');
-        if (orbDiv) {
-            orbDiv.classList.add('show');
-        }
-        if (orbDisplay) {
-            orbDisplay.classList.add('show');
-            orbVisible = true;
+    if(resource.orb.visible === false) {
+        if (buy(orbData.resourceNeed, orbData.costs, orbData.resourceGet[0]) === true) {
+            console.log('Attempting to show orb');
+            const orbDisplay = document.getElementById('orbDisplay');
+            const orbDiv = document.getElementById('orbDiv');
+            if (orbDiv) {
+                orbDiv.classList.add('show');
+            }
+            if (orbDisplay) {
+                orbDisplay.classList.add('show');
+                resource.orb.visible = true;
+            }
         }
     }
 });
@@ -166,10 +215,43 @@ document.getElementById('buyOrbBtn').addEventListener('click', function() {
 //---------------------------//
 // Generators                //
 //---------------------------//
+ 
+function generatorTick() {
+    //search for all resources that generate
+    for (const prop in resource) {
+        if (resource.hasOwnProperty(prop)) {
+            const obj = resource[prop];
+            if (obj.generator === true) {
+                const targetResource = resource[obj.generate];
+                if (targetResource) {
+                    const prevAmount = targetResource.amount;
+                    targetResource.amount += obj.rate * obj.amount;
+                    if (targetResource.amount > targetResource.max) {
+                        targetResource.amount = targetResource.max;
+                    }
+                    // Update the display for the generated resource
+                    const displayId = targetResource.displayId;
+                    const displayElement = document.getElementById(displayId);
+                    if (displayElement) {
+                        displayElement.innerHTML = targetResource.amount;
+                    }
+                    // If resource was previously 0 and now > 0, show it
+                    if (prevAmount === 0 && targetResource.amount > 0 && !targetResource.visible) {
+                        const displayDiv = document.getElementById(displayId.replace('AmountVal', 'Display'));
+                        if (displayDiv) {
+                            displayDiv.classList.add('show');
+                        }
+                        targetResource.visible = true;
+                    }
+                }
+            }
+        }
+    }
+}
+   
 
-
-
-
+// Run generatorTick every second
+setInterval(generatorTick, 1000);
 
 
 
@@ -281,6 +363,25 @@ async function unlockOrb() {
 //Research button
 document.getElementById('researchBtn').addEventListener('click', researchClick);
 
+//---------------------------//
+// Debug                    //
+//---------------------------//
+if (DEBUG_MODE) {
+    resource.dummyResource.visible = true;
+    resource.dummyGenerator.visible = true;
+}
+if (resource.dummyResource.visible === true) {
+    const dummyDisplay = document.getElementById('dummyDisplay');
+    if (dummyDisplay) {
+        dummyDisplay.classList.add('show');
+    }
+}
+if (resource.dummyGenerator.visible === true) {
+    const dummyGenDisplay = document.getElementById('dummyGenDisplay');
+    if (dummyGenDisplay) {
+        dummyGenDisplay.classList.add('show');
+    }
+}
 
 //---------------------------//
 // Initialization            //

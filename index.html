@@ -20,6 +20,17 @@
         <!-- Where resources will be displayed -->
         <div class = "gameMainLeft">
             <div class = "resources">
+                <!--DummyResource-->
+                <div class = "dummyDisplay" id = "dummyDisplay">
+                    <div class = "resourceTitle">
+                        Dummy:
+                    </div>
+                    <div class = "resourceAmount" id="dummyResourceAmount">
+                        <span id="dummyResourceAmountVal">0</span>
+                        /
+                        <span id="dummyResourceMax">10</span>
+                    </div>
+                </div>
                 <!-- Knowledge-->
                 <div class = "knowledgeDisplay" id = "knowledgeDisplay">
                     <div class = "resourceTitle">
@@ -31,17 +42,38 @@
                 </div>
                 <!-- Gold-->
                 <div class = "goldDisplay" id="goldDisplay">
-                    <div class = "resourceTitle">
+                    <div class = "resourceTitle goldTitle">
                         Gold:
                     </div>
                     <div class = "resourceAmount" id="goldAmount">
                         5
                     </div>
                 </div>
+                <!-- Mana-->
+                <div class = "manaDisplay" id="manaDisplay">
+                    <div class = "resourceTitle manaTitle">
+                        Mana:
+                    </div>
+                <div class = "resourceAmount" id="manaAmount">
+                        <span id="manaAmountVal">0</span>
+                        /
+                        <span id="manaMax">10</span>
+                    </div>
+                </div>
             </div>
 
             <hr class="resourceDiv" id="orbDiv">
-                <!-- Orb-->
+            <div class = "generators">
+                <!-- Dummy Generator-->
+                <div class = "dummyDisplay" id = "dummyGenDisplay">
+                    <div class = "resourceTitle">
+                        DummyGen:
+                    </div>
+                    <div class = "resourceAmount" id="dummyGeneratorAmount">
+                        1
+                    </div>
+                </div>
+                 <!-- Orb-->
                 <div class = "orbDisplay" id = "orbDisplay">
                     <div class = "resourceTitle">
                         Orb:
@@ -50,8 +82,6 @@
                         0
                     </div>
                 </div>
-            <div class = "generators">
-
             </div>
         </div>
 

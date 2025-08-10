@@ -1,26 +1,29 @@
-.resourceTitle {
-    width: 100px;
-}
-
-.resourceAmount {
-    width: 50px;
-}
-
-
-.knowledgeDisplay {
+/* Classes with identical hidden state properties */
+.knowledgeDisplay,
+.goldDisplay,
+.manaDisplay,
+.orbDisplay {
     display: flex;
     flex-direction: row;
     justify-content: left;
     opacity: 0;
     visibility: hidden;
+    height: 0;
     transition: opacity 1s ease;
 }
 
-.knowledgeDisplay.show {
+/* Classes with identical visible state properties */
+.knowledgeDisplay.show,
+.goldDisplay.show,
+.manaDisplay.show,
+.orbDisplay.show {
     opacity: 1;
     visibility: visible;
+    display: flex;
+    height: auto;
 }
 
+/* resourceDiv hidden/visible states */
 .resourceDiv {
     border: none;
     border-bottom: 1px solid lightgrey;
@@ -35,33 +38,37 @@
 .resourceDiv.show {
     opacity: 1;
     visibility: visible;
+    height: auto;
 }
 
-.goldDisplay {
+/* Individual styles */
+.resourceTitle {
+    width: 100px;
+}
+
+.resourceAmount {
+    width: 50px;
+}
+
+.goldTitle {
+    color: goldenrod;
+}
+
+.manaTitle {
+    color: lightskyblue;
+}
+
+/* dummyDisplay hidden/visible states */
+.dummyDisplay {
     display: flex;
     flex-direction: row;
     justify-content: left;
-    opacity: 0;
     visibility: hidden;
-    transition: opacity 1s ease;
+    height: 0;
 }
 
-.goldDisplay.show {
-    opacity: 1;
+.dummyDisplay.show {
     visibility: visible;
-}
-
-
-.orbDisplay {
     display: flex;
-    flex-direction: row;
-    justify-content: left;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 1s ease;
-}
-
-.orbDisplay.show {
-    opacity: 1;
-    visibility: visible;
+    height: auto;
 }
