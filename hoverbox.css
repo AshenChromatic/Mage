@@ -61,6 +61,9 @@
     display: flex;
     justify-content: flex-end;
     text-align: right;
-    padding: 0px 4px;
+    font-size: 12px;
+    color: #4c6876;
+    font-style: italic;
+    padding: 4px 4px;
     width: calc(100% - 8px);
 }

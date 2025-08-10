@@ -1,9 +1,12 @@
-let DEBUG_MODE = false; // Set to false for normal gameplay
+let DEBUG_MODE = {
+    fastmode: false, //Skips waiting times
+    dummies: false   // Shows dummy resources and generators
+};
 
 
 //This function is for waiiiting
 function sleep(ms) {
-    if (DEBUG_MODE) return Promise.resolve();
+    if (DEBUG_MODE.fastmode) return Promise.resolve();
     return new Promise(function(resolve) {
         setTimeout(resolve, ms);
     });
@@ -309,7 +312,7 @@ buyOrbBtn.addEventListener ('mouseover', function() {
         'A mana orb that gathers and stores ambient mana from the environment.',
         '5 gold',
         '+1 Mana/s <br> +50 Max Mana',
-        ''
+        'Surprisingly unponderable.'
     );
     const hoverBoxBuy = document.getElementById('hoverBoxBuy');
     if (checkIfEnoughResources(buyer.orb.resourceNeed, buyer.orb.costs)) {
@@ -366,7 +369,7 @@ document.getElementById('researchBtn').addEventListener('click', researchClick);
 //---------------------------//
 // Debug                    //
 //---------------------------//
-if (DEBUG_MODE) {
+if (DEBUG_MODE.dummies) {
     resource.dummyResource.visible = true;
     resource.dummyGenerator.visible = true;
 }
