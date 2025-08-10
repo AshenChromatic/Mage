@@ -1,4 +1,4 @@
-let DEBUG_MODE = true; // Set to false for normal gameplay
+let DEBUG_MODE = false; // Set to false for normal gameplay
 
 
 //This function is for waiiiting
