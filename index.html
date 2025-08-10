@@ -7,6 +7,7 @@
     <link rel = "stylesheet" href="research_tab.css">
     <link rel = "stylesheet" href="shop_tab.css">
     <link rel = "stylesheet" href="resources.css">
+    <link rel = "stylesheet" href="hoverbox.css">
     <title>Mage</title>
 </head>
 <body>
@@ -18,23 +19,39 @@
     <div class = "gameMain">
         <!-- Where resources will be displayed -->
         <div class = "gameMainLeft">
-            <!-- Knowledge-->
-            <div class = "knowledgeDisplay" id = "knowledgeDisplay">
-                <div class = "resourceTitle">
-                    Knowledge:
+            <div class = "resources">
+                <!-- Knowledge-->
+                <div class = "knowledgeDisplay" id = "knowledgeDisplay">
+                    <div class = "resourceTitle">
+                        Knowledge:
+                    </div>
+                    <div class = "resourceAmount" id="knowledgeAmount">
+                        0
+                    </div>
                 </div>
-                <div class = "resourceAmount" id="knowledgeAmount">
-                    0
+                <!-- Gold-->
+                <div class = "goldDisplay" id="goldDisplay">
+                    <div class = "resourceTitle">
+                        Gold:
+                    </div>
+                    <div class = "resourceAmount" id="goldAmount">
+                        5
+                    </div>
                 </div>
             </div>
-            <!-- Gold-->
-            <div class = "goldDisplay" id="goldDisplay">
-                <div class = "resourceTitle">
-                    Gold:
+
+            <hr class="resourceDiv" id="orbDiv">
+                <!-- Orb-->
+                <div class = "orbDisplay" id = "orbDisplay">
+                    <div class = "resourceTitle">
+                        Orb:
+                    </div>
+                    <div class = "resourceAmount" id="orbAmount">
+                        0
+                    </div>
                 </div>
-                <div class = "resourceAmount" id="goldAmount">
-                    5
-                </div>
+            <div class = "generators">
+
             </div>
         </div>
 
@@ -78,6 +95,34 @@
             </div>
         </div>
     </div>
+
+    <div class = "hoverBox" id = "hoverBox">
+        <!-- Hover box content for buying/unlocking things for a cost-->
+        <div class = "hoverBoxBuy" id = "hoverBoxBuy">
+            <div class=" hoverBuyDesc" id="hoverBuyDesc">
+                <!-- Description will be dynamically filled -->
+            </div>
+
+            <hr class="hoverBuyDiv">
+
+            <div class="hoverBuyCost" id="hoverBuyCost">
+                <!-- Cost will be dynamically filled -->
+            </div>
+
+            <hr class="hoverBuyDiv">
+            
+            <div class="hoverBuyEffect" id="hoverBuyEffect">
+                <!-- Effect will be dynamically filled -->
+            </div>
+
+            <div class="hoverBuyFlavor" id="hoverBuyFlavor">
+                <!-- Flavor text will be dynamically filled -->
+            </div>
+        </div>
+    </div>
+
+
+    <!-- js -->
     <script src= "script.js"></script>
 </body>
 </html>
