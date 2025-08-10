@@ -1,14 +1,17 @@
 let DEBUG_MODE = {
-    fastmode: false, //Skips waiting times
+    fastmode: true, //Skips waiting times
     dummies: false   // Shows dummy resources and generators
 };
 
 
 //This function is for waiiiting
 function sleep(ms) {
-    if (DEBUG_MODE.fastmode) return Promise.resolve();
+    let sleepTime = ms;
+    if (DEBUG_MODE.fastmode) {
+        sleepTime = sleepTime / 10; // Reduce wait time by 90% in fast mode
+    }
     return new Promise(function(resolve) {
-        setTimeout(resolve, ms);
+        setTimeout(resolve, sleepTime);
     });
 }
 
