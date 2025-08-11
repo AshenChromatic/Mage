@@ -119,3 +119,11 @@
 .ashenColor {
     color: #4c6876;
 }
+
+.logMessage {
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+.logMessage.show {
+    opacity: 1;
+}

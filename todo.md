@@ -17,7 +17,6 @@ _Last updated: 2025-8-11_
 
 ## Polish & Tweaks
 - [ ] Add bars to resources
-- [ ] Make log fade in
 
 ---
 
@@ -26,5 +25,5 @@ _Last updated: 2025-8-11_
 ---
 
 ## Done
-
+- [x] Make log fade in  8/11/25
 ---

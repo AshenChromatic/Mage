@@ -18,7 +18,15 @@ function sleep(ms) {
 //Put text in the log
 function sendToLog(message) {
     const logDiv = document.getElementById('gameLog');
-    logDiv.innerHTML += '> ' + message + '<br>';
+    // Create a new div for the message
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'logMessage';
+    msgDiv.innerHTML = '> ' + message + '<br>';
+    logDiv.appendChild(msgDiv);
+    // Trigger fade-in
+    setTimeout(function() {
+        msgDiv.classList.add('show');
+    }, 10); // Short delay to ensure the element is added before transition
 }
 
 
