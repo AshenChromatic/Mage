@@ -10,9 +10,9 @@ This project is actively being developed and improved. If you find bugs, have id
 
 Pull requests are welcome! If you want to contribute code, please fork the repository and submit your changes via a pull request. For major changes, consider opening an issue first to discuss the approach.
 
-##License
+## License
 This project is open source under the MIT License. See the [License](LICENSE) file for details.
 
 
-##Contact
+## Contact
 Feel free to reach out or discuss ideas by opening issues on GitHub, or you can find me on Discord as AshenChromatic.
