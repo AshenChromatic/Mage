@@ -3,7 +3,7 @@ A browser-based idle game inspired by my favorite minimalist web incrementals li
 
 Currently in alpha.
 
-**[Play it here:](https://ashenchromatic.github.io/Mage/)**
+**[Play it here](https://ashenchromatic.github.io/Mage/)**
 
 ## Development
 This project is actively being developed and improved. If you find bugs, have ideas for new features, or want to contribute, please check out the [Issues](https://github.com/AshenChromatic/Mage/issues) page to report or discuss them.
