@@ -1,5 +1,5 @@
 let DEBUG_MODE = {
-    fastmode: true, //Skips waiting times
+    fastmode: false, //Skips waiting times
     dummies: false   // Shows dummy resources and generators
 };
 
@@ -21,9 +21,6 @@ function sendToLog(message) {
     logDiv.innerHTML += '> ' + message + '<br>';
 }
 
-
-//Setup for orbUnlock
-let orbUnlock = false;
 
 
 function getRandomInt(min, max) {
@@ -95,6 +92,9 @@ let  resource = {
 // Clickers                  //
 //---------------------------//
 
+let orbUnlock = false;
+let runeUnlock = false;
+
 function researchClick() {
     //Knowledge visiblizer
     if (!resource.knowledge.visible) {
@@ -118,6 +118,16 @@ function researchClick() {
         if (orbUnlockRandom === 1) {
             orbUnlock = true;
             unlockOrb();
+        }
+    }
+    //Rune unlocker
+    if (runeUnlock === true && resource.knowledge.amount >= 100 && resource.orb.amount > 0) {
+        let runeUnlockRandom = getRandomInt(1, 100);
+        console.log('runeUnlockRandom: ' + runeUnlockRandom);
+        //If the random number is 1, unlock the rune
+        if (runeUnlockRandom === 1) {
+            runeUnlock = true;
+            unlockRune();
         }
     }
 }

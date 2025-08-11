@@ -22,6 +22,10 @@
     padding: 4px 8px;
 }
 
+.researchBtn:hover {
+    background-color: rgb(236, 236, 236);
+}
+
 .researchBtn:active {
     background-color: lightgray;
 }
