@@ -1,3 +1,12 @@
+.gameMainCenterMain {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+.gameMainCenterMain.show {
+    visibility: visible;
+    opacity: 1;
+}
 .topBar {
     display: flex;
     flex-direction: row;
@@ -39,53 +48,7 @@
     border-left-color: black;
 }
 
-.centerContent {
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 1s ease;
-}
 
-.centerContent.show {
-    visibility: visible;
-    opacity: 1;
-}
-
-.tabSelector {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-}
-
-.tabLink {
-    color: gray;
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 1s ease;
-}
-
-.tabLink:hover {
-    color:rgb(84, 84, 84);
-    white-space: pre;
-}
-
-.tabLink.show {
-    visibility: visible;
-    opacity: 1;
-}
-
-.tilde {
-    white-space: pre;
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 1s ease;
-}
-
-.tilde.show {
-    visibility: visible;
-    opacity: 1;
-}
 
 .gameMainRight {
     display: flex;

@@ -1,5 +1,5 @@
 let DEBUG_MODE = {
-    fastmode: false, //Skips waiting times
+    fastmode: true, //Skips waiting times
     dummies: false   // Shows dummy resources and generators
 };
 
@@ -102,6 +102,7 @@ let  resource = {
 
 let orbUnlock = false;
 let runeUnlock = false;
+document.getElementById('researchBtn').addEventListener('click', researchClick);
 
 function researchClick() {
     //Knowledge visiblizer
@@ -121,7 +122,9 @@ function researchClick() {
     //Orb unlocker
     if (orbUnlock === false && resource.knowledge.amount >=10) {
         let orbUnlockRandom = getRandomInt(1, 30);
-        console.log('orbUnlockRandom: ' + orbUnlockRandom);
+        if (orbUnlockRandom !== 1) {
+            console.log('failed orb unlock check');
+        }
         //If the random number is 1, unlock the orb
         if (orbUnlockRandom === 1) {
             orbUnlock = true;
@@ -129,9 +132,13 @@ function researchClick() {
         }
     }
     //Rune unlocker
-    if (runeUnlock === true && resource.knowledge.amount >= 100 && resource.orb.amount > 0) {
-        let runeUnlockRandom = getRandomInt(1, 100);
-        console.log('runeUnlockRandom: ' + runeUnlockRandom);
+    if (runeUnlock === false && resource.knowledge.amount >= 100 && resource.orb.amount > 0) {
+        let runeChance = Math.max(1, 100 - Math.floor((resource.knowledge.amount - 100)));
+        let runeUnlockRandom = getRandomInt(1, runeChance);
+        if (runeUnlockRandom !== 1) {
+            console.log('failed rune unlock check');
+        }
+
         //If the random number is 1, unlock the rune
         if (runeUnlockRandom === 1) {
             runeUnlock = true;
@@ -283,10 +290,11 @@ setInterval(generatorTick, 1000);
 // Tab Switchers             //
 //---------------------------//
 
-const tabIds = ['researchTab', 'shopTab'];
+// Subtab switching for PC tab
+const subTabIds = ['researchTab', 'shopTab'];
 
-function openTab(tabId) {
-    tabIds.forEach(id => {
+function openSubTab(tabId) {
+    subTabIds.forEach(id => {
         const tab = document.getElementById(id);
         if (tab) {
             tab.classList.remove('show');
@@ -298,11 +306,13 @@ function openTab(tabId) {
     }
 }
 
-document.getElementById('researchTabBtn').addEventListener('click', function() {
-    openTab('researchTab');
+document.getElementById('researchTabBtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    openSubTab('researchTab');
 });
-document.getElementById('shopTabBtn').addEventListener('click', function() {
-    openTab('shopTab');
+document.getElementById('shopTabBtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    openSubTab('shopTab');
 });
 
 
@@ -361,6 +371,37 @@ buyOrbBtn.addEventListener ('mouseleave', function() {
 // Dialogs                   //
 //---------------------------//
 
+// Rune unlock dialog
+async function unlockRune() {
+    const logDiv = document.getElementById('gameLog');
+    logDiv.innerHTML += '<br>';
+    sendToLog('You continue your research for a while.');
+    await sleep(4000);
+    sendToLog('It\'s difficult to find anything of real use, especially to a beginner such as yourself.');
+    await sleep(4000);
+    sendToLog('Pouring over wizard chatrooms leaves you with more questions than answers.');
+    await sleep(4000);
+    sendToLog('Such as');
+    await sleep(2000);
+    sendToLog('What the hell is a Power Word: Scrunch?');
+    await sleep(4000);
+    sendToLog('However, you do find some information.');
+    await sleep(4000);
+    sendToLog('Something that even you can manage');
+    await sleep(4000);
+    sendToLog('Runes.');
+    await sleep(4000);
+    sendToLog('Apparently, all some wizards do is draw a couple squiggles on a piece of paper and call it a day.');
+    await sleep(4000);
+    sendToLog('You turn to the empty space on your desk and pull out a notebook and a pencil.')
+    unlockRune = true;
+    document.getElementById('mainSelector').classList.add('show');
+    document.getElementById('pcTabBtn').classList.add('show');
+    document.getElementById('deskSpace').classList.add('show');
+    document.getElementById('deskTabBtn').classList.add('show');
+    document.getElementById('mainSelectorDiv').classList.add('show');
+}
+
 // Orb unlock dialog
 async function unlockOrb() {
     const logDiv = document.getElementById('gameLog');
@@ -379,13 +420,6 @@ async function unlockOrb() {
 
 }
 
-//---------------------------//
-// Event Listeners           //
-//---------------------------//
-
-
-//Research button
-document.getElementById('researchBtn').addEventListener('click', researchClick);
 
 //---------------------------//
 // Debug                    //
@@ -426,7 +460,7 @@ async function startGame() {
     sendToLog('Magic isn\'t going to learn itself, after all.');
     document.querySelector('.gameMainCenter').classList.add('border');
     document.querySelector('.researchTab').classList.add('show');
-    document.querySelector('.centerContent').classList.add('show');
+    document.getElementById('pcMainCenter').classList.add('show');
 
 }
 startGame();

@@ -2,21 +2,22 @@
 <html lang="en">
 <head>
     <meta charset = "UTF-8">
-    <meta name = "viewport" content="width=device-width, initial-scale=1.0">
-    <link rel = "stylesheet" href="style.css?v=2"> 
-    <link rel = "stylesheet" href="research_tab.css?v=2">
-    <link rel = "stylesheet" href="shop_tab.css?v=2">
-    <link rel = "stylesheet" href="resources.css?v=2">
-    <link rel = "stylesheet" href="hoverbox.css?v=2">
+    <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+    <link rel = "stylesheet" href = "style.css?v=2"> 
+    <link rel = "stylesheet" href = "research_tab.css?v=2">
+    <link rel = "stylesheet" href = "shop_tab.css?v=2">
+    <link rel = "stylesheet" href = "resources.css?v=2">
+    <link rel = "stylesheet" href = "hoverbox.css?v=2">
+    <link rel = "stylesheet" href = "tab_selector.css?v=2">
     <title>Mage</title>
 </head>
 <body>
 
-    <div class="topBar">
-        <div class="title">
+    <div class = "topBar">
+        <div class = "title">
             <span> Mage </span> <span class = "ashenColor">by AshenChromatic</span>
         </div>
-        <div class="version">
+        <div class = "version">
             Alpha 0.1.1
         </div>
     </div>
@@ -92,26 +93,51 @@
 
         <!-- Where most of the game will be displayed -->
         <div class = "gameMainCenter">
-            <div class = "centerContent" id = "centerContent">
-                <!--- Tab selector-->
-                <div class = "tabSelector">
+            <!-- Main tab selector -->
+            <div class = "mainTabSelector" id = "mainSelector">
+                <a href = "#" class = "tabLink" id = "pcTabBtn">PC</a>
+                <span class = "tilde" id = "deskSpace"> ~ </span>
+                <a href = "#" class = "tabLink" id = "deskTabBtn">Desk</a>
+                <span class = "tilde" id = "doorSpace"> ~ </span>
+                <a href = "#" class = "tabLink" id = "doorTabBtn">Door</a>
+            </div>
+            <hr class = "mainSelectorDiv" id = "mainSelectorDiv">
+
+            <!-- PC Main Game Center -->
+            <div class="gameMainCenterMain" id="pcMainCenter">
+                <div class = "subTabSelector" id = "pcTabSelector">
                     <a href = "#" class = "tabLink" id = "researchTabBtn">Research</a>
                     <span class = "tilde" id = "shopSpace"> ~ </span>
                     <a href = "#" class = "tabLink" id = "shopTabBtn">Shop</a>
                 </div>
-
-                <!-- Switchable Window-->
-                <div class = "gameMainCenterMain">
+                <div class = "tabContent" id = "pcTabContent">
                     <!-- Research Tab -->
                     <div class = "researchTab" id = "researchTab">
                         <button class = "researchBtn" id = "researchBtn">Research</button>
                     </div>
-
                     <!-- Shop Tab -->
                     <div class = "shopTab" id = "shopTab">
                         <button class = "shopBuyBtn" id = "buyOrbBtn">Buy Orb</button>
                     </div>
                 </div>
+            </div>
+
+            <!-- Desk Main Game Center -->
+            <div class="gameMainCenterMain" id="deskMainCenter">
+                <div class = "subTabSelector" id = "deskTabSelector">
+                    <a href = "#" class = "tabLink" id = "runeTabBtn">Runes</a>
+                </div>
+                <div class = "tabContent" id = "deskTabContent">
+                    <!-- Runes Tab (empty for now) -->
+                    <div class = "runeTab" id = "runeTab">
+                        <!-- Runes content goes here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Door Main Game Center -->
+            <div class="gameMainCenterMain" id="doorMainCenter">
+                <!-- Door tab is empty -->
             </div>
         </div>
 

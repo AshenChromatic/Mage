@@ -1,0 +1,71 @@
+.subTabSelector {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.mainTabSelector {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 0px;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 1s ease;
+    height: 0;
+    overflow: hidden;
+}
+
+.mainTabSelector.show {
+    padding: 10px;
+    visibility: visible;
+    opacity: 1;
+    height: auto;
+    overflow: visible;
+}
+
+.mainSelectorDiv {
+    border: none;
+    border-bottom: 1px solid lightgrey;
+    width: 90%;
+    margin: 8px 0;
+    height: 0;
+    opacity: 0;
+}
+.mainSelectorDiv.show {
+    opacity: 1;
+}
+
+
+.tabLink {
+    color: gray;
+    display: none;
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+
+.tabLink:hover {
+    color:rgb(84, 84, 84);
+    white-space: pre;
+}
+
+.tabLink.show {
+    display: inline-block;
+    opacity: 1;
+}
+
+
+.tilde {
+    white-space: pre;
+    display: none;
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+
+.tilde.show {
+    display: inline-block;
+    opacity: 1;
+}
