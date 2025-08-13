@@ -1,12 +1,11 @@
 # Mage TODO
 
-_Last updated: 2025-8-11_
+_Last updated: 2025-8-13_
 
 
 ## Features to Add
 - [ ] New exit tab for world map which will replace all current tabs with a new window.
 - [ ] Outside will have a phone which will slide out from the bottom right I think
-- [ ] Implement and Outside
 - [ ] Add more runes
 - [ ] Implement saving (oh god i think i need to restructure how game progress is stored for this)
 
