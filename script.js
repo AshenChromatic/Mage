@@ -481,6 +481,7 @@ async function unlockOrb() {
 //---------------------------//
 // Rune Minigame             //
 //---------------------------//
+let runeLevel = 1
 
 //Define rune line width and radius for accuracy check
 const RUNE_LINE_WIDTH = 6;
@@ -489,8 +490,8 @@ const RUNE_CIRCLE_RADIUS = 12;
 
 //All runes are stored as lines here
 const runes = {
-    alpha: {
-        name: "Alpha",
+    thorn: {
+        name: "thorn",
         lines: [
             { start: [75, 50], end: [75, 250] },
             { start: [75, 115], end: [125, 150] },
@@ -712,7 +713,7 @@ function gradeRune(drawnLines, rune) {
         // For each user point, check if it is close to any segment of the rune
         let onRuneCount = 0;
         let totalCount = userPoints.length;
-    const TOLERANCE = 4; // px, even tighter for accuracy
+    let TOLERANCE = runeLevel; // px, even tighter for accuracy
 
         // Flatten rune segments for easier checking
         let runeSegments = [];

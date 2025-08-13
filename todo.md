@@ -18,6 +18,7 @@ _Last updated: 2025-8-13_
 ## Polish & Tweaks
 - [ ] Add bars to resources
 - [ ] Add thing that tells you how good your last rune was
+- [ ] Scrollable Log
 
 ---
 
