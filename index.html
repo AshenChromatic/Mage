@@ -9,6 +9,8 @@
     <link rel = "stylesheet" href = "resources.css?v=2">
     <link rel = "stylesheet" href = "hoverbox.css?v=2">
     <link rel = "stylesheet" href = "tab_selector.css?v=2">
+    <link rel = "stylesheet" href = "rune_minigame.css?v=2">
+    <link rel = "stylesheet" href = "debug.css?v=2">
     <title>Mage</title>
 </head>
 <body>
@@ -89,6 +91,43 @@
                     </div>
                 </div>
             </div>
+        
+
+            <hr class="resourceDiv" id="runeDiv">
+            <div class = "runes">
+                <div class = "garbageRuneDisplay" id = "garbageRuneDisplay">
+                    <div class = "resourceTitle">
+                        Garbage Rune:
+                    </div>
+                    <div class = "resourceAmount" id="garbageRuneAmount">
+                        0
+                    </div>
+                </div>
+                <div class = "okRuneDisplay" id = "okRuneDisplay">
+                    <div class = "resourceTitle">
+                        Ok Rune:
+                    </div>
+                    <div class = "resourceAmount" id="okRuneAmount">
+                        0
+                    </div>
+                </div>
+                <div class = "goodRuneDisplay" id = "goodRuneDisplay">
+                    <div class = "resourceTitle">
+                        Good Rune:
+                    </div>
+                    <div class = "resourceAmount" id="goodRuneAmount">
+                        0
+                    </div>
+                </div>
+                <div class = "perfectRuneDisplay" id = "perfectRuneDisplay">
+                    <div class = "resourceTitle">
+                        Perfect Rune:
+                    </div>
+                    <div class = "resourceAmount" id="perfectRuneAmount">
+                        0
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Where most of the game will be displayed -->
@@ -128,9 +167,11 @@
                     <a href = "#" class = "tabLink" id = "runeTabBtn">Runes</a>
                 </div>
                 <div class = "tabContent" id = "deskTabContent">
-                    <!-- Runes Tab (empty for now) -->
+                    <!-- Runes Tab -->
                     <div class = "runeTab" id = "runeTab">
-                        <!-- Runes content goes here -->
+                        <canvas id="runeCanvas" class="runeCanvas" width="200" height="300"></canvas>
+                        <div id="runeGrade" class="runeGrade"></div>
+                        <button id="nextRuneBtn" class="runeNextBtn">Next Rune</button>
                     </div>
                 </div>
             </div>
@@ -182,8 +223,18 @@
         </div>
     </div>
 
+    <!-- Debug Window -->
+    <div id="debugWindow" class="debugWindow">
+        <div class="debugHeader">Debug</div>
+        <div class="debugContent">
+            <button id="fastmodeBtn">Toggle Fastmode</button>
+            <button id="dummyResourcesBtn">Toggle Dummy Resources</button>
+            <button id="skipToRunesBtn">Skip to Runes</button>
+            <button id="renderEndpointsBtn">Render Rune Endpoints</button>
+        </div>
+    </div>
 
     <!-- js -->
-    <script src= "script.js"></script>
+    <script src = "script.js"></script>
 </body>
 </html>

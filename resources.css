@@ -1,8 +1,13 @@
+
 /* Classes with identical hidden state properties */
 .knowledgeDisplay,
 .goldDisplay,
 .manaDisplay,
-.orbDisplay {
+.orbDisplay,
+.garbageRuneDisplay,
+.okRuneDisplay,
+.goodRuneDisplay,
+.perfectRuneDisplay {
     display: flex;
     flex-direction: row;
     justify-content: left;
@@ -16,7 +21,11 @@
 .knowledgeDisplay.show,
 .goldDisplay.show,
 .manaDisplay.show,
-.orbDisplay.show {
+.orbDisplay.show,
+.garbageRuneDisplay.show,
+.okRuneDisplay.show,
+.goodRuneDisplay.show,
+.perfectRuneDisplay.show {
     opacity: 1;
     visibility: visible;
     display: flex;

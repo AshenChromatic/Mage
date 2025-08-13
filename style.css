@@ -1,11 +1,20 @@
 .gameMainCenterMain {
-    visibility: hidden;
+    display: none;
+}
+.gameMainCenterMain.revealed {
+    display: block;
     opacity: 0;
-    transition: opacity 1s ease;
+    animation: fadeInMainTab 1s forwards;
 }
 .gameMainCenterMain.show {
-    visibility: visible;
+    display: block;
     opacity: 1;
+    animation: none;
+}
+
+@keyframes fadeInMainTab {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 .topBar {
     display: flex;

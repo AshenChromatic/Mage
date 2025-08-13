@@ -1,8 +1,4 @@
-let DEBUG_MODE = {
-    fastmode: true, //Skips waiting times
-    dummies: false   // Shows dummy resources and generators
-};
-
+const Debug = false;
 
 //This function is for waiiiting
 function sleep(ms) {
@@ -41,9 +37,6 @@ function getRandomInt(min, max) {
 //---------------------------//
 
 
-
-let knowledgeVisible = false;
-let orbVisible = false;
 
 let  resource = {
     dummyResource: {
@@ -91,6 +84,30 @@ let  resource = {
         displayId: 'manaAmountVal',
         displayMaxId: 'manaMax',
         max: 0,
+        visible: false
+    },
+    garbageRune: {
+        name: 'Garbage Rune',
+        amount: 0,
+        displayId: 'garbageRuneAmount',
+        visible: false
+    },
+    okRune: {
+        name: 'Ok Rune',
+        amount: 0,
+        displayId: 'okRuneAmount',
+        visible: false
+    },
+    goodRune: {
+        name: 'Good Rune',
+        amount: 0,
+        displayId: 'goodRuneAmount',
+        visible: false
+    },
+    perfectRune: {
+        name: 'Perfect Rune',
+        amount: 0,
+        displayId: 'perfectRuneAmount',
         visible: false
     }
 };
@@ -290,6 +307,46 @@ setInterval(generatorTick, 1000);
 // Tab Switchers             //
 //---------------------------//
 
+// Main tab switching (PC, Desk, Door)
+const mainTabIds = ['pcMainCenter', 'deskMainCenter', 'doorMainCenter'];
+
+function openMainTab(tabId) {
+    mainTabIds.forEach(id => {
+        const tab = document.getElementById(id);
+        if (tab) {
+            tab.classList.remove('show');
+            tab.classList.remove('revealed');
+        }
+    });
+    const currentTab = document.getElementById(tabId);
+    if (currentTab) {
+        // If this is the first time showing, fade in
+        if (!currentTab.dataset.revealed) {
+            currentTab.classList.add('revealed');
+            currentTab.dataset.revealed = 'true';
+            setTimeout(() => {
+                currentTab.classList.remove('revealed');
+                currentTab.classList.add('show');
+            }, 1000); // match fade duration
+        } else {
+            currentTab.classList.add('show');
+        }
+    }
+}
+
+document.getElementById('pcTabBtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    openMainTab('pcMainCenter');
+});
+document.getElementById('deskTabBtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    openMainTab('deskMainCenter');
+});
+document.getElementById('doorTabBtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    openMainTab('doorMainCenter');
+});
+
 // Subtab switching for PC tab
 const subTabIds = ['researchTab', 'shopTab'];
 
@@ -387,7 +444,7 @@ async function unlockRune() {
     await sleep(4000);
     sendToLog('However, you do find some information.');
     await sleep(4000);
-    sendToLog('Something that even you can manage');
+    sendToLog('Something that even you can manage:');
     await sleep(4000);
     sendToLog('Runes.');
     await sleep(4000);
@@ -422,8 +479,505 @@ async function unlockOrb() {
 
 
 //---------------------------//
-// Debug                    //
+// Rune Minigame             //
 //---------------------------//
+
+//Define rune line width and radius for accuracy check
+const RUNE_LINE_WIDTH = 6;
+const RUNE_CIRCLE_RADIUS = 12;
+
+
+//All runes are stored as lines here
+const runes = {
+    alpha: {
+        name: "Alpha",
+        lines: [
+            { start: [75, 50], end: [75, 250] },
+            { start: [75, 115], end: [125, 150] },
+            { start: [75, 185], end: [125, 150] }
+        ],
+        drawLines: [
+            {
+            endpoints: [[75, 50], [75, 250]],
+            midpoints: [[75, 115], [75, 185]]
+            },
+            {
+            endpoints: [[75, 115], [75, 185]],
+            midpoints: [[125, 150]]
+            }
+        ]
+    },
+    // Add more runes here
+};
+
+//Pull a random rune
+const runeKeys = Object.keys(runes);
+const randomRune = runes[runeKeys[Math.floor(Math.random() * runeKeys.length)]];
+
+function renderRune(ctx, rune) {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.lineWidth = RUNE_LINE_WIDTH;
+    ctx.strokeStyle = "#888";
+    ctx.lineCap = "round"; // Make line tips rounded
+    for (const seg of rune.lines) {
+        ctx.beginPath();
+        ctx.moveTo(seg.start[0], seg.start[1]);
+        ctx.lineTo(seg.end[0], seg.end[1]);
+        ctx.stroke();
+    }
+    // Draw invisible circles for logic (not rendered, but for hit detection)
+    // You can store these for later use in grading
+}
+
+// Render endpoint outlines for debugging
+function renderRuneEndpoints(ctx, rune) {
+    if (!window.DEBUG_MODE.endpoints) return;
+    if (!rune.drawLines) return;
+    ctx.save();
+    ctx.lineWidth = 2;
+    // Collect all unique endpoints
+    const uniqueEndpoints = [];
+    const endpointKeySet = new Set();
+    const uniqueMidpoints = [];
+    const midpointKeySet = new Set();
+    for (const line of rune.drawLines) {
+        for (const pt of line.endpoints) {
+            const key = pt[0] + ',' + pt[1];
+            if (!endpointKeySet.has(key)) {
+                uniqueEndpoints.push(pt);
+                endpointKeySet.add(key);
+            }
+        }
+        for (const pt of line.midpoints) {
+            const key = pt[0] + ',' + pt[1];
+            if (!midpointKeySet.has(key)) {
+                uniqueMidpoints.push(pt);
+                midpointKeySet.add(key);
+            }
+        }
+    }
+    // Draw endpoints in yellow
+    ctx.strokeStyle = 'yellow';
+    for (const pt of uniqueEndpoints) {
+        ctx.beginPath();
+        ctx.arc(pt[0], pt[1], RUNE_CIRCLE_RADIUS, 0, 2 * Math.PI);
+        ctx.stroke();
+    }
+    // Draw midpoints in orange
+    ctx.strokeStyle = 'orange';
+    for (const pt of uniqueMidpoints) {
+        ctx.beginPath();
+        ctx.arc(pt[0], pt[1], RUNE_CIRCLE_RADIUS, 0, 2 * Math.PI);
+        ctx.stroke();
+    }
+    ctx.restore();
+}
+
+// Render a rune as soon as the Rune tab appears
+window.addEventListener('DOMContentLoaded', function() {
+    const canvas = document.getElementById('runeCanvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        renderRune(ctx, randomRune);
+        renderRuneEndpoints(ctx, randomRune);
+        enableRuneDrawing(canvas, ctx, randomRune);
+    }
+});
+
+// Drawing logic
+function enableRuneDrawing(canvas, ctx, rune) {
+    let drawing = false;
+    let start = null;
+    let currentLine = [];
+    let drawnLines = [];
+    const maxLines = rune.drawLines ? rune.drawLines.length : 0;
+
+    function onMouseDown(e) {
+        if (drawnLines.length >= maxLines) return;
+        drawing = true;
+        const rect = canvas.getBoundingClientRect();
+        start = [e.clientX - rect.left, e.clientY - rect.top];
+        currentLine = [start];
+    }
+
+    function onMouseMove(e) {
+        if (!drawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const point = [e.clientX - rect.left, e.clientY - rect.top];
+        currentLine.push(point);
+        // Draw the current segment as you go
+        ctx.save();
+        ctx.strokeStyle = '#44f';
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        const [sx, sy] = currentLine[currentLine.length - 2];
+        ctx.moveTo(sx, sy);
+        ctx.lineTo(point[0], point[1]);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    function onMouseUp(e) {
+        if (!drawing) return;
+        drawing = false;
+        drawnLines.push(currentLine);
+        if (drawnLines.length >= maxLines) {
+            // Remove listeners and call gradeRune
+            canvas.removeEventListener('mousedown', onMouseDown);
+            canvas.removeEventListener('mousemove', onMouseMove);
+            canvas.removeEventListener('mouseup', onMouseUp);
+            gradeRune(drawnLines, rune);
+        }
+    }
+
+    canvas.addEventListener('mousedown', onMouseDown);
+    canvas.addEventListener('mousemove', onMouseMove);
+    canvas.addEventListener('mouseup', onMouseUp);
+}
+
+
+function gradeRune(drawnLines, rune) {
+    // Helper: distance between two points
+    function dist(a, b) {
+        return Math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2);
+    }
+    const TOLERANCE = 12; // px, adjust as needed
+
+    // Clone drawLines so we can remove matched lines
+    let remainingDrawLines = rune.drawLines.map(function(line) {
+        return {
+            endpoints: [...line.endpoints],
+            midpoints: [...line.midpoints]
+        };
+    });
+
+    let grade = "ok"; // default, will be set to "garbage" if any check fails
+
+    for (const drawn of drawnLines) {
+        if (remainingDrawLines.length === 0) break;
+
+        // Try to match this drawn line to a drawLine
+        let matchedIndex = -1;
+        let matchedLine = null;
+        let drawnStart = drawn[0];
+        let drawnEnd = drawn[drawn.length - 1];
+
+        for (let i = 0; i < remainingDrawLines.length; i++) {
+            const line = remainingDrawLines[i];
+            // Check if drawn line starts/ends at either endpoint (within tolerance)
+            if (
+                (dist(drawnStart, line.endpoints[0]) < TOLERANCE && dist(drawnEnd, line.endpoints[1]) < TOLERANCE) ||
+                (dist(drawnStart, line.endpoints[1]) < TOLERANCE && dist(drawnEnd, line.endpoints[0]) < TOLERANCE)
+            ) {
+                matchedIndex = i;
+                matchedLine = line;
+                break;
+            }
+        }
+
+        if (!matchedLine) {
+            grade = "garbage";
+            console.log("No matching line found for drawn segment");
+            break;
+        }
+
+        // Check if all midpoints are visited
+        let allMidpointsHit = matchedLine.midpoints.every(mp =>
+            drawn.some(pt => dist(pt, mp) < TOLERANCE)
+        );
+        if (!allMidpointsHit) {
+            grade = "garbage";
+            console.log("Midpoints not hit correctly");
+            break;
+        }
+
+        // Remove matched line so it can't be matched again
+        remainingDrawLines.splice(matchedIndex, 1);
+    }
+
+    if (grade === "garbage" || remainingDrawLines.length > 0) {
+        grade = "garbage";
+        console.log("Rune drawn incorrectly or pairing error");
+    }
+
+    //Step 2: Accuracy check
+    if (grade !== "garbage") {
+        // Collect all user-drawn points
+        let userPoints = [];
+        for (const line of drawnLines) {
+            userPoints = userPoints.concat(line);
+        }
+
+        // For each user point, check if it is close to any segment of the rune
+        let onRuneCount = 0;
+        let totalCount = userPoints.length;
+    const TOLERANCE = 4; // px, even tighter for accuracy
+
+        // Flatten rune segments for easier checking
+        let runeSegments = [];
+        for (const seg of rune.lines) {
+            runeSegments.push({start: seg.start, end: seg.end});
+        }
+
+        // Helper: distance from point to segment
+        function pointToSegmentDist(pt, seg) {
+            const [x, y] = pt;
+            const [x1, y1] = seg.start;
+            const [x2, y2] = seg.end;
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            if (dx === 0 && dy === 0) {
+                // Start and end are the same
+                return Math.sqrt((x - x1) ** 2 + (y - y1) ** 2);
+            }
+            // Project point onto the segment
+            const t = Math.max(0, Math.min(1, ((x - x1) * dx + (y - y1) * dy) / (dx * dx + dy * dy)));
+            const projX = x1 + t * dx;
+            const projY = y1 + t * dy;
+            return Math.sqrt((x - projX) ** 2 + (y - projY) ** 2);
+        }
+
+        for (const pt of userPoints) {
+            let close = false;
+            for (const seg of runeSegments) {
+                if (pointToSegmentDist(pt, seg) <= TOLERANCE) {
+                    close = true;
+                    break;
+                }
+            }
+            if (close) onRuneCount++;
+        }
+
+        let percentOnRune = totalCount > 0 ? (onRuneCount / totalCount) : 0;
+        // Assign grade based on percentage
+        if (percentOnRune >= 0.99) {
+            grade = "perfect";
+        } else if (percentOnRune >= 0.8) {
+            grade = "good";
+        } else if (percentOnRune >= 0.5) {
+            grade = "ok";
+        } else {
+            grade = "garbage";
+        }
+        console.log(`Accuracy: ${(percentOnRune*100).toFixed(1)}% | Grade: ${grade}`);
+    }
+
+    //Step 3: Return rune of whatever grade
+    if (grade === "garbage") {
+        resource.garbageRune.amount += 1;
+        console.log("Rune graded as garbage");
+        const garbageRuneAmount = document.getElementById(resource.garbageRune.displayId);
+        if (garbageRuneAmount) {
+            garbageRuneAmount.textContent = resource.garbageRune.amount;
+        }
+    }
+    if (grade === "ok") {
+        resource.okRune.amount += 1;
+        console.log("Rune graded as ok");
+        const okRuneAmount = document.getElementById(resource.okRune.displayId);
+        if (okRuneAmount) {
+            okRuneAmount.textContent = resource.okRune.amount;
+        }
+    }
+    if (grade === "good") {
+        resource.goodRune.amount += 1;
+        console.log("Rune graded as good");
+        const goodRuneAmount = document.getElementById(resource.goodRune.displayId);
+        if (goodRuneAmount) {
+            goodRuneAmount.textContent = resource.goodRune.amount;
+        }
+    }
+    if (grade === "perfect") {
+        resource.perfectRune.amount += 1;
+        console.log("Rune graded as perfect");
+        const perfectRuneAmount = document.getElementById(resource.perfectRune.displayId);
+        if (perfectRuneAmount) {
+            perfectRuneAmount.textContent = resource.perfectRune.amount;
+        }
+    }
+
+    // After grading, check if rune resources are visible; if not, show them
+    if (!resource.garbageRune.visible || !resource.okRune.visible || !resource.goodRune.visible || !resource.perfectRune.visible) {
+        console.log("Showing rune resources");
+        const runeDiv = document.getElementById('runeDiv');
+        if (runeDiv) runeDiv.classList.add('show');
+        const garbageRuneDisplay = document.getElementById('garbageRuneDisplay');
+        if (garbageRuneDisplay) garbageRuneDisplay.classList.add('show');
+        const okRuneDisplay = document.getElementById('okRuneDisplay');
+        if (okRuneDisplay) okRuneDisplay.classList.add('show');
+        const goodRuneDisplay = document.getElementById('goodRuneDisplay');
+        if (goodRuneDisplay) goodRuneDisplay.classList.add('show');
+        const perfectRuneDisplay = document.getElementById('perfectRuneDisplay');
+        if (perfectRuneDisplay) perfectRuneDisplay.classList.add('show');
+        resource.garbageRune.visible = true;
+        resource.okRune.visible = true;
+        resource.goodRune.visible = true;
+        resource.perfectRune.visible = true;
+    }
+
+    // Step 4: Clear canvas, pick a new random rune, render, and re-enable drawing
+    const canvas = document.getElementById('runeCanvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        // Pick a new random rune
+        const runeKeys = Object.keys(runes);
+        const newRandomRune = runes[runeKeys[Math.floor(Math.random() * runeKeys.length)]];
+        // Clear and render new rune
+        renderRune(ctx, newRandomRune);
+        renderRuneEndpoints(ctx, newRandomRune);
+        enableRuneDrawing(canvas, ctx, newRandomRune);
+    }
+}
+
+//---------------------------//
+// Debug                     //
+//---------------------------//
+
+//Show debug window if debug is true
+if (Debug) {
+    const debugWindow = document.getElementById('debugWindow');
+    debugWindow.classList.add('show');
+}
+
+//Debug variables
+window.DEBUG_MODE = {
+    fastmode: false,
+    dummies: false,
+    endpoints: false
+};
+
+// Make debug window draggable
+const debugWindow = document.getElementById('debugWindow');
+const debugHeader = debugWindow.querySelector('.debugHeader');
+let offsetX = 0, offsetY = 0, isDragging = false;
+debugHeader.addEventListener('mousedown', function(e) {
+    isDragging = true;
+    // Calculate offset
+    const rect = debugWindow.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+    document.body.style.userSelect = 'none'; // Prevent text selection
+});
+document.addEventListener('mousemove', function(e) {
+    if (isDragging) {
+        debugWindow.style.position = 'fixed';
+        debugWindow.style.left = (e.clientX - offsetX) + 'px';
+        debugWindow.style.top = (e.clientY - offsetY) + 'px';
+    }
+});
+document.addEventListener('mouseup', function() {
+    isDragging = false;
+    document.body.style.userSelect = '';
+});
+
+// Debug window button event listeners
+const fastmodeBtn = document.getElementById('fastmodeBtn');
+const dummyResourcesBtn = document.getElementById('dummyResourcesBtn');
+const skipToRunesBtn = document.getElementById('skipToRunesBtn');
+
+
+//fastmode button
+if (fastmodeBtn) {
+    fastmodeBtn.addEventListener('click', function() {
+        DEBUG_MODE.fastmode = !DEBUG_MODE.fastmode;
+        fastmodeBtn.textContent = DEBUG_MODE.fastmode ? 'Fastmode: ON' : 'Fastmode: OFF';
+    });
+    // Set initial label
+    fastmodeBtn.textContent = DEBUG_MODE.fastmode ? 'Fastmode: ON' : 'Fastmode: OFF';
+}
+
+
+if (dummyResourcesBtn) {
+    dummyResourcesBtn.addEventListener('click', function() {
+        DEBUG_MODE.dummies = !DEBUG_MODE.dummies;
+        dummyResourcesBtn.textContent = DEBUG_MODE.dummies ? 'Dummy Resources: ON' : 'Dummy Resources: OFF';
+        // Show/hide dummy resources immediately
+        const dummyDisplay = document.getElementById('dummyDisplay');
+        const dummyGenDisplay = document.getElementById('dummyGenDisplay');
+        if (DEBUG_MODE.dummies) {
+            if (dummyDisplay) dummyDisplay.classList.add('show');
+            if (dummyGenDisplay) dummyGenDisplay.classList.add('show');
+        } else {
+            if (dummyDisplay) dummyDisplay.classList.remove('show');
+            if (dummyGenDisplay) dummyGenDisplay.classList.remove('show');
+        }
+    });
+    // Set initial label
+    dummyResourcesBtn.textContent = DEBUG_MODE.dummies ? 'Dummy Resources: ON' : 'Dummy Resources: OFF';
+}
+if (skipToRunesBtn) {
+    skipToRunesBtn.addEventListener('click', function() {
+        skipToRunes();
+    });
+}
+
+//rune endpoints button
+if (renderEndpointsBtn) {
+    renderEndpointsBtn.addEventListener('click', function() {
+        window.DEBUG_MODE.endpoints = !window.DEBUG_MODE.endpoints;
+        renderEndpointsBtn.textContent = window.DEBUG_MODE.endpoints ? 'Render Rune Endpoints: ON' : 'Render Rune Endpoints: OFF';
+        const canvas = document.getElementById('runeCanvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            renderRune(ctx, randomRune); // or your current rune variable
+            if (window.DEBUG_MODE.endpoints) {
+                renderRuneEndpoints(ctx, randomRune);
+            }
+        }
+    });
+    // Set initial label
+    renderEndpointsBtn.textContent = window.DEBUG_MODE.endpoints ? 'Render Rune Endpoints: ON' : 'Render Rune Endpoints: OFF';
+}
+
+// Skip to Runes function
+function skipToRunes() {
+    // Unlock orb if not already unlocked
+    if (!orbUnlock) {
+        orbUnlock = true;
+        unlockOrb();
+    }
+    // Unlock rune if not already unlocked
+    if (!runeUnlock) {
+        runeUnlock = true;
+        unlockRune();
+    }
+    // Set knowledge to 101
+    resource.knowledge.amount = 101;
+    const knowledgeAmount = document.getElementById(resource.knowledge.displayId);
+    if (knowledgeAmount) {
+        knowledgeAmount.innerHTML = resource.knowledge.amount;
+    }
+    // Set orbs to 1
+    resource.orb.amount = 1;
+    const orbAmount = document.getElementById(resource.orb.displayId);
+    if (orbAmount) {
+        orbAmount.innerHTML = resource.orb.amount;
+    }
+    // Show orb display if not visible
+    if (!resource.orb.visible) {
+        const orbDisplay = document.getElementById('orbDisplay');
+        if (orbDisplay) {
+            orbDisplay.classList.add('show');
+            resource.orb.visible = true;
+        }
+        const orbDiv = document.getElementById('orbDiv');
+        if (orbDiv) {
+            orbDiv.classList.add('show');
+        }
+    }
+    // Show knowledge display if not visible
+    if (!resource.knowledge.visible) {
+        const knowledgeDisplay = document.getElementById('knowledgeDisplay');
+        if (knowledgeDisplay) {
+            knowledgeDisplay.classList.add('show');
+            resource.knowledge.visible = true;
+        }
+    }
+}
+
+
+//Show dummy resources
 if (DEBUG_MODE.dummies) {
     resource.dummyResource.visible = true;
     resource.dummyGenerator.visible = true;
@@ -460,7 +1014,14 @@ async function startGame() {
     sendToLog('Magic isn\'t going to learn itself, after all.');
     document.querySelector('.gameMainCenter').classList.add('border');
     document.querySelector('.researchTab').classList.add('show');
-    document.getElementById('pcMainCenter').classList.add('show');
+    // Fade in PC tab on first load
+    const pcMain = document.getElementById('pcMainCenter');
+    pcMain.classList.add('revealed');
+    pcMain.dataset.revealed = 'true';
+    setTimeout(() => {
+        pcMain.classList.remove('revealed');
+        pcMain.classList.add('show');
+    }, 1000);
 
 }
 startGame();
