@@ -4,10 +4,11 @@ _Last updated: 2025-8-11_
 
 
 ## Features to Add
-- [ ] Add new tabs above current tabs for parts of the room like PC or runes
-- [ ] This will include an exit for world map which will replace all current tabs with a new window.
+- [ ] New exit tab for world map which will replace all current tabs with a new window.
 - [ ] Outside will have a phone which will slide out from the bottom right I think
-- [ ] Implement Runes and Outside
+- [ ] Implement and Outside
+- [ ] Add more runes
+- [ ] Implement saving (oh god i think i need to restructure how game progress is stored for this)
 
 ---
 
@@ -17,6 +18,7 @@ _Last updated: 2025-8-11_
 
 ## Polish & Tweaks
 - [ ] Add bars to resources
+- [ ] Add thing that tells you how good your last rune was
 
 ---
 
@@ -25,5 +27,7 @@ _Last updated: 2025-8-11_
 ---
 
 ## Done
+- [x] Implement Runes 8/13/25
+- [x] Add new tabs above current tabs for parts of the room like PC or runes 8/13/25
 - [x] Make log fade in  8/11/25
 ---
