@@ -7,6 +7,7 @@ _Last updated: 2025-8-13_
 - [ ] New exit tab for world map which will replace all current tabs with a new window.
 - [ ] Outside will have a phone which will slide out from the bottom right I think
 - [ ] Add more runes
+- [ ] Add rune xp
 - [ ] Implement saving (oh god i think i need to restructure how game progress is stored for this)
 
 ---
