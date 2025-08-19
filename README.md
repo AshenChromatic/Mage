@@ -8,11 +8,10 @@ Currently in alpha.
 ## Development
 This project is actively being developed and improved. If you find bugs, have ideas for new features, or want to contribute, please check out the [Issues](https://github.com/AshenChromatic/Mage/issues) page to report or discuss them.
 
-Pull requests are welcome! If you want to contribute code, please fork the repository and submit your changes via a pull request. For major changes, consider opening an issue first to discuss the approach.
 
 ## License
 This project is open source under the MIT License. See the [License](LICENSE) file for details.
 
 
 ## Contact
-Feel free to reach out or discuss ideas by opening issues on GitHub, or you can find me on Discord as AshenChromatic.
+Feel free to reach out to me on Discord at AshenChromatic.
