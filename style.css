@@ -1,21 +1,32 @@
-.gameMainCenterMain {
-    display: none;
-}
-.gameMainCenterMain.revealed {
-    display: block;
-    opacity: 0;
-    animation: fadeInMainTab 1s forwards;
-}
-.gameMainCenterMain.show {
-    display: block;
-    opacity: 1;
-    animation: none;
+html, body {
+    height: calc(100vh);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
 }
 
-@keyframes fadeInMainTab {
-    from { opacity: 0; }
-    to { opacity: 1; }
+.gameMainCenter {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 1s;
 }
+
+.gameMainCenter.show {
+    visibility: visible;
+    opacity: 1;
+}
+
+.gameMainCenterMain {
+    visibility: hidden;
+    display: none;
+}
+
+.gameMainCenterMain.show {
+    visibility: visible;
+    display: block;
+}
+
 .topBar {
     display: flex;
     flex-direction: row;
@@ -33,16 +44,20 @@
 .gameMain {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
     border-style: solid;
     border-color: black;
     border-width: 1px;
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: calc(100% - 50px);
 }
 
 .gameMainLeft {
     display: flex;
     flex-direction: column;
     width: 400px;
-    padding: 4px
+    padding: 4px;
 }
 
 .gameMainCenter {
@@ -50,9 +65,6 @@
     border-left-style: solid;
     border-left-color: white;
     border-left-width: 1px;
-    border-right-style: solid;
-    border-right-color: black;
-    border-right-width: 1px;
 }
 .gameMainCenter.border {
     border-left-color: black;
@@ -63,7 +75,13 @@
 .gameMainRight {
     display: flex;
     flex-direction: column;
-    flex: 1;
+    flex: 1 1 auto;
+    min-height: 0;
+    max-width: 25%;
+    border-left-style: solid;
+    border-left-color: black;
+    border-left-width: 1px;
+    position: relative;
 }
 
 .gameMainRightHeader {
@@ -85,8 +103,25 @@
     border-bottom-width: 1px;
 }
 
-.log{
+.log {
     padding: 4px;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    position: relative;
+}
+
+.logGradient {
+  position: absolute;
+  top: 27px;
+  left: 0;
+  right: 0;
+  height: 40px; 
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.82), transparent);
+  pointer-events: none;
+  z-index: 900;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .ashenColor {

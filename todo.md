@@ -19,7 +19,6 @@ _Last updated: 2025-8-13_
 ## Polish & Tweaks
 - [ ] Add bars to resources
 - [ ] Add thing that tells you how good your last rune was
-- [ ] Scrollable Log
 
 ---
 
@@ -28,6 +27,7 @@ _Last updated: 2025-8-13_
 ---
 
 ## Done
+- [x] Scrollable Log 8/19/25
 - [x] Implement Runes 8/13/25
 - [x] Add new tabs above current tabs for parts of the room like PC or runes 8/13/25
 - [x] Make log fade in  8/11/25

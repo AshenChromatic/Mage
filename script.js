@@ -1,4 +1,4 @@
-const Debug = false;
+const Debug = true;
 
 //This function is for waiiiting
 function sleep(ms) {
@@ -14,11 +14,16 @@ function sleep(ms) {
 //Put text in the log
 function sendToLog(message) {
     const logDiv = document.getElementById('gameLog');
+    const threshold = 5;
+    const isAtBottom = logDiv.scrollHeight - logDiv.scrollTop - logDiv.clientHeight <= threshold;
     // Create a new div for the message
     const msgDiv = document.createElement('div');
     msgDiv.className = 'logMessage';
     msgDiv.innerHTML = '> ' + message + '<br>';
     logDiv.appendChild(msgDiv);
+    if (isAtBottom) {
+        logDiv.scrollTop = logDiv.scrollHeight;
+    }
     // Trigger fade-in
     setTimeout(function() {
         msgDiv.classList.add('show');
@@ -35,9 +40,6 @@ function getRandomInt(min, max) {
 //---------------------------//
 // Resources                 //
 //---------------------------//
-
-
-
 let  resource = {
     dummyResource: {
         name: 'dummyResource',
@@ -112,6 +114,16 @@ let  resource = {
     }
 };
 
+//---------------------------//
+// Saving                    //
+//---------------------------//
+
+function saveGame() {
+    const saveData = {
+        resources: resources
+    }
+}
+
 
 //---------------------------//
 // Clickers                  //
@@ -145,7 +157,7 @@ function researchClick() {
         //If the random number is 1, unlock the orb
         if (orbUnlockRandom === 1) {
             orbUnlock = true;
-            unlockOrb();
+            runDialogue("unlockOrb", 0);
         }
     }
     //Rune unlocker
@@ -159,7 +171,7 @@ function researchClick() {
         //If the random number is 1, unlock the rune
         if (runeUnlockRandom === 1) {
             runeUnlock = true;
-            unlockRune();
+            runDialogue("unlockRune", 0);
         }
     }
 }
@@ -315,23 +327,10 @@ function openMainTab(tabId) {
         const tab = document.getElementById(id);
         if (tab) {
             tab.classList.remove('show');
-            tab.classList.remove('revealed');
         }
     });
     const currentTab = document.getElementById(tabId);
-    if (currentTab) {
-        // If this is the first time showing, fade in
-        if (!currentTab.dataset.revealed) {
-            currentTab.classList.add('revealed');
-            currentTab.dataset.revealed = 'true';
-            setTimeout(() => {
-                currentTab.classList.remove('revealed');
-                currentTab.classList.add('show');
-            }, 1000); // match fade duration
-        } else {
             currentTab.classList.add('show');
-        }
-    }
 }
 
 document.getElementById('pcTabBtn').addEventListener('click', function(e) {
@@ -427,30 +426,50 @@ buyOrbBtn.addEventListener ('mouseleave', function() {
 //---------------------------//
 // Dialogs                   //
 //---------------------------//
+let dialogues = {
+    startGame: [
+        {type: 'line', text: 'You sit at your desk, the white-ish light of your computer monitor illuminating your face.', time: 4000},
+        {type: 'line', text: 'You spent most of the day doing what can only be described as', time: 2000},
+        {type: 'line', text: 'Goofing Off.', time: 4000},
+        {type: 'line', text: 'However, most of your friends have gone to bed, and you are left with nothing to entertain yourself.', time: 4000},
+        {type: 'line', text: 'You suppose it is finally time to actually do something productive.', time: 4000},
+        {type: 'line', text: 'Magic isn\'t going to learn itself, after all.', time: 1000},
+        {type: 'function', fn: startGame}
+        
+    ],
+    unlockRune: [
+        {type: 'line', text: ' ', time: 0},
+        {type: 'line', text: 'You continue your research for a while.', time: 4000},
+        {type: 'line', text: 'It\'s difficult to find anything of real use, especially to a beginner such as yourself.', time: 4000},
+        {type: 'line', text: 'Pouring over wizard chatrooms leaves you with more questions than answers.', time: 4000},
+        {type: 'line', text: 'Such as', time: 2000},
+        {type: 'line', text: 'What the hell is a Power Word: Scrunch?', time: 4000},
+        {type: 'line', text: 'However, you do find some information.', time: 4000},
+        {type: 'line', text: 'Something that even you can manage:', time: 4000},
+        {type: 'line', text: 'Runes.', time: 4000},
+        {type: 'line', text: 'Apparently, all some wizards do is draw a couple squiggles on a piece of paper and call it a day.', time: 4000},
+        {type: 'line', text: 'You turn to the empty space on your desk and pull out a notebook and a pencil.', time: 1000},
+        {type: 'function', fn: unlockRune}
+    ],
+    unlockOrb: [
+        {type: 'line', text: ' ', time: 0},
+        {type: 'line', text: 'After a few minutes of research, you feel like you\'ve learned something.', time: 4000},
+        {type: 'line', text: 'To use magic, you need mana. You do not currently have any mana.', time: 4000},
+        {type: 'line', text: 'Luckily, they sell mana orbs online nowadays.', time: 4000},
+        {type: 'line', text: 'You think that maybe you should buy one.', time: 1000},
+        {type: 'function', fn: unlockOrb}
+    ]
+}
 
-// Rune unlock dialog
-async function unlockRune() {
-    const logDiv = document.getElementById('gameLog');
-    logDiv.innerHTML += '<br>';
-    sendToLog('You continue your research for a while.');
-    await sleep(4000);
-    sendToLog('It\'s difficult to find anything of real use, especially to a beginner such as yourself.');
-    await sleep(4000);
-    sendToLog('Pouring over wizard chatrooms leaves you with more questions than answers.');
-    await sleep(4000);
-    sendToLog('Such as');
-    await sleep(2000);
-    sendToLog('What the hell is a Power Word: Scrunch?');
-    await sleep(4000);
-    sendToLog('However, you do find some information.');
-    await sleep(4000);
-    sendToLog('Something that even you can manage:');
-    await sleep(4000);
-    sendToLog('Runes.');
-    await sleep(4000);
-    sendToLog('Apparently, all some wizards do is draw a couple squiggles on a piece of paper and call it a day.');
-    await sleep(4000);
-    sendToLog('You turn to the empty space on your desk and pull out a notebook and a pencil.')
+let dialogueManager = {
+    currentDialogue: null,
+    currentLine: 0,
+    running: false
+}
+
+
+// Rune unlock
+function unlockRune() {
     unlockRune = true;
     document.getElementById('mainSelector').classList.add('show');
     document.getElementById('pcTabBtn').classList.add('show');
@@ -459,23 +478,61 @@ async function unlockRune() {
     document.getElementById('mainSelectorDiv').classList.add('show');
 }
 
-// Orb unlock dialog
-async function unlockOrb() {
-    const logDiv = document.getElementById('gameLog');
-    logDiv.innerHTML +='<br>';
-    sendToLog('After a few minutes of research, you feel like you\'ve learned something.');
-    await sleep(4000);
-    sendToLog('To use magic, you need mana. You do not currently have any mana.')
-    await sleep(4000);
-    sendToLog('Luckily, they sell mana orbs online nowadays.');
-    await sleep(4000);
-    sendToLog('You think that maybe you should buy one.');
+// Orb unlock
+function unlockOrb() {
     document.getElementById('researchTabBtn').classList.add('show');
     document.getElementById('shopSpace').classList.add('show');
     document.getElementById('shopTabBtn').classList.add('show');
     document.getElementById('goldDisplay').classList.add('show');
 
 }
+
+// Reveal main elements
+function startGame() {
+    console.log("Revealing main elements");
+    document.getElementById('gameMainCenter').classList.add('show');
+    document.getElementById('researchTab').classList.add('show');
+}
+
+async function runDialogue(dialogueName, index) {
+  let steps = dialogues[dialogueName];
+
+  dialogueManager.currentDialogue = dialogueName;
+  dialogueManager.currentLine = index || 0; // default to 0
+  dialogueManager.running = true;
+
+  while (dialogueManager.running && dialogueManager.currentLine < steps.length) {
+    let step = steps[dialogueManager.currentLine];
+
+    if (step.type === "line") {
+      sendToLog(step.text);
+      await sleep(step.time);
+    } else if (step.type === "function") {
+      step.fn();
+    }
+
+    dialogueManager.currentLine++;
+    console.log(dialogueManager.currentLine);
+  }
+
+  // Cleanup
+  dialogueManager.running = false;
+  dialogueManager.currentDialogue = null;
+  dialogueManager.currentLine = 0;
+}
+
+//Log gradient
+const logForGradient = document.getElementById("gameLog");
+const logGradient = document.querySelector(".logGradient");
+
+logForGradient.addEventListener("scroll", () => {
+  if (logForGradient.scrollTop > 0) {
+    logGradient.style.opacity = "1";
+  } else {
+    logGradient.style.opacity = "0";
+  }
+});
+
 
 
 //---------------------------//
@@ -995,34 +1052,8 @@ if (resource.dummyGenerator.visible === true) {
         dummyGenDisplay.classList.add('show');
     }
 }
-
 //---------------------------//
 // Initialization            //
 //---------------------------//
 
-//Initial log and display Research button
-async function startGame() {
-    sendToLog('You sit at your desk, the white-ish light of your computer monitor illuminating your face.');
-    await sleep(4000);
-    sendToLog('You spent most of the day doing what can only be described as')
-    await sleep(2000);
-    sendToLog('Goofing Off.')
-    await sleep(4000);
-    sendToLog('However, most of your friends have gone to bed, and you are left with nothing to entertain yourself.');
-    await sleep(4000);
-    sendToLog('You suppose it is finally time to actually do something productive.');
-    await sleep(4000);
-    sendToLog('Magic isn\'t going to learn itself, after all.');
-    document.querySelector('.gameMainCenter').classList.add('border');
-    document.querySelector('.researchTab').classList.add('show');
-    // Fade in PC tab on first load
-    const pcMain = document.getElementById('pcMainCenter');
-    pcMain.classList.add('revealed');
-    pcMain.dataset.revealed = 'true';
-    setTimeout(() => {
-        pcMain.classList.remove('revealed');
-        pcMain.classList.add('show');
-    }, 1000);
-
-}
-startGame();
+runDialogue("startGame", 0);

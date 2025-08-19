@@ -21,7 +21,7 @@
         </div>
         <div class = "title">
             <a href = "#" class = "tabLink show" id = "saveBtn">Save</a>
-                <span class = "tilde show" id = "deskSpace"> | </span>
+                <span class = "tilde show" id = "exportSpace"> | </span>
                 <a href = "#" class = "tabLink show" id = "exportBtn">Export Save</a>
                 <span class = "tilde show" id = "doorSpace"> | </span>
                 <a href = "#" class = "tabLink show" id = "importBtn">Import Save</a>
@@ -138,7 +138,7 @@
         </div>
 
         <!-- Where most of the game will be displayed -->
-        <div class = "gameMainCenter">
+        <div class = "gameMainCenter" id = "gameMainCenter">
             <!-- Main tab selector -->
             <div class = "mainTabSelector" id = "mainSelector">
                 <a href = "#" class = "tabLink" id = "pcTabBtn">PC</a>
@@ -150,7 +150,7 @@
             <hr class = "mainSelectorDiv" id = "mainSelectorDiv">
 
             <!-- PC Main Game Center -->
-            <div class="gameMainCenterMain" id="pcMainCenter">
+            <div class="gameMainCenterMain show" id="pcMainCenter">
                 <div class = "subTabSelector" id = "pcTabSelector">
                     <a href = "#" class = "tabLink" id = "researchTabBtn">Research</a>
                     <span class = "tilde" id = "shopSpace"> ~ </span>
@@ -198,9 +198,9 @@
             </div>
 
             <hr class="logDivider">
-
+            <div class="logGradient"></div>
             <div class = "log" id = "gameLog">
-                <!-- Log messages appear here -->
+                    <!-- Log messages appear here -->
             </div>
         </div>
     </div>
