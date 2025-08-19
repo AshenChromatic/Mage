@@ -18,7 +18,7 @@ _Last updated: 2025-8-13_
 
 ## Polish & Tweaks
 - [ ] Add bars to resources
-- [ ] Add thing that tells you how good your last rune was
+- [ ] Make Rune XP visible
 
 ---
 
@@ -27,6 +27,7 @@ _Last updated: 2025-8-13_
 ---
 
 ## Done
+- [x] Add thing that tells you how good your last rune was 8/19/25
 - [x] Scrollable Log 8/19/25
 - [x] Implement Runes 8/13/25
 - [x] Add new tabs above current tabs for parts of the room like PC or runes 8/13/25

@@ -124,13 +124,13 @@ function saveGame() {
     }
 }
 
-
+let progress = {
+    orbUnlock: false,
+    runeUnlock: false
+}
 //---------------------------//
 // Clickers                  //
 //---------------------------//
-
-let orbUnlock = false;
-let runeUnlock = false;
 document.getElementById('researchBtn').addEventListener('click', researchClick);
 
 function researchClick() {
@@ -149,19 +149,19 @@ function researchClick() {
         knowledgeAmount.innerHTML = resource.knowledge.amount;
     }
     //Orb unlocker
-    if (orbUnlock === false && resource.knowledge.amount >=10) {
+    if (progress.orbUnlock === false && resource.knowledge.amount >=10) {
         let orbUnlockRandom = getRandomInt(1, 30);
         if (orbUnlockRandom !== 1) {
             console.log('failed orb unlock check');
         }
         //If the random number is 1, unlock the orb
         if (orbUnlockRandom === 1) {
-            orbUnlock = true;
+            progress.orbUnlock = true;
             runDialogue("unlockOrb", 0);
         }
     }
     //Rune unlocker
-    if (runeUnlock === false && resource.knowledge.amount >= 100 && resource.orb.amount > 0) {
+    if (progress.runeUnlock === false && resource.knowledge.amount >= 100 && resource.orb.amount > 0) {
         let runeChance = Math.max(1, 100 - Math.floor((resource.knowledge.amount - 100)));
         let runeUnlockRandom = getRandomInt(1, runeChance);
         if (runeUnlockRandom !== 1) {
@@ -170,7 +170,7 @@ function researchClick() {
 
         //If the random number is 1, unlock the rune
         if (runeUnlockRandom === 1) {
-            runeUnlock = true;
+            progress.runeUnlock = true;
             runDialogue("unlockRune", 0);
         }
     }
@@ -491,6 +491,7 @@ function unlockOrb() {
 function startGame() {
     console.log("Revealing main elements");
     document.getElementById('gameMainCenter').classList.add('show');
+    document.getElementById('gameMainCenter').classList.add('border');
     document.getElementById('researchTab').classList.add('show');
 }
 
@@ -539,6 +540,9 @@ logForGradient.addEventListener("scroll", () => {
 // Rune Minigame             //
 //---------------------------//
 let runeLevel = 1
+let runeXP = 0
+const runeXPBenchmarks = [0, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000];
+
 
 //Define rune line width and radius for accuracy check
 const RUNE_LINE_WIDTH = 6;
@@ -694,7 +698,6 @@ function enableRuneDrawing(canvas, ctx, rune) {
     canvas.addEventListener('mouseup', onMouseUp);
 }
 
-
 function gradeRune(drawnLines, rune) {
     // Helper: distance between two points
     function dist(a, b) {
@@ -757,6 +760,12 @@ function gradeRune(drawnLines, rune) {
     if (grade === "garbage" || remainingDrawLines.length > 0) {
         grade = "garbage";
         console.log("Rune drawn incorrectly or pairing error");
+        const runeGradeDisplay = document.getElementById('runeGrade');
+        if (runeGradeDisplay) {
+            console.log(`Telling user rune grade`);
+            runeGradeDisplay.textContent = `You drew a Garbage Rune. It didn't feel like your accuracy was the problem- rather that you weren't drawing it correctly at all.`;
+            runeXP += 1;
+        }
     }
 
     //Step 2: Accuracy check
@@ -811,14 +820,24 @@ function gradeRune(drawnLines, rune) {
         // Assign grade based on percentage
         if (percentOnRune >= 0.99) {
             grade = "perfect";
+            runeXP += 100;
         } else if (percentOnRune >= 0.8) {
             grade = "good";
+            runeXP += 50;
         } else if (percentOnRune >= 0.5) {
             grade = "ok";
+            runeXP += 25;
         } else {
             grade = "garbage";
+            runeXP += 10;
         }
         console.log(`Accuracy: ${(percentOnRune*100).toFixed(1)}% | Grade: ${grade}`);
+        const runeGradeDisplay = document.getElementById('runeGrade');
+        if (runeGradeDisplay) {
+            console.log(`Telling user rune grade`);
+            const percentDisplay = Math.round(percentOnRune * 100);
+            runeGradeDisplay.textContent = `You drew with ${percentDisplay}% accuracy and received a ${grade} rune!`;
+        }
     }
 
     //Step 3: Return rune of whatever grade
@@ -873,8 +892,19 @@ function gradeRune(drawnLines, rune) {
         resource.goodRune.visible = true;
         resource.perfectRune.visible = true;
     }
+    // Step 4: Update rune level and display
+    console.log(`Rune XP now at ${runeXP}`);
+    while (runeLevel < runeXPBenchmarks.length && runeXP >= runeXPBenchmarks[runeLevel]) {
+        runeLevel++;
+        console.log("Leveled up! Rune Level is now:", runeLevel);
+    }
+    //update display
+    const runeLevelDisplay = document.getElementById('runeLevel');
+    if (runeLevelDisplay) {
+        runeLevelDisplay.textContent = `Rune Level: ${runeLevel}`;
+    }
 
-    // Step 4: Clear canvas, pick a new random rune, render, and re-enable drawing
+    // Step 5: Clear canvas, pick a new random rune, render, and re-enable drawing
     const canvas = document.getElementById('runeCanvas');
     if (canvas) {
         const ctx = canvas.getContext('2d');
@@ -991,13 +1021,13 @@ if (renderEndpointsBtn) {
 // Skip to Runes function
 function skipToRunes() {
     // Unlock orb if not already unlocked
-    if (!orbUnlock) {
-        orbUnlock = true;
+    if (!progress.orbUnlock) {
+        progress.orbUnlock = true;
         unlockOrb();
     }
     // Unlock rune if not already unlocked
-    if (!runeUnlock) {
-        runeUnlock = true;
+    if (!progress.runeUnlock) {
+        progress.runeUnlock = true;
         unlockRune();
     }
     // Set knowledge to 101

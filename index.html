@@ -3,14 +3,14 @@
 <head>
     <meta charset = "UTF-8">
     <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
-    <link rel = "stylesheet" href = "style.css?v=3"> 
-    <link rel = "stylesheet" href = "research_tab.css?v=3">
-    <link rel = "stylesheet" href = "shop_tab.css?v=3">
-    <link rel = "stylesheet" href = "resources.css?v=3">
-    <link rel = "stylesheet" href = "hoverbox.css?v=3">
-    <link rel = "stylesheet" href = "tab_selector.css?v=3">
-    <link rel = "stylesheet" href = "rune_minigame.css?v=3">
-    <link rel = "stylesheet" href = "debug.css?v=3">
+    <link rel = "stylesheet" href = "style.css?v=4"> 
+    <link rel = "stylesheet" href = "research_tab.css?v=4">
+    <link rel = "stylesheet" href = "shop_tab.css?v=4">
+    <link rel = "stylesheet" href = "resources.css?v=4">
+    <link rel = "stylesheet" href = "hoverbox.css?v=4">
+    <link rel = "stylesheet" href = "tab_selector.css?v=4">
+    <link rel = "stylesheet" href = "rune_tab.css?v=4">
+    <link rel = "stylesheet" href = "debug.css?v=4">
     <title>Mage</title>
 </head>
 <body>
@@ -176,9 +176,9 @@
                 <div class = "tabContent" id = "deskTabContent">
                     <!-- Runes Tab -->
                     <div class = "runeTab" id = "runeTab">
+                        <div class="runeLevel" id="runeLevel">Rune Level: 1</div>
                         <canvas id="runeCanvas" class="runeCanvas" width="200" height="300"></canvas>
                         <div id="runeGrade" class="runeGrade"></div>
-                        <button id="nextRuneBtn" class="runeNextBtn">Next Rune</button>
                     </div>
                 </div>
             </div>
@@ -209,23 +209,23 @@
         <!-- Hover box content for buying/unlocking things for a cost-->
         <div class = "hoverBoxBuy" id = "hoverBoxBuy">
             <div class=" hoverBuyDesc" id="hoverBuyDesc">
-                <!-- Description will be dynamically filled -->
+                <!-- Description -->
             </div>
 
             <hr class="hoverBuyDiv">
 
             <div class="hoverBuyCost" id="hoverBuyCost">
-                <!-- Cost will be dynamically filled -->
+                <!-- Costs -->
             </div>
 
             <hr class="hoverBuyDiv">
             
             <div class="hoverBuyEffect" id="hoverBuyEffect">
-                <!-- Effect will be dynamically filled -->
+                <!-- Stuff you get -->
             </div>
 
             <div class="hoverBuyFlavor" id="hoverBuyFlavor">
-                <!-- Flavor text will be dynamically filled -->
+                <!-- Flavor text -->
             </div>
         </div>
     </div>
