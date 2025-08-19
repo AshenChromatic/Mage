@@ -1,14 +1,12 @@
 # Mage TODO
 
-_Last updated: 2025-8-13_
+_Last updated: 2025-8-29_
 
 
 ## Features to Add
 - [ ] New exit tab for world map which will replace all current tabs with a new window.
 - [ ] Outside will have a phone which will slide out from the bottom right I think
-- [ ] Add more runes
-- [ ] Add rune xp
-- [ ] Implement saving (oh god i think i need to restructure how game progress is stored for this)
+- [ ] Add even more runes (esp some that unlock at certain levels)
 
 ---
 
@@ -27,6 +25,9 @@ _Last updated: 2025-8-13_
 ---
 
 ## Done
+- [x] Implement saving 8/19/25
+- [x] Add more runes 8/19/25
+- [x] Add rune xp 8/19/25
 - [x] Add thing that tells you how good your last rune was 8/19/25
 - [x] Scrollable Log 8/19/25
 - [x] Implement Runes 8/13/25

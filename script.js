@@ -118,16 +118,248 @@ let  resource = {
 // Saving                    //
 //---------------------------//
 
-function saveGame() {
-    const saveData = {
-        resources: resources
-    }
-}
-
 let progress = {
     orbUnlock: false,
-    runeUnlock: false
+    runeUnlock: false,
+    runeTwo: false,
+    runeFive: false,
+    runeTen: false,
+    runeLevel: 1,
+    runeXP: 0
+};
+
+function saveGame() {
+    console.log('Attempting export')
+    // Collect all resources and progress
+    const saveData = {
+        resources: resource,
+        progress: progress,
+        elements: getElementStates(),
+        dialogue: dialogueManager
+    }
+    // Store save
+    localStorage.setItem("mageSave", JSON.stringify(saveData));
 }
+function exportGame() {
+    const saveData = {
+        resources: resource,
+        progress: progress,
+        elements: getElementStates(),
+        dialogue: dialogueManager
+    };
+
+    // Convert to JSON string
+    const dataStr = JSON.stringify(saveData, null, 2);
+
+    // Make filename with game title + date/time
+    const gameTitle = "Mage";
+    const date = new Date();
+    const timestamp = date.toISOString().replace(/[:.]/g, "-"); 
+    const filename = `${gameTitle}_save_${timestamp}.json`;
+
+    // Create a blob and trigger download
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
+}
+
+function getElementStates() {
+    var elements = document.querySelectorAll('.show, .border');
+    var result = [];
+    for (var i = 0; i < elements.length; i++) {
+        var el = elements[i];
+        if (el.id) {
+            var classes = [];
+            if (el.classList.contains('show')) {
+                classes.push('show');
+            }
+            if (el.classList.contains('border')) {
+                classes.push('border');
+            }
+            result.push({
+                id: el.id,
+                classes: classes
+            });
+        }
+    }
+    return result;
+}
+
+// importSave: allow loading from localStorage (key "myGameSave") or from a JSON file.
+// After loading the JSON it calls applySave(saveData) to do the actual work.
+function importGame() {
+  // If there's a simple browser slot, offer it first.
+  const browserKey = "mageSave";
+  const browserSave = localStorage.getItem(browserKey);
+
+  if (browserSave && confirm("Load save from browser storage? (OK = load, Cancel = choose file)")) {
+    try {
+      const saveData = JSON.parse(browserSave);
+      applySave(saveData);
+    } catch (e) {
+      alert("Failed to parse browser save: " + e);
+    }
+    return;
+  }
+
+  // Otherwise, prompt the user to pick a file.
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".json,application/json";
+  input.addEventListener("change", (ev) => {
+    const file = ev.target.files && ev.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const saveData = JSON.parse(e.target.result);
+        applySave(saveData);
+      } catch (err) {
+        alert("Failed to parse save file: " + err);
+      }
+    };
+    reader.onerror = function() {
+      alert("Failed to read file.");
+    };
+    reader.readAsText(file);
+  });
+
+  // trigger the picker
+  input.click();
+}
+
+// applySave: given a parsed saveData object, apply it to the game state
+function applySave(saveData) {
+  if (!saveData || typeof saveData !== "object") {
+    alert("Invalid save data.");
+    return;
+  }
+
+  // 1) Cancel any dialogue immediately
+  try {
+    if (typeof dialogueManager === "object") {
+      dialogueManager.running = false; // stop current dialogue loop immediately
+    }
+  } catch (e) {
+    console.warn("Couldn't access dialogue manager to stop it:", e);
+  }
+
+  // 1b) Clear the current log TODO
+    const logDiv = document.getElementById('gameLog');
+    logDiv.innerHTML = '';
+
+    // 2) Restore resources: overwrite fields for each resource and update displays
+    if (saveData.resources && typeof saveData.resources === "object") {
+        Object.keys(saveData.resources).forEach(function(resName) {
+            const saved = saveData.resources[resName];
+            // If you already have a resource object, copy saved properties into it; otherwise create it
+            if (typeof resource[resName] === "object") {
+                // Overwrite existing values with saved ones
+                Object.assign(resource[resName], saved);
+            } else {
+                // Create new resource entry in the resource table
+                resource[resName] = Object.assign({}, saved);
+            }
+
+            // Update display(s) for this resource
+            if (resource[resName].displayId) {
+                var el = document.getElementById(resource[resName].displayId);
+                if (el) {
+                    el.textContent = resource[resName].amount;
+                }
+            }
+            // If there is a displayMaxId and max, update that too
+            if (resource[resName].displayMaxId && typeof resource[resName].max !== 'undefined') {
+                var maxEl = document.getElementById(resource[resName].displayMaxId);
+                if (maxEl) {
+                    maxEl.textContent = resource[resName].max;
+                }
+            }
+        });
+    }
+  
+
+  // 3) Restore progress
+  if (typeof saveData.progress !== "undefined") {
+    progress = saveData.progress;
+  }
+
+  // 4) Reveal/hide elements according to saved element states
+  if (Array.isArray(saveData.elements)) {
+    // First remove the classes from all currently marked elements (so we have a clean slate)
+    const currently = document.querySelectorAll('.show, .border');
+    currently.forEach(el => {
+      el.classList.remove('show');
+      el.classList.remove('border');
+    });
+
+    // Apply saved classes
+    saveData.elements.forEach(item => {
+      if (!item || !item.id) return;
+      const el = document.getElementById(item.id);
+      if (!el) return;
+      // remove both just in case, then add the ones that were saved
+      el.classList.remove('show');
+      el.classList.remove('border');
+
+      if (Array.isArray(item.classes)) {
+        item.classes.forEach(c => el.classList.add(c));
+      }
+    });
+  }
+
+  // 5) Resume dialogue from where left off 
+    if (saveData.dialogue && typeof saveData.dialogue === "object") {
+        try {
+            // map fields to the in-memory dialogueManager (the one you showed earlier)
+            if (typeof dialogueManager === "object") {
+                dialogueManager.currentDialogue = saveData.dialogue.currentDialogue || saveData.dialogue.currentDialogueName || null;
+                dialogueManager.currentLine     = Number(saveData.dialogue.currentLine ?? saveData.dialogue.currentIndex ?? 0);
+                dialogueManager.running         = false; // don't auto-run until we call runDialogue
+            } else if (typeof dialogueState === "object") {
+                dialogueState.currentDialogue = saveData.dialogue.currentDialogue || saveData.dialogue.currentDialogueName || null;
+                dialogueState.currentIndex    = Number(saveData.dialogue.currentIndex ?? saveData.dialogue.currentLine ?? 0);
+                dialogueState.running         = false;
+            }
+
+      // If a dialogue name exists, try to resume it by calling runDialogue
+      const nameToResume = (dialogueManager && dialogueManager.currentDialogue) ||
+                           (dialogueState && dialogueState.currentDialogue);
+
+      const indexToResume = (dialogueManager && Number(dialogueManager.currentLine ?? 0)) ||
+                            (dialogueState && Number(dialogueState.currentIndex ?? 0)) || 0;
+
+      if (nameToResume && typeof runDialogue === "function") {
+        // small timeout to let the UI update first
+        setTimeout(() => runDialogue(nameToResume, indexToResume), 50);
+      }
+    } catch (e) {
+      console.warn("Could not resume dialogue from save:", e);
+    }
+  }
+
+  //Update rune level text
+  const runeLevelDisplay = document.getElementById('runeLevel');
+    if (runeLevelDisplay) {
+        runeLevelDisplay.textContent = `Rune Level: ${progress.runeLevel}`;
+    }
+
+  // Final: give a small notification
+  console.log("Save imported successfully.");
+};
+
+document.getElementById('saveBtn').addEventListener('click', saveGame);
+document.getElementById('exportBtn').addEventListener('click', exportGame);
+document.getElementById('importBtn').addEventListener('click', importGame);
 //---------------------------//
 // Clickers                  //
 //---------------------------//
@@ -458,6 +690,21 @@ let dialogues = {
         {type: 'line', text: 'Luckily, they sell mana orbs online nowadays.', time: 4000},
         {type: 'line', text: 'You think that maybe you should buy one.', time: 1000},
         {type: 'function', fn: unlockOrb}
+    ],
+    runeTwo: [
+        {type: 'line', text: ' ', time: 0},
+        {type: 'line', text: 'The first couple runes you drew were pretty, uh,', time: 1000},
+        {type: 'line', text: 'Rough.', time: 4000},
+        {type: 'line', text: 'But now that you\'ve had some practice, you think you sort of understand what you\'re doing.', time: 4000},
+        {type: 'line', text: 'At the very least, it feels a little bit easier now.', time: 4000},
+        {type: 'function', fn: runeTwo}
+    ],
+    runeFive: [
+        {type: 'line', text: ' ', time: 0},
+        {type: 'line', text: 'Now that you\'ve been drawing runes for a while, you\'re confident that your skills have improved', time: 4000},
+        {type: 'line', text: 'You\'re not quite sure if it\'s muscle memory or something else, but you\'re more confident in your earlier intuition:', time: 2000},
+        {type: 'line', text: 'They <i>are</i> getting easier to draw.', time: 1000},
+        {type: 'function', fn: runeFive}
     ]
 }
 
@@ -467,10 +714,26 @@ let dialogueManager = {
     running: false
 }
 
+// Reveal main elements
+function startGame() {
+    console.log("Revealing main elements");
+    document.getElementById('gameMainCenter').classList.add('show');
+    document.getElementById('gameMainCenter').classList.add('border');
+    document.getElementById('researchTab').classList.add('show');
+}
+
+// Orb unlock
+function unlockOrb() {
+    progress.orbUnlock = true;
+    document.getElementById('researchTabBtn').classList.add('show');
+    document.getElementById('shopSpace').classList.add('show');
+    document.getElementById('shopTabBtn').classList.add('show');
+    document.getElementById('goldDisplay').classList.add('show');
+}
 
 // Rune unlock
 function unlockRune() {
-    unlockRune = true;
+    progress.runeUnlock = true;
     document.getElementById('mainSelector').classList.add('show');
     document.getElementById('pcTabBtn').classList.add('show');
     document.getElementById('deskSpace').classList.add('show');
@@ -478,21 +741,14 @@ function unlockRune() {
     document.getElementById('mainSelectorDiv').classList.add('show');
 }
 
-// Orb unlock
-function unlockOrb() {
-    document.getElementById('researchTabBtn').classList.add('show');
-    document.getElementById('shopSpace').classList.add('show');
-    document.getElementById('shopTabBtn').classList.add('show');
-    document.getElementById('goldDisplay').classList.add('show');
-
+// Second Rune Level
+function runeTwo() {
+    progress.runeTwo = true;
 }
 
-// Reveal main elements
-function startGame() {
-    console.log("Revealing main elements");
-    document.getElementById('gameMainCenter').classList.add('show');
-    document.getElementById('gameMainCenter').classList.add('border');
-    document.getElementById('researchTab').classList.add('show');
+// Fifth Rune Level
+function runeFive() {
+    progress.runeFive = true;
 }
 
 async function runDialogue(dialogueName, index) {
@@ -539,8 +795,6 @@ logForGradient.addEventListener("scroll", () => {
 //---------------------------//
 // Rune Minigame             //
 //---------------------------//
-let runeLevel = 1
-let runeXP = 0
 const runeXPBenchmarks = [0, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000];
 
 
@@ -554,19 +808,80 @@ const runes = {
     thorn: {
         name: "thorn",
         lines: [
-            { start: [75, 50], end: [75, 250] },
-            { start: [75, 115], end: [125, 150] },
-            { start: [75, 185], end: [125, 150] }
+            { start: [75, 50], end: [75, 250] }, //vertical
+            { start: [75, 115], end: [125, 150] }, //top triangle
+            { start: [75, 185], end: [125, 150] } // bottom triangle
         ],
         drawLines: [
             {
-            endpoints: [[75, 50], [75, 250]],
+            endpoints: [[75, 50], [75, 250]], //top to bottom
             midpoints: [[75, 115], [75, 185]]
             },
             {
-            endpoints: [[75, 115], [75, 185]],
+            endpoints: [[75, 115], [75, 185]], //triangle
             midpoints: [[125, 150]]
             }
+        ]
+    },
+    ur: {
+        name: "ur",
+        lines: [
+            { start: [70,50], end: [70,250] }, //vertical
+            { start: [70,50], end: [130,250] } //diagonal
+        ],
+        drawLines: [
+            {
+                endpoints: [[70,250], [130, 250]],
+                midpoints: [[70, 50]]
+            }
+        ]
+    },
+    cen: {
+        name: "cen",
+        lines: [
+            { start: [70,50], end: [70,250] }, //vertical
+            { start: [70,190], end: [130,250] } //diagonal down
+        ],
+        drawLines: [
+            {
+            endpoints: [[70, 50], [70, 250]], //top to bottom
+            midpoints: [[70, 200]]
+            },
+            {
+            endpoints: [[70, 190], [130, 250]], //diagonal down
+            midpoints: [[100, 220]]
+            },
+        ]
+    },
+    gyfu: {
+        name: "gyfu",
+        lines: [
+            { start: [70, 50], end: [130, 250] }, //top left to bottom right
+            { start: [130, 50], end: [70, 250] }, //top right to bottom left
+        ],
+        drawLines: [
+            {
+            endpoints: [[70, 50], [130, 250]], //top left to bottom right
+            midpoints: [[100, 150]]
+            },
+            {
+            endpoints: [[70, 250], [130, 50]], //top right to bottom left
+            midpoints: [[100, 150]]
+            }
+        ]
+    },
+    thorn: {
+        name: "wyn",
+        lines: [
+            { start: [75, 50], end: [75, 250] }, //vertical
+            { start: [75, 50], end: [125, 85] }, //top triangle
+            { start: [75, 125], end: [125, 85] } // bottom triangle
+        ],
+        drawLines: [
+            {
+            endpoints: [[75, 125], [75, 250]],
+            midpoints: [[75, 50]]
+            },
         ]
     },
     // Add more runes here
@@ -764,7 +1079,7 @@ function gradeRune(drawnLines, rune) {
         if (runeGradeDisplay) {
             console.log(`Telling user rune grade`);
             runeGradeDisplay.textContent = `You drew a Garbage Rune. It didn't feel like your accuracy was the problem- rather that you weren't drawing it correctly at all.`;
-            runeXP += 1;
+            progress.runeXP += 1;
         }
     }
 
@@ -779,7 +1094,7 @@ function gradeRune(drawnLines, rune) {
         // For each user point, check if it is close to any segment of the rune
         let onRuneCount = 0;
         let totalCount = userPoints.length;
-    let TOLERANCE = runeLevel; // px, even tighter for accuracy
+    let TOLERANCE = progress.runeLevel; // px, even tighter for accuracy
 
         // Flatten rune segments for easier checking
         let runeSegments = [];
@@ -820,16 +1135,16 @@ function gradeRune(drawnLines, rune) {
         // Assign grade based on percentage
         if (percentOnRune >= 0.99) {
             grade = "perfect";
-            runeXP += 100;
+            progress.runeXP += 100;
         } else if (percentOnRune >= 0.8) {
             grade = "good";
-            runeXP += 50;
+            progress.runeXP += 50;
         } else if (percentOnRune >= 0.5) {
             grade = "ok";
-            runeXP += 25;
+            progress.runeXP += 25;
         } else {
             grade = "garbage";
-            runeXP += 10;
+            progress.runeXP += 10;
         }
         console.log(`Accuracy: ${(percentOnRune*100).toFixed(1)}% | Grade: ${grade}`);
         const runeGradeDisplay = document.getElementById('runeGrade');
@@ -893,15 +1208,25 @@ function gradeRune(drawnLines, rune) {
         resource.perfectRune.visible = true;
     }
     // Step 4: Update rune level and display
-    console.log(`Rune XP now at ${runeXP}`);
-    while (runeLevel < runeXPBenchmarks.length && runeXP >= runeXPBenchmarks[runeLevel]) {
-        runeLevel++;
-        console.log("Leveled up! Rune Level is now:", runeLevel);
+    console.log(`Rune XP now at ${progress.runeXP}`);
+    while (progress.runeLevel < runeXPBenchmarks.length && progress.runeXP >= runeXPBenchmarks[progress.runeLevel]) {
+        progress.runeLevel++;
+        console.log("Leveled up! Rune Level is now:", progress.runeLevel);
     }
     //update display
     const runeLevelDisplay = document.getElementById('runeLevel');
     if (runeLevelDisplay) {
-        runeLevelDisplay.textContent = `Rune Level: ${runeLevel}`;
+        runeLevelDisplay.textContent = `Rune Level: ${progress.runeLevel}`;
+    }
+
+    // Step 4.5: run rune level dialogues
+    if (progress.runeLevel === 2 && !progress.runeTwo) {
+        runDialogue('runeTwo',0)
+        progress.runeTwo = true;
+    }
+    if (progress.runeLevel === 5 && !progress.runeFive) {
+        runDialogue('runeFive',0)
+        progress.runeFive = true;
     }
 
     // Step 5: Clear canvas, pick a new random rune, render, and re-enable drawing
@@ -1008,7 +1333,7 @@ if (renderEndpointsBtn) {
         const canvas = document.getElementById('runeCanvas');
         if (canvas) {
             const ctx = canvas.getContext('2d');
-            renderRune(ctx, randomRune); // or your current rune variable
+            renderRune(ctx, randomRune);
             if (window.DEBUG_MODE.endpoints) {
                 renderRuneEndpoints(ctx, randomRune);
             }
