@@ -1,4 +1,4 @@
-const Debug = true;
+const Debug = false;
 
 //This function is for waiiiting
 function sleep(ms) {
