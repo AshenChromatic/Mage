@@ -11,6 +11,8 @@ _Last updated: 2025-8-29_
 ---
 
 ## Bugs / Fixes
+- [ ] Fuck the indefinite article bruh.
+- [ ] Tabs don't fade in anymore for some reason.
 
 ---
 
@@ -21,6 +23,7 @@ _Last updated: 2025-8-29_
 ---
 
 ## Future Ideas / Brainstorm
+- [ ] Add dateable characters
 
 ---
 

@@ -1,4 +1,4 @@
-const Debug = false;
+const Debug = true;
 
 //This function is for waiiiting
 function sleep(ms) {
@@ -125,7 +125,9 @@ let progress = {
     runeFive: false,
     runeTen: false,
     runeLevel: 1,
-    runeXP: 0
+    runeXP: 0,
+    unlockDoor: false,
+    mainSelector: false,
 };
 
 function saveGame() {
@@ -135,7 +137,8 @@ function saveGame() {
         resources: resource,
         progress: progress,
         elements: getElementStates(),
-        dialogue: dialogueManager
+        dialogue: dialogueManager,
+        dialogueQueue: dialogueQueue,
     }
     // Store save
     localStorage.setItem("mageSave", JSON.stringify(saveData));
@@ -287,10 +290,13 @@ function applySave(saveData) {
         });
     }
   
-
   // 3) Restore progress
   if (typeof saveData.progress !== "undefined") {
     progress = saveData.progress;
+  }
+  // 3.5) Restore dialogue queue
+  if (Array.isArray(saveData.dialogueQueue)) {
+    dialogueQueue = saveData.dialogueQueue;
   }
 
   // 4) Reveal/hide elements according to saved element states
@@ -324,14 +330,14 @@ function applySave(saveData) {
             if (typeof dialogueManager === "object") {
                 dialogueManager.currentDialogue = saveData.dialogue.currentDialogue || saveData.dialogue.currentDialogueName || null;
                 dialogueManager.currentLine     = Number(saveData.dialogue.currentLine ?? saveData.dialogue.currentIndex ?? 0);
-                dialogueManager.running         = false; // don't auto-run until we call runDialogue
+                dialogueManager.running         = false; // don't auto-run until we call queueDialogue
             } else if (typeof dialogueState === "object") {
                 dialogueState.currentDialogue = saveData.dialogue.currentDialogue || saveData.dialogue.currentDialogueName || null;
                 dialogueState.currentIndex    = Number(saveData.dialogue.currentIndex ?? saveData.dialogue.currentLine ?? 0);
                 dialogueState.running         = false;
             }
 
-      // If a dialogue name exists, try to resume it by calling runDialogue
+      // If a dialogue name exists, try to resume it by calling queueDialogue
       const nameToResume = (dialogueManager && dialogueManager.currentDialogue) ||
                            (dialogueState && dialogueState.currentDialogue);
 
@@ -539,6 +545,12 @@ function generatorTick() {
             }
         }
     }
+    // Check various unlocks
+    if (!progress.doorUnlock && resource.mana.amount >= 30) {
+        progress.doorUnlock = true;
+        console.log("Door unlocked!");
+        queueDialogue("unlockDoor", 0);
+    }
 }
    
 
@@ -705,7 +717,15 @@ let dialogues = {
         {type: 'line', text: 'You\'re not quite sure if it\'s muscle memory or something else, but you\'re more confident in your earlier intuition:', time: 2000},
         {type: 'line', text: 'They <i>are</i> getting easier to draw.', time: 1000},
         {type: 'function', fn: runeFive}
-    ]
+    ],
+    unlockDoor: [
+        {type: 'line', text: ' ', time: 0},
+        {type: 'line', text: 'You\'ve been generating mana, but you feel like you don\'t have enough to do anything with.', time: 4000},
+        {type: 'line', text: 'On top of this, you lack the funds to get any more mana orbs.', time: 4000},
+        {type: 'line', text: 'Unfortunately, all of this world\'s funds exist outside of the safety of your room', time: 4000},
+        {type: 'line', text: 'You decide to venture out into the world to find some way to earn gold', time: 1000},
+        {type: 'function', fn: unlockDoor}
+    ],
 }
 
 let dialogueManager = {
@@ -734,11 +754,9 @@ function unlockOrb() {
 // Rune unlock
 function unlockRune() {
     progress.runeUnlock = true;
-    document.getElementById('mainSelector').classList.add('show');
-    document.getElementById('pcTabBtn').classList.add('show');
     document.getElementById('deskSpace').classList.add('show');
     document.getElementById('deskTabBtn').classList.add('show');
-    document.getElementById('mainSelectorDiv').classList.add('show');
+    showMainSelector();
 }
 
 // Second Rune Level
@@ -751,31 +769,72 @@ function runeFive() {
     progress.runeFive = true;
 }
 
+function unlockDoor() {
+    progress.unlockDoor = true;
+    document.getElementById('doorTabBtn').classList.add('show');
+    document.getElementById('doorSpace').classList.add('show');
+    showMainSelector();
+}
+
+function showMainSelector(){
+    console.log("Checking to show main selector");
+    if (!progress.mainSelector) { 
+        console.log("Showing main selector");
+        document.getElementById('mainSelector').classList.add('show');
+        document.getElementById('pcTabBtn').classList.add('show');
+        document.getElementById('mainSelectorDiv').classList.add('show');
+        progress.mainSelector = true;
+    }
+}
+
+let dialogueQueue = [];
+let dialogueActive = false;
+
+function queueDialogue(dialogueName, index) {
+    if (dialogueActive) {
+        dialogueQueue.push({ name: dialogueName, index: index });
+        return;
+    }
+    runDialogue(dialogueName, index);
+}
+
 async function runDialogue(dialogueName, index) {
-  let steps = dialogues[dialogueName];
+    if (dialogueActive) {
+        dialogueQueue.push({ name: dialogueName, index: index });
+        return;
+    }
+    dialogueActive = true;
+    let steps = dialogues[dialogueName];
 
-  dialogueManager.currentDialogue = dialogueName;
-  dialogueManager.currentLine = index || 0; // default to 0
-  dialogueManager.running = true;
+    dialogueManager.currentDialogue = dialogueName;
+    dialogueManager.currentLine = index || 0;
+    dialogueManager.running = true;
 
-  while (dialogueManager.running && dialogueManager.currentLine < steps.length) {
-    let step = steps[dialogueManager.currentLine];
+    while (dialogueManager.running && dialogueManager.currentLine < steps.length) {
+        let step = steps[dialogueManager.currentLine];
 
-    if (step.type === "line") {
-      sendToLog(step.text);
-      await sleep(step.time);
-    } else if (step.type === "function") {
-      step.fn();
+        if (step.type === "line") {
+            sendToLog(step.text);
+            await sleep(step.time);
+        } else if (step.type === "function") {
+            step.fn();
+        }
+
+        dialogueManager.currentLine++;
+        console.log(dialogueManager.currentLine);
     }
 
-    dialogueManager.currentLine++;
-    console.log(dialogueManager.currentLine);
-  }
+    // Cleanup
+    dialogueManager.running = false;
+    dialogueManager.currentDialogue = null;
+    dialogueManager.currentLine = 0;
+    dialogueActive = false;
 
-  // Cleanup
-  dialogueManager.running = false;
-  dialogueManager.currentDialogue = null;
-  dialogueManager.currentLine = 0;
+    // Start next dialogue in queue if any
+    if (dialogueQueue.length > 0) {
+        const next = dialogueQueue.shift();
+        runDialogue(next.name, next.index);
+    }
 }
 
 //Log gradient
@@ -1078,7 +1137,7 @@ function gradeRune(drawnLines, rune) {
         const runeGradeDisplay = document.getElementById('runeGrade');
         if (runeGradeDisplay) {
             console.log(`Telling user rune grade`);
-            runeGradeDisplay.textContent = `You drew a Garbage Rune. It didn't feel like your accuracy was the problem- rather that you weren't drawing it correctly at all.`;
+            runeGradeDisplay.textContent = `You drew a garbage rune. It didn't feel like you were drawing the right shape at all.`;
             progress.runeXP += 1;
         }
     }
@@ -1221,11 +1280,11 @@ function gradeRune(drawnLines, rune) {
 
     // Step 4.5: run rune level dialogues
     if (progress.runeLevel === 2 && !progress.runeTwo) {
-        runDialogue('runeTwo',0)
+        queueDialogue("runeTwo",0)
         progress.runeTwo = true;
     }
     if (progress.runeLevel === 5 && !progress.runeFive) {
-        runDialogue('runeFive',0)
+        queueDialogue("runeFive",0)
         progress.runeFive = true;
     }
 
@@ -1411,4 +1470,4 @@ if (resource.dummyGenerator.visible === true) {
 // Initialization            //
 //---------------------------//
 
-runDialogue("startGame", 0);
+queueDialogue("startGame", 0);
