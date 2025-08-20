@@ -61,6 +61,7 @@
 
 
 .tilde {
+    color: gray;
     white-space: pre;
     display: none;
     opacity: 0;

@@ -616,6 +616,27 @@ document.getElementById('shopTabBtn').addEventListener('click', function(e) {
 });
 
 
+//Go outside
+document.getElementById('leaveHouseBtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    goOutside();
+});
+//Go inside
+document.getElementById('tempGoHome').addEventListener('click', function(e) {
+    e.preventDefault();
+    goInside();
+});
+
+function goOutside() {
+    document.getElementById('insideHouse').classList.remove('show');
+    document.getElementById('worldMap').classList.add('show');
+}
+
+function goInside() {
+    document.getElementById('worldMap').classList.remove('show');
+    document.getElementById('insideHouse').classList.add('show');
+}
+
 //---------------------------//
 // Hoverbox                  //
 //---------------------------//

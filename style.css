@@ -32,6 +32,31 @@ html, body {
     flex-direction: column;
 }
 
+.insideHouse {
+    visibility: hidden;
+    display: none;
+}
+
+.insideHouse.show {
+    visibility: visible;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
+.worldMap {
+    visibility: hidden;
+    display: none;
+}
+.worldMap.show {
+    visibility: visible;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
 .topBar {
     display: flex;
     flex-direction: row;
