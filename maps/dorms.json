@@ -1,6 +1,6 @@
 {
 "name": "dorms",
-"map": [
+"tiles": [
  "################################",
  "#......==......==......==CD...B#",
  "#......==......==......==.....B#",
@@ -70,40 +70,43 @@
     "0": {
         "type": "player",
         "color": "ignore"
-    },
+        },
     "1": {
         "type": "npc",
         "name": "tbd",
         "dialogue": "tbd",
         "color": "ignore"
-    },
+        },
     "2": {
         "type": "npc",
         "name": "tbd",
         "dialogue": "tbd",
         "color": "ignore"
-    },
+        },
     "3": {
         "type": "npc",
         "name": "tbd",
         "dialogue": "tbd",
         "color": "ignore"
-    },
+        },
     "4": {
         "type": "npc",
         "name": "tbd",
         "dialogue": "tbd",
         "color": "ignore"
-    },
+        },
     "5": {
         "type": "doorHome",
         "color": "ignore"
-    },
+        },
     "6": {
         "type": "door",
         "locked": true,
         "dialogue": "tbd",
         "color": "ignore"
+        },
+    ".": {
+        "color": "grey"
+        },
     }
-}
 }
