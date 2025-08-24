@@ -15,9 +15,28 @@ function sleep(ms) {
     });
 }
 
+//Put text in the journal
+function sendToJournal(message) {
+    const logDiv = document.getElementById('gameLog');
+    const threshold = 5;
+    const isAtBottom = logDiv.scrollHeight - logDiv.scrollTop - logDiv.clientHeight <= threshold;
+    // Create a new div for the message
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'logMessage';
+    msgDiv.innerHTML = '> ' + message + '<br>';
+    logDiv.appendChild(msgDiv);
+    if (isAtBottom) {
+        logDiv.scrollTop = logDiv.scrollHeight;
+    }
+    // Trigger fade-in
+    setTimeout(function() {
+        msgDiv.classList.add('show');
+    }, 10); // Short delay to ensure the element is added before transition
+}
+
 //Put text in the log
 function sendToLog(message) {
-    const logDiv = document.getElementById('gameLog');
+    const logDiv = document.getElementById('gameLog2');
     const threshold = 5;
     const isAtBottom = logDiv.scrollHeight - logDiv.scrollTop - logDiv.clientHeight <= threshold;
     // Create a new div for the message
@@ -844,7 +863,7 @@ async function runDialogue(dialogueName, index) {
         let step = steps[dialogueManager.currentLine];
 
         if (step.type === "line") {
-            sendToLog(step.text);
+            sendToJournal(step.text);
             await sleep(step.time);
         } else if (step.type === "function") {
             step.fn();
@@ -868,8 +887,19 @@ async function runDialogue(dialogueName, index) {
 }
 
 //Log gradient
-const logForGradient = document.getElementById("gameLog");
-const logGradient = document.querySelector(".logGradient");
+const diaryForGradient = document.getElementById("gameLog");
+const diaryGradient = document.querySelector(".logGradient");
+
+diaryForGradient.addEventListener("scroll", () => {
+  if (diaryForGradient.scrollTop > 0) {
+    diaryGradient.style.opacity = "1";
+  } else {
+    diaryGradient.style.opacity = "0";
+  }
+});
+
+const logForGradient = document.getElementById("gameLog2");
+const logGradient = document.querySelector(".logGradient2");
 
 logForGradient.addEventListener("scroll", () => {
   if (logForGradient.scrollTop > 0) {
@@ -1079,12 +1109,8 @@ function gradeRune(drawnLines, rune) {
 
     if (grade === "garbage") {
         console.log("Rune drawn incorrectly or pairing error");
-        const runeGradeDisplay = document.getElementById('runeGrade');
-        if (runeGradeDisplay) {
-            console.log(`Telling user rune grade`);
-            runeGradeDisplay.textContent = `You drew a garbage rune. It didn't feel like you were drawing the right shape at all.`;
-            progress.runeXP += 1;
-        }
+        sendToLog(`You drew a garbage rune. It didn't feel like you were drawing the right shape at all.`);
+        progress.runeXP += 1;
     }
 
     //Step 2: Accuracy check
@@ -1151,12 +1177,7 @@ function gradeRune(drawnLines, rune) {
             progress.runeXP += 10;
         }
         console.log(`Accuracy: ${(percentOnRune*100).toFixed(1)}% | Grade: ${grade}`);
-        const runeGradeDisplay = document.getElementById('runeGrade');
-        if (runeGradeDisplay) {
-            console.log(`Telling user rune grade`);
-            const percentDisplay = Math.round(percentOnRune * 100);
-            runeGradeDisplay.textContent = `You drew with ${percentDisplay}% accuracy and received a ${grade} rune!`;
-        }
+        sendToLog(`You drew a ${grade} rune with ${(percentOnRune*100).toFixed(1)}% accuracy.`);
     }
 
     //Step 3: Return rune of whatever grade

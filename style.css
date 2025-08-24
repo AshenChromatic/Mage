@@ -6,6 +6,32 @@ html, body {
     flex-direction: column;
 }
 
+.topBar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 16px;
+    padding: 4px 8px;
+}
+
+.version {
+    font-style: italic;
+    text-align: right;
+}
+
+.gameMain {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: calc(100% - 50px);
+}
+
 .gameMainCenter {
     display: flex;
     flex-direction: column;
@@ -75,31 +101,6 @@ html, body {
     font-size: 20px;
 }
 
-.topBar {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    font-family: 'Times New Roman', Times, serif;
-    font-size: 16px;
-    padding: 4px 8px;
-}
-
-.version {
-    font-style: italic;
-    text-align: right;
-}
-
-.gameMain {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    border-style: solid;
-    border-color: black;
-    border-width: 1px;
-    flex: 1 1 auto;
-    min-height: 0;
-    max-height: calc(100% - 50px);
-}
 
 .gameMainLeft {
     display: flex;
@@ -126,6 +127,7 @@ html, body {
 .gameMainRight {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     flex: 1 1 auto;
     min-height: 0;
     max-width: 25%;
@@ -136,12 +138,31 @@ html, body {
 }
 
 .gameMainRightHeader {
+    min-height: 0;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
     padding-top: 4px;
     padding-bottom: 4px;
+}
 
+.topLog  {
+    flex: 1 1 0;
+    min-height: 0;
+    height:auto;
+    max-height: 100%;
+    display: flex;
+    overflow-y: auto;
+    flex-direction: column;
+}
+.bottomLog {
+    position:relative;
+    height: 200px;
+    min-height: 0;
+    max-height: 200px;
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid black;
 }
 
 .logDivider {
@@ -156,8 +177,9 @@ html, body {
 
 .log {
     padding: 4px;
-    flex: 1 1 auto;
+    flex: 1 1 0;
     min-height: 0;
+    max-height: 100%;
     overflow-y: auto;
     position: relative;
 }
@@ -168,6 +190,19 @@ html, body {
   left: 0;
   right: 0;
   height: 40px; 
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.82), transparent);
+  pointer-events: none;
+  z-index: 900;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.logGradient2 {
+  position: absolute;
+  top: 27px;
+  left: 0;
+  right: 0;
+  height: 40px;
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0.82), transparent);
   pointer-events: none;
   z-index: 900;

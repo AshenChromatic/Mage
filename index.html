@@ -1,76 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset = "UTF-8">
-    <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
-    <link rel = "stylesheet" href = "style.css?v=6"> 
-    <link rel = "stylesheet" href = "research_tab.css?v=6">
-    <link rel = "stylesheet" href = "shop_tab.css?v=6">
-    <link rel = "stylesheet" href = "resources.css?v=6">
-    <link rel = "stylesheet" href = "hoverbox.css?v=6">
-    <link rel = "stylesheet" href = "tab_selector.css?v=6">
-    <link rel = "stylesheet" href = "rune_tab.css?v=6">
-    <link rel = "stylesheet" href = "debug.css?v=6">
-    <link rel = "stylesheet" href = "door_tab.css?v=6">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css?v=7">
+    <link rel="stylesheet" href="research_tab.css?v=7">
+    <link rel="stylesheet" href="shop_tab.css?v=7">
+    <link rel="stylesheet" href="resources.css?v=7">
+    <link rel="stylesheet" href="hoverbox.css?v=7">
+    <link rel="stylesheet" href="tab_selector.css?v=7">
+    <link rel="stylesheet" href="rune_tab.css?v=7">
+    <link rel="stylesheet" href="debug.css?v=7">
+    <link rel="stylesheet" href="door_tab.css?v=7">
     <title>Mage</title>
 </head>
+
 <body>
 
-    <div class = "topBar">
-        <div class = "title">
-            <span> Mage </span> <span class = "ashenColor">by AshenChromatic</span>
+    <div class="topBar">
+        <div class="title">
+            <span> Mage </span> <span class="ashenColor">by AshenChromatic</span>
         </div>
-        <div class = "title">
-            <a href = "#" class = "tabLink show" id = "saveBtn">Save</a>
-                <span class = "tilde show" id = "exportSpace"> | </span>
-                <a href = "#" class = "tabLink show" id = "exportBtn">Export Save</a>
-                <span class = "tilde show" id = "importSpace"> | </span>
-                <a href = "#" class = "tabLink show" id = "importBtn">Import Save</a>
+        <div class="title">
+            <a href="#" class="tabLink show" id="saveBtn">Save</a>
+            <span class="tilde show" id="exportSpace"> | </span>
+            <a href="#" class="tabLink show" id="exportBtn">Export Save</a>
+            <span class="tilde show" id="importSpace"> | </span>
+            <a href="#" class="tabLink show" id="importBtn">Import Save</a>
         </div>
-        <div class = "version">
-            Alpha 0.2.1
+        <div class="version">
+            Alpha 0.2.2
         </div>
     </div>
 
-    <div class = "gameMain">
+    <div class="gameMain">
         <!-- Where resources will be displayed -->
-        <div class = "gameMainLeft">
-            <div class = "resources">
+        <div class="gameMainLeft">
+            <div class="resources">
                 <!--DummyResource-->
-                <div class = "dummyDisplay" id = "dummyDisplay">
-                    <div class = "resourceTitle">
+                <div class="dummyDisplay" id="dummyDisplay">
+                    <div class="resourceTitle">
                         Dummy:
                     </div>
-                    <div class = "resourceAmount" id="dummyResourceAmount">
+                    <div class="resourceAmount" id="dummyResourceAmount">
                         <span id="dummyResourceAmountVal">0</span>
                         /
                         <span id="dummyResourceMax">10</span>
                     </div>
                 </div>
                 <!-- Knowledge-->
-                <div class = "knowledgeDisplay" id = "knowledgeDisplay">
-                    <div class = "resourceTitle">
+                <div class="knowledgeDisplay" id="knowledgeDisplay">
+                    <div class="resourceTitle">
                         Knowledge:
                     </div>
-                    <div class = "resourceAmount" id="knowledgeAmount">
+                    <div class="resourceAmount" id="knowledgeAmount">
                         0
                     </div>
                 </div>
                 <!-- Gold-->
-                <div class = "goldDisplay" id="goldDisplay">
-                    <div class = "resourceTitle goldTitle">
+                <div class="goldDisplay" id="goldDisplay">
+                    <div class="resourceTitle goldTitle">
                         Gold:
                     </div>
-                    <div class = "resourceAmount" id="goldAmount">
+                    <div class="resourceAmount" id="goldAmount">
                         5
                     </div>
                 </div>
                 <!-- Mana-->
-                <div class = "manaDisplay" id="manaDisplay">
-                    <div class = "resourceTitle manaTitle">
+                <div class="manaDisplay" id="manaDisplay">
+                    <div class="resourceTitle manaTitle">
                         Mana:
                     </div>
-                <div class = "resourceAmount" id="manaAmount">
+                    <div class="resourceAmount" id="manaAmount">
                         <span id="manaAmountVal">0</span>
                         /
                         <span id="manaMax">10</span>
@@ -79,59 +81,59 @@
             </div>
 
             <hr class="resourceDiv" id="orbDiv">
-            <div class = "generators">
+            <div class="generators">
                 <!-- Dummy Generator-->
-                <div class = "dummyDisplay" id = "dummyGenDisplay">
-                    <div class = "resourceTitle">
+                <div class="dummyDisplay" id="dummyGenDisplay">
+                    <div class="resourceTitle">
                         DummyGen:
                     </div>
-                    <div class = "resourceAmount" id="dummyGeneratorAmount">
+                    <div class="resourceAmount" id="dummyGeneratorAmount">
                         1
                     </div>
                 </div>
-                 <!-- Orb-->
-                <div class = "orbDisplay" id = "orbDisplay">
-                    <div class = "resourceTitle">
+                <!-- Orb-->
+                <div class="orbDisplay" id="orbDisplay">
+                    <div class="resourceTitle">
                         Orb:
                     </div>
-                    <div class = "resourceAmount" id="orbAmount">
+                    <div class="resourceAmount" id="orbAmount">
                         0
                     </div>
                 </div>
             </div>
-        
+
             <!--Runes-->
             <hr class="resourceDiv" id="runeDiv">
-            <div class = "runes">
-                <div class = "garbageRuneDisplay" id = "garbageRuneDisplay">
-                    <div class = "resourceTitle">
+            <div class="runes">
+                <div class="garbageRuneDisplay" id="garbageRuneDisplay">
+                    <div class="resourceTitle">
                         Garbage Rune:
                     </div>
-                    <div class = "resourceAmount" id="garbageRuneAmount">
+                    <div class="resourceAmount" id="garbageRuneAmount">
                         0
                     </div>
                 </div>
-                <div class = "okRuneDisplay" id = "okRuneDisplay">
-                    <div class = "resourceTitle">
+                <div class="okRuneDisplay" id="okRuneDisplay">
+                    <div class="resourceTitle">
                         Ok Rune:
                     </div>
-                    <div class = "resourceAmount" id="okRuneAmount">
+                    <div class="resourceAmount" id="okRuneAmount">
                         0
                     </div>
                 </div>
-                <div class = "goodRuneDisplay" id = "goodRuneDisplay">
-                    <div class = "resourceTitle">
+                <div class="goodRuneDisplay" id="goodRuneDisplay">
+                    <div class="resourceTitle">
                         Good Rune:
                     </div>
-                    <div class = "resourceAmount" id="goodRuneAmount">
+                    <div class="resourceAmount" id="goodRuneAmount">
                         0
                     </div>
                 </div>
-                <div class = "perfectRuneDisplay" id = "perfectRuneDisplay">
-                    <div class = "resourceTitle">
+                <div class="perfectRuneDisplay" id="perfectRuneDisplay">
+                    <div class="resourceTitle">
                         Perfect Rune:
                     </div>
-                    <div class = "resourceAmount" id="perfectRuneAmount">
+                    <div class="resourceAmount" id="perfectRuneAmount">
                         0
                     </div>
                 </div>
@@ -139,141 +141,157 @@
         </div>
 
         <!-- Where most of the game will be displayed -->
-        <div class = "gameMainCenter" id = "gameMainCenter">
+        <div class="gameMainCenter" id="gameMainCenter">
             <!--Inside-->
-            <div class = "insideHouse show" id = "insideHouse">
+            <div class="insideHouse show" id="insideHouse">
                 <!-- Main tab selector -->
-                <div class = "mainTabSelector" id = "mainSelector">
-                <a href = "#" class = "tabLink" id = "pcTabBtn">PC</a>
-                <span class = "tilde" id = "deskSpace"> ~ </span>
-                <a href = "#" class = "tabLink" id = "deskTabBtn">Desk</a>
-                <span class = "tilde" id = "doorSpace"> ~ </span>
-                <a href = "#" class = "tabLink" id = "doorTabBtn">Door</a>
+                <div class="mainTabSelector" id="mainSelector">
+                    <a href="#" class="tabLink" id="pcTabBtn">PC</a>
+                    <span class="tilde" id="deskSpace"> ~ </span>
+                    <a href="#" class="tabLink" id="deskTabBtn">Desk</a>
+                    <span class="tilde" id="doorSpace"> ~ </span>
+                    <a href="#" class="tabLink" id="doorTabBtn">Door</a>
                 </div>
-                <hr class = "mainSelectorDiv" id = "mainSelectorDiv">
+                <hr class="mainSelectorDiv" id="mainSelectorDiv">
 
                 <!-- PC Main Game Center -->
                 <div class="gameMainCenterMain show" id="pcMainCenter">
-                <div class = "subTabSelector" id = "pcTabSelector">
-                    <a href = "#" class = "tabLink" id = "researchTabBtn">Research</a>
-                    <span class = "tilde" id = "shopSpace"> ~ </span>
-                    <a href = "#" class = "tabLink" id = "shopTabBtn">Shop</a>
-                </div>
-                <div class = "tabContent" id = "pcTabContent">
-                    <!-- Research Tab -->
-                    <div class = "researchTab" id = "researchTab">
-                        <button class = "researchBtn" id = "researchBtn">Research</button>
+                    <div class="subTabSelector" id="pcTabSelector">
+                        <a href="#" class="tabLink" id="researchTabBtn">Research</a>
+                        <span class="tilde" id="shopSpace"> ~ </span>
+                        <a href="#" class="tabLink" id="shopTabBtn">Shop</a>
                     </div>
-                    <!-- Shop Tab -->
-                    <div class = "shopTab" id = "shopTab">
-                        <button class = "shopBuyBtn" id = "buyOrbBtn">Buy Orb</button>
+                    <div class="tabContent" id="pcTabContent">
+                        <!-- Research Tab -->
+                        <div class="researchTab" id="researchTab">
+                            <button class="researchBtn" id="researchBtn">Research</button>
+                        </div>
+                        <!-- Shop Tab -->
+                        <div class="shopTab" id="shopTab">
+                            <button class="shopBuyBtn" id="buyOrbBtn">Buy Orb</button>
+                        </div>
                     </div>
-                </div>
                 </div>
 
                 <!-- Desk Main Game Center -->
                 <div class="gameMainCenterMain" id="deskMainCenter">
-                <div class = "subTabSelector" id = "deskTabSelector">
-                    <a href = "#" class = "tabLink" id = "runeTabBtn">Runes</a>
-                </div>
-                <div class = "tabContent" id = "deskTabContent">
-                    <!-- Runes Tab -->
-                    <div class = "runeTab" id = "runeTab">
-                        <div class="runeLevel" id="runeLevel">Rune Level: 1</div>
-                        <canvas id="runeCanvas" class="runeCanvas" width="200" height="300"></canvas>
-                        <div id="runeGrade" class="runeGrade"></div>
+                    <div class="subTabSelector" id="deskTabSelector">
+                        <a href="#" class="tabLink" id="runeTabBtn">Runes</a>
                     </div>
-                </div>
+                    <div class="tabContent" id="deskTabContent">
+                        <!-- Runes Tab -->
+                        <div class="runeTab" id="runeTab">
+                            <div class="runeLevel" id="runeLevel">Rune Level: 1</div>
+                            <canvas id="runeCanvas" class="runeCanvas" width="200" height="300"></canvas>
+                            <div id="runeGrade" class="runeGrade"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Door Main Game Center -->
                 <div class="gameMainCenterMain" id="doorMainCenter">
-                <div class = "subTabSelector" id = "doorTabSelector">
-                    <a href = "#" class = "tabLink" id = "doorTabBtn">Runes</a>
-                </div>
-                <div class = "tabContent" id = "doorTabContent">
-                    <!-- Door Tab -->
-                    <div class = "doorTab" id = "doorTab">
-                        <button class = "leaveHouseBtn" id = "leaveHouseBtn">Exit</button>
+                    <div class="subTabSelector" id="doorTabSelector">
+                        <a href="#" class="tabLink" id="doorTabBtn">Runes</a>
                     </div>
-                </div>
+                    <div class="tabContent" id="doorTabContent">
+                        <!-- Door Tab -->
+                        <div class="doorTab" id="doorTab">
+                            <button class="leaveHouseBtn" id="leaveHouseBtn">Exit</button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- World map-->
-            <div class = "worldMap" id = "worldMap">
+            <div class="worldMap" id="worldMap">
                 <!-- REMOVE THIS BUTTON L8R-->
-                <button id = "tempGoHome">Go Home</button>
-                <div class = "worldMapDisplay" id = "worldMapDisplay">
-                <!-- World map go here -->
+                <button id="tempGoHome">Go Home</button>
+                <div class="worldMapDisplay" id="worldMapDisplay">
+                    <!-- World map go here -->
                 </div>
             </div>
         </div>
 
         <!-- This handles the log-->
-        <div class = "gameMainRight">
-            <div class = "gameMainRightHeader">
-                <div class = "logTitle">
-                    Log
+        <div class="gameMainRight">
+            <!-- Main Log-->
+            <div class="topLog" id="topLog">
+                <div class="gameMainRightHeader">
+                    <div class="logTitle">
+                        Journal
+                    </div>
+                </div>
+                <hr class="logDivider">
+                <div class="logGradient"></div>
+                <div class="log" id="gameLog">
+                    <!-- Journal messages appear here -->
+                </div>
+            </div>
+            <!-- Second Log-->
+            <div class="bottomLog" id="bottomLog">
+                <div class="gameMainRightHeader">
+                    <div class="logTitle">
+                        Log
+                    </div>
+                </div>
+
+                <hr class="logDivider">
+                <div class="logGradient"></div>
+                <div class="log" id="gameLog2">
+                    <!-- Log messages appear here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="hoverBox" id="hoverBox">
+            <!-- Hover box content for buying/unlocking things for a cost-->
+            <div class="hoverBoxBuy show" id="hoverBoxBuy">
+                <div class=" hoverBuyDesc" id="hoverBuyDesc">
+                    <!-- Description -->
+                </div>
+
+                <hr class="hoverBuyDiv">
+
+                <div class="hoverBuyCost" id="hoverBuyCost">
+                    <!-- Costs -->
+                </div>
+
+                <hr class="hoverBuyDiv">
+
+                <div class="hoverBuyEffect" id="hoverBuyEffect">
+                    <!-- Stuff you get -->
+                </div>
+
+                <div class="hoverBuyFlavor" id="hoverBuyFlavor">
+                    <!-- Flavor text -->
+                </div>
+            </div>
+            <!-- Hover box content for mousing over map icons-->
+            <div class="hoverBoxMap" id="hoverBoxMap">
+                <div class="hoverMapTitle" id="hoverMapTitle">
+                    <!-- Title -->
+                </div>
+
+                <hr class="hoverMapDiv">
+
+                <div class="hoverMapText" id="hoverMapText">
+                    <!-- Text -->
                 </div>
             </div>
 
-            <hr class="logDivider">
-            <div class="logGradient"></div>
-            <div class = "log" id = "gameLog">
-                    <!-- Log messages appear here -->
-            </div>
-        </div>
-    </div>
-
-    <div class = "hoverBox" id = "hoverBox">
-        <!-- Hover box content for buying/unlocking things for a cost-->
-        <div class = "hoverBoxBuy show" id = "hoverBoxBuy">
-            <div class=" hoverBuyDesc" id="hoverBuyDesc">
-                <!-- Description -->
+            <!-- Debug Window -->
+            <div id="debugWindow" class="debugWindow">
+                <div class="debugHeader">Debug</div>
+                <div class="debugContent">
+                    <button id="fastmodeBtn">Toggle Fastmode</button>
+                    <button id="dummyResourcesBtn">Toggle Dummy Resources</button>
+                    <button id="skipToRunesBtn">Skip to Runes</button>
+                    <button id="renderEndpointsBtn">Render Rune Endpoints</button>
+                </div>
             </div>
 
-            <hr class="hoverBuyDiv">
-
-            <div class="hoverBuyCost" id="hoverBuyCost">
-                <!-- Costs -->
-            </div>
-
-            <hr class="hoverBuyDiv">
-            
-            <div class="hoverBuyEffect" id="hoverBuyEffect">
-                <!-- Stuff you get -->
-            </div>
-
-            <div class="hoverBuyFlavor" id="hoverBuyFlavor">
-                <!-- Flavor text -->
-            </div>
-        </div>
-        <!-- Hover box content for mousing over map icons-->
-        <div class = "hoverBoxMap" id = "hoverBoxMap">
-            <div class = "hoverMapTitle" id = "hoverMapTitle">
-                <!-- Title -->
-            </div>
-
-            <hr class = "hoverMapDiv">
-
-            <div class = "hoverMapText" id = "hoverMapText">
-                <!-- Text -->
-            </div>
-        </div>
-
-    <!-- Debug Window -->
-    <div id="debugWindow" class="debugWindow">
-        <div class="debugHeader">Debug</div>
-        <div class="debugContent">
-            <button id="fastmodeBtn">Toggle Fastmode</button>
-            <button id="dummyResourcesBtn">Toggle Dummy Resources</button>
-            <button id="skipToRunesBtn">Skip to Runes</button>
-            <button id="renderEndpointsBtn">Render Rune Endpoints</button>
-        </div>
-    </div>
-
-    <!-- js -->
-    <script src = "script.js?v=6"></script>
-    <script src = "maps/world.js?v=6"></script>
+            <!-- js -->
+            <script src="script.js?v=7"></script>
+            <script src="maps/world.js?v=7"></script>
 </body>
+
 </html>
