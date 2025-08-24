@@ -7,7 +7,6 @@
     opacity: 0;
     transition: opacity 0.2;
     z-index: 1000;
-    width: 200px;
     background-color: white;
 }
 
@@ -16,10 +15,28 @@
 }
 
 .hoverBoxBuy {
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
-    color:black
+    color:black;
+    width: 200px;
+}
+
+.hoverBoxBuy.show {
+    display: flex;
+}
+
+.hoverBoxMap {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    color:black;
+    padding: 4px;
+    width: 200px;
+}
+
+.hoverBoxMap.show {
+    display: flex;
 }
 
 .hoverBoxBuy.broke {
@@ -33,7 +50,7 @@
 
 }
 
-.hoverBuyDiv {
+.hoverBuyDiv, .hoverMapDiv {
     border: none;
     border-bottom: 1px solid lightgrey;
     width: 90%;
@@ -66,4 +83,10 @@
     font-style: italic;
     padding: 4px 4px;
     width: calc(100% - 8px);
+}
+
+.hoverMapDiv {
+    display: flex;
+    justify-content: center;
+    text-align: center;
 }

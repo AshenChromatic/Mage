@@ -1,4 +1,8 @@
 const Debug = true;
+window.mage = {
+    playerColor: "#ff0000ff"
+}
+
 
 //This function is for waiiiting
 function sleep(ms) {
@@ -620,6 +624,7 @@ document.getElementById('shopTabBtn').addEventListener('click', function(e) {
 document.getElementById('leaveHouseBtn').addEventListener('click', function(e) {
     e.preventDefault();
     goOutside();
+
 });
 //Go inside
 document.getElementById('tempGoHome').addEventListener('click', function(e) {
@@ -630,11 +635,15 @@ document.getElementById('tempGoHome').addEventListener('click', function(e) {
 function goOutside() {
     document.getElementById('insideHouse').classList.remove('show');
     document.getElementById('worldMap').classList.add('show');
+    document.getElementById('hoverBoxBuy').classList.remove('show');
+    document.getElementById('hoverBoxMap').classList.add('show');
 }
 
 function goInside() {
     document.getElementById('worldMap').classList.remove('show');
     document.getElementById('insideHouse').classList.add('show');
+    document.getElementById('hoverBoxBuy').classList.add('show');
+    document.getElementById('hoverBoxMap').classList.remove('show');
 }
 
 //---------------------------//
@@ -1201,6 +1210,7 @@ function gradeRune(drawnLines, rune) {
         resource.okRune.visible = true;
         resource.goodRune.visible = true;
         resource.perfectRune.visible = true;
+        
     }
     // Step 4: Update rune level and display
     console.log(`Rune XP now at ${progress.runeXP}`);
