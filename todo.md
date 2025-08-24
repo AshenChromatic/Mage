@@ -1,12 +1,11 @@
 # Mage TODO
 
-_Last updated: 2025-8-29_
+_Last updated: 2025-8-20_
 
 
 ## Features to Add
-- [ ] New exit tab for world map which will replace all current tabs with a new window.
+- [ ] Implement world map
 - [ ] Outside will have a phone which will slide out from the bottom right I think
-- [ ] Add even more runes (esp some that unlock at certain levels)
 
 ---
 
@@ -19,6 +18,10 @@ _Last updated: 2025-8-29_
 ## Polish & Tweaks
 - [ ] Add bars to resources
 - [ ] Make Rune XP visible
+- [ ] Add even more runes (esp some that unlock at certain levels)
+
+## Code garbagae
+- [ ] Move dialogue to json
 
 ---
 
@@ -28,6 +31,7 @@ _Last updated: 2025-8-29_
 ---
 
 ## Done
+- [x] New exit tab for world map which will replace all current tabs with a new window. 8/19/25
 - [x] Implement saving 8/19/25
 - [x] Add more runes 8/19/25
 - [x] Add rune xp 8/19/25

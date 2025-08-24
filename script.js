@@ -886,83 +886,51 @@ const RUNE_CIRCLE_RADIUS = 12;
 //All runes are stored as lines here
 const runes = {
     thorn: {
-        name: "thorn",
+        name: "thorn", // halfway between b and p
         lines: [
             { start: [75, 50], end: [75, 250] }, //vertical
             { start: [75, 115], end: [125, 150] }, //top triangle
             { start: [75, 185], end: [125, 150] } // bottom triangle
         ],
-        drawLines: [
-            {
-            endpoints: [[75, 50], [75, 250]], //top to bottom
-            midpoints: [[75, 115], [75, 185]]
-            },
-            {
-            endpoints: [[75, 115], [75, 185]], //triangle
-            midpoints: [[125, 150]]
-            }
-        ]
+        midpoints: [[75, 50], [75, 250], [75, 115], [75, 185], [125, 150]],
+        lineCount: 2
     },
     ur: {
-        name: "ur",
+        name: "ur",   //fucked up lowercase n
         lines: [
             { start: [70,50], end: [70,250] }, //vertical
             { start: [70,50], end: [130,250] } //diagonal
         ],
-        drawLines: [
-            {
-                endpoints: [[70,250], [130, 250]],
-                midpoints: [[70, 50]]
-            }
-        ]
+        midpoints: [ [70, 50], [70, 250], [130, 250]],
+        lineCount: 1
     },
     cen: {
-        name: "cen",
+        name: "cen",  // the spiky lowercase h
         lines: [
             { start: [70,50], end: [70,250] }, //vertical
             { start: [70,190], end: [130,250] } //diagonal down
         ],
-        drawLines: [
-            {
-            endpoints: [[70, 50], [70, 250]], //top to bottom
-            midpoints: [[70, 200]]
-            },
-            {
-            endpoints: [[70, 190], [130, 250]], //diagonal down
-            midpoints: [[100, 220]]
-            },
-        ]
+        midpoints: [[70, 50], [70, 250], [70, 190], [130, 250]],
+        lineCount: 2
     },
     gyfu: {
-        name: "gyfu",
+        name: "gyfu", // x
         lines: [
             { start: [70, 50], end: [130, 250] }, //top left to bottom right
             { start: [130, 50], end: [70, 250] }, //top right to bottom left
         ],
-        drawLines: [
-            {
-            endpoints: [[70, 50], [130, 250]], //top left to bottom right
-            midpoints: [[100, 150]]
-            },
-            {
-            endpoints: [[70, 250], [130, 50]], //top right to bottom left
-            midpoints: [[100, 150]]
-            }
-        ]
+        midpoints: [[70, 50], [130, 250], [70, 250], [130, 50], [100, 150]],
+        lineCount: 2
     },
     thorn: {
-        name: "wyn",
+        name: "wyn", // looks like a p
         lines: [
             { start: [75, 50], end: [75, 250] }, //vertical
             { start: [75, 50], end: [125, 85] }, //top triangle
             { start: [75, 125], end: [125, 85] } // bottom triangle
         ],
-        drawLines: [
-            {
-            endpoints: [[75, 125], [75, 250]],
-            midpoints: [[75, 50]]
-            },
-        ]
+        midpoints: [[75, 125], [75, 250], [75, 50], [125, 85]],
+        lineCount: 1
     },
     // Add more runes here
 };
@@ -989,46 +957,28 @@ function renderRune(ctx, rune) {
 // Render endpoint outlines for debugging
 function renderRuneEndpoints(ctx, rune) {
     if (!window.DEBUG_MODE.endpoints) return;
-    if (!rune.drawLines) return;
+    if (!rune.midpoints) return;
     ctx.save();
     ctx.lineWidth = 2;
-    // Collect all unique endpoints
-    const uniqueEndpoints = [];
-    const endpointKeySet = new Set();
+    // Collect all unique midpoints
     const uniqueMidpoints = [];
     const midpointKeySet = new Set();
-    for (const line of rune.drawLines) {
-        for (const pt of line.endpoints) {
-            const key = pt[0] + ',' + pt[1];
-            if (!endpointKeySet.has(key)) {
-                uniqueEndpoints.push(pt);
-                endpointKeySet.add(key);
-            }
-        }
-        for (const pt of line.midpoints) {
+    for (const pt of rune.midpoints) {
             const key = pt[0] + ',' + pt[1];
             if (!midpointKeySet.has(key)) {
                 uniqueMidpoints.push(pt);
                 midpointKeySet.add(key);
             }
         }
-    }
-    // Draw endpoints in yellow
+    // Draw midpoints in yellow
     ctx.strokeStyle = 'yellow';
-    for (const pt of uniqueEndpoints) {
-        ctx.beginPath();
-        ctx.arc(pt[0], pt[1], RUNE_CIRCLE_RADIUS, 0, 2 * Math.PI);
-        ctx.stroke();
-    }
-    // Draw midpoints in orange
-    ctx.strokeStyle = 'orange';
     for (const pt of uniqueMidpoints) {
         ctx.beginPath();
         ctx.arc(pt[0], pt[1], RUNE_CIRCLE_RADIUS, 0, 2 * Math.PI);
         ctx.stroke();
     }
     ctx.restore();
-}
+};
 
 // Render a rune as soon as the Rune tab appears
 window.addEventListener('DOMContentLoaded', function() {
@@ -1047,7 +997,7 @@ function enableRuneDrawing(canvas, ctx, rune) {
     let start = null;
     let currentLine = [];
     let drawnLines = [];
-    const maxLines = rune.drawLines ? rune.drawLines.length : 0;
+    const maxLines = rune.lineCount;
 
     function onMouseDown(e) {
         if (drawnLines.length >= maxLines) return;
@@ -1100,60 +1050,25 @@ function gradeRune(drawnLines, rune) {
     }
     const TOLERANCE = 12; // px, adjust as needed
 
-    // Clone drawLines so we can remove matched lines
-    let remainingDrawLines = rune.drawLines.map(function(line) {
-        return {
-            endpoints: [...line.endpoints],
-            midpoints: [...line.midpoints]
-        };
-    });
-
     let grade = "ok"; // default, will be set to "garbage" if any check fails
 
-    for (const drawn of drawnLines) {
-        if (remainingDrawLines.length === 0) break;
-
-        // Try to match this drawn line to a drawLine
-        let matchedIndex = -1;
-        let matchedLine = null;
-        let drawnStart = drawn[0];
-        let drawnEnd = drawn[drawn.length - 1];
-
-        for (let i = 0; i < remainingDrawLines.length; i++) {
-            const line = remainingDrawLines[i];
-            // Check if drawn line starts/ends at either endpoint (within tolerance)
-            if (
-                (dist(drawnStart, line.endpoints[0]) < TOLERANCE && dist(drawnEnd, line.endpoints[1]) < TOLERANCE) ||
-                (dist(drawnStart, line.endpoints[1]) < TOLERANCE && dist(drawnEnd, line.endpoints[0]) < TOLERANCE)
-            ) {
-                matchedIndex = i;
-                matchedLine = line;
-                break;
-            }
-        }
-
-        if (!matchedLine) {
-            grade = "garbage";
-            console.log("No matching line found for drawn segment");
-            break;
-        }
-
-        // Check if all midpoints are visited
-        let allMidpointsHit = matchedLine.midpoints.every(mp =>
-            drawn.some(pt => dist(pt, mp) < TOLERANCE)
-        );
-        if (!allMidpointsHit) {
-            grade = "garbage";
-            console.log("Midpoints not hit correctly");
-            break;
-        }
-
-        // Remove matched line so it can't be matched again
-        remainingDrawLines.splice(matchedIndex, 1);
+    // Collect all user-drawn points from all lines
+    let allDrawnPoints = [];
+    for (const line of drawnLines) {
+    allDrawnPoints = allDrawnPoints.concat(line);
     }
 
-    if (grade === "garbage" || remainingDrawLines.length > 0) {
+    // Check if all midpoints are visited by any drawn point
+    let allMidpointsHit = rune.midpoints.every(mp =>
+        allDrawnPoints.some(pt => dist(pt, mp) < TOLERANCE)
+    );
+
+    if (!allMidpointsHit) {
         grade = "garbage";
+        console.log("Midpoints not hit correctly");
+    }
+
+    if (grade === "garbage") {
         console.log("Rune drawn incorrectly or pairing error");
         const runeGradeDisplay = document.getElementById('runeGrade');
         if (runeGradeDisplay) {
