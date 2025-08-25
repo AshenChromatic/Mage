@@ -1,8 +1,8 @@
-const debug = true;
+const debug = false;
 window.mage = {
     playerColor: "#ff0000ff",
-    slut: "0"
-}
+    slut: 0
+};
 
 
 //This function is for waiiiting

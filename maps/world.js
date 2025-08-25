@@ -33,7 +33,11 @@ window.addEventListener('DOMContentLoaded', function () {
 //---------------------------//
 // Dialogue Management       //
 //---------------------------//
-
+let mapDialogue = {
+    gribbletharp: {
+        comeHereOften: true
+    }
+}
 
 // helper: resolve a handler function for a node
 function resolveHandler(node) {
@@ -238,22 +242,47 @@ function friendlyClassmate1() {
     console.log("Clicked Friendly Classmate 1");
     choiceToLog("Who are you?", friendlyClassmate2A);
     choiceToLog("How do I get money?", friendlyClassmate2B);
-    choiceToLog("Come here often?", friendlyClassmate2C);
+    if (mapDialogue.gribbletharp.comeHereOften === true) {
+        choiceToLog("Come here often?", friendlyClassmate2C);
+    }
 }
 
 function friendlyClassmate2A() {
     console.log("Clicked Friendly Classmate 2A");
-    sendToLog("<span style='color: #399500;'>" + maps.dorms.keyData["1"].name + ": Uh, you don't remember me? </span>");
+    sendToLog("<span style='color: #399500;'>" + maps.dorms.keyData["1"].name + ": You don't remember me, dude? It's me, Gribbletharp, I live RIGHT nextdoor, hello?</span>");
+    sendToLog("You think that name sucks.");
+    maps.dorms.keyData["1"].name = "Gribbletharp";
 }
 
 function friendlyClassmate2B() {
     console.log("Clicked Friendly Classmate 2B");
-    sendToLog("<span style='color: #399500;'>" + maps.dorms.keyData["1"].name + ": Uh, you get a job???</span>");
+    sendToLog("<span style='color: #399500;'>" + maps.dorms.keyData["1"].name + ": Uh, you get a job??? I'm not giving you any money, freak.</span>");
+    sendToLog("What a foolish idea. " + maps.dorms.keyData["1"].name + " must be some type of moron.");
 }
 
 function friendlyClassmate2C() {
     console.log("Clicked Friendly Classmate 2C");
-    sendToLog("<span style='color: #399500;'>" + maps.dorms.keyData["1"].name + ":</span>");
+    sendToLog("<span style='color: #399500;'>" + maps.dorms.keyData["1"].name + ":...yes? I live here, idiot.</span>");
+    choiceToLog("Woah, what a coincidence, I also live here! We should kiss...", friendlyClassmate3A);
+    choiceToLog("That can't be true. I've never seen you before.", friendlyClassmate3B);
+    choiceToLog("*leave*", friendlyClassmate3C);
+}
+
+function friendlyClassmate3A() {
+    mage.slut += 1;
+    sendToLog("<span style='color: #399500;'>" + maps.dorms.keyData["1"].name + ": ???</span>");
+    sendToLog("He gives you a weird look. Thankfully, nobody else was watching. You decide to walk away and never speak of this again.");
+    mapDialogue.gribbletharp.comeHereOften = false;
+}
+
+function friendlyClassmate3B() {
+    sendToLog("<span style='color: #399500;'>" + maps.dorms.keyData["1"].name + ": Oh really? The shut-in mage hasn't seem me around? I'm truly baffled.</span>");
+    sendToLog("You realize there may have been alternate reasons you haven't seen this man this semester.");
+}
+
+function friendlyClassmate3C() {
+    sendToLog("You decide you do not care about this man's existence.")
+    mapDialogue.gribbletharp.comeHereOften = false;
 }
 
 //Doors
