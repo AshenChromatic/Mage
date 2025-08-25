@@ -2,9 +2,11 @@
 
 _Last updated: 2025-8-20_
 
+## Currently Working On
+- [ ] 
 
 ## Features to Add
-- [ ] Add dialogue to map
+- [ ] Add dialogue choices to map
 - [ ] Outside will have a phone which will slide out from the bottom right I think
 
 ---
@@ -12,7 +14,7 @@ _Last updated: 2025-8-20_
 ## Bugs / Fixes
 - [ ] Fuck the indefinite article bruh.
 - [ ] Tabs don't fade in anymore for some reason.
-- [ ] New hoverbox implementation fucks up the debug hoverbox
+- [ ] Fix log gradient thingy
 
 ---
 
@@ -20,11 +22,10 @@ _Last updated: 2025-8-20_
 - [ ] Add bars to resources
 - [ ] Make Rune XP visible
 - [ ] Add even more runes (esp some that unlock at certain levels)
-- [ ] Secondary Logs
 - [ ] Change worldmap rune dialogue when runes are high enough
 
 ## Code garbagae
-- [ ] Move dialogue to json
+- [ ] Rework dialogue god help me
 
 ---
 
@@ -34,6 +35,9 @@ _Last updated: 2025-8-20_
 ---
 
 ## Done
+- [x] Fix Debug Hoverbox 8/25/25
+- [x] Add dialogue to map 8/24/25
+- [x] Secondary Logs 8/24/25
 - [x] Implement world map 8/24/25
 - [x] New exit tab for world map which will replace all current tabs with a new window. 8/19/25
 - [x] Implement saving 8/19/25

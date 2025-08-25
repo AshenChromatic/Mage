@@ -1,6 +1,7 @@
-const Debug = true;
+const debug = true;
 window.mage = {
-    playerColor: "#ff0000ff"
+    playerColor: "#ff0000ff",
+    slut: "0"
 }
 
 
@@ -10,7 +11,7 @@ function sleep(ms) {
     if (DEBUG_MODE.fastmode) {
         sleepTime = sleepTime / 10; // Reduce wait time by 90% in fast mode
     }
-    return new Promise(function(resolve) {
+    return new Promise(function (resolve) {
         setTimeout(resolve, sleepTime);
     });
 }
@@ -29,7 +30,7 @@ function sendToJournal(message) {
         logDiv.scrollTop = logDiv.scrollHeight;
     }
     // Trigger fade-in
-    setTimeout(function() {
+    setTimeout(function () {
         msgDiv.classList.add('show');
     }, 10); // Short delay to ensure the element is added before transition
 }
@@ -48,11 +49,95 @@ function sendToLog(message) {
         logDiv.scrollTop = logDiv.scrollHeight;
     }
     // Trigger fade-in
-    setTimeout(function() {
+    setTimeout(function () {
         msgDiv.classList.add('show');
     }, 10); // Short delay to ensure the element is added before transition
 }
 
+function sendClickLog(message, color) {
+    const logDiv = document.getElementById('gameLog2');
+    const threshold = 5;
+    const isAtBottom = logDiv.scrollHeight - logDiv.scrollTop - logDiv.clientHeight <= threshold;
+
+    // Create a new div for the message
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'logMessage';
+
+    // Apply optional color
+    var innerHTML = '> ';
+    if (color) {
+        innerHTML += '<span style="color: ' + color + '">';
+    }
+
+    // Simple marker syntax: [click:handlerName]text[/click]
+    // Example: "Hey man. You [click:friendlyClassmate1]need something[/click]?"
+    var regex = /\[click:([^\]]+)\](.*?)\[\/click\]/g;
+    var lastIndex = 0;
+    var match;
+    while (match = regex.exec(message)) {
+        // Append text before the clickable part
+        innerHTML += message.substring(lastIndex, match.index);
+
+        // Create clickable span with data attributes
+        innerHTML += '<span class="dialogue" data-clickable="true" data-handler="' + match[1] + '">' + match[2] + '</span>';
+
+        lastIndex = regex.lastIndex;
+    }
+
+    // Append any remaining text after the last clickable segment
+    innerHTML += message.substring(lastIndex);
+
+    if (color) {
+        innerHTML += '</span>';
+    }
+
+    innerHTML += '<br>';
+    msgDiv.innerHTML = innerHTML;
+    // After setting innerHTML, assign function references to ._handler
+    const clickableSpans = msgDiv.querySelectorAll('span[data-clickable="true"]');
+    clickableSpans.forEach(span => {
+        const handlerName = span.dataset.handler;
+        if (typeof window[handlerName] === "function") {
+            span._handler = window[handlerName];
+        }
+    });
+    logDiv.appendChild(msgDiv);
+
+    if (isAtBottom) {
+        logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    // Trigger fade-in
+    setTimeout(function () {
+        msgDiv.classList.add('show');
+    }, 10); // Short delay to ensure the element is added before transition
+    attachDialogueHandlers("dialogue");
+}
+
+
+function choiceToLog(message, handler) {
+    const logDiv = document.getElementById('gameLog2');
+    const threshold = 5;
+    const isAtBottom = logDiv.scrollHeight - logDiv.scrollTop - logDiv.clientHeight <= threshold;
+    // Create a new div for the message
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'logMessage';
+    msgDiv.innerHTML = '<a href=\"#\" class=\"dialogue link\">' + message + '</a><br>';
+    msgDiv.dataset.clickable = "true";
+    msgDiv.dataset.choice = "true";
+    // Store both the function reference and a string version in dataset
+    msgDiv._handler = handler;
+    msgDiv.dataset.handler = handler.name || "";
+    logDiv.appendChild(msgDiv);
+    if (isAtBottom) {
+        logDiv.scrollTop = logDiv.scrollHeight;
+    }
+    // Trigger fade-in
+    setTimeout(function () {
+        msgDiv.classList.add('show');
+    }, 10); // Short delay to ensure the element is added before transition
+    attachDialogueHandlers("choice");
+}
 
 
 function getRandomInt(min, max) {
@@ -63,7 +148,7 @@ function getRandomInt(min, max) {
 //---------------------------//
 // Resources                 //
 //---------------------------//
-let  resource = {
+let resource = {
     dummyResource: {
         name: 'dummyResource',
         amount: 0,
@@ -151,6 +236,7 @@ let progress = {
     runeXP: 0,
     unlockDoor: false,
     mainSelector: false,
+    goneOutside: false,
 };
 
 function saveGame() {
@@ -180,7 +266,7 @@ function exportGame() {
     // Make filename with game title + date/time
     const gameTitle = "Mage";
     const date = new Date();
-    const timestamp = date.toISOString().replace(/[:.]/g, "-"); 
+    const timestamp = date.toISOString().replace(/[:.]/g, "-");
     const filename = `${gameTitle}_save_${timestamp}.json`;
 
     // Create a blob and trigger download
@@ -222,70 +308,70 @@ function getElementStates() {
 // importSave: allow loading from localStorage (key "myGameSave") or from a JSON file.
 // After loading the JSON it calls applySave(saveData) to do the actual work.
 function importGame() {
-  // If there's a simple browser slot, offer it first.
-  const browserKey = "mageSave";
-  const browserSave = localStorage.getItem(browserKey);
+    // If there's a simple browser slot, offer it first.
+    const browserKey = "mageSave";
+    const browserSave = localStorage.getItem(browserKey);
 
-  if (browserSave && confirm("Load save from browser storage? (OK = load, Cancel = choose file)")) {
-    try {
-      const saveData = JSON.parse(browserSave);
-      applySave(saveData);
-    } catch (e) {
-      alert("Failed to parse browser save: " + e);
+    if (browserSave && confirm("Load save from browser storage? (OK = load, Cancel = choose file)")) {
+        try {
+            const saveData = JSON.parse(browserSave);
+            applySave(saveData);
+        } catch (e) {
+            alert("Failed to parse browser save: " + e);
+        }
+        return;
     }
-    return;
-  }
 
-  // Otherwise, prompt the user to pick a file.
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = ".json,application/json";
-  input.addEventListener("change", (ev) => {
-    const file = ev.target.files && ev.target.files[0];
-    if (!file) return;
+    // Otherwise, prompt the user to pick a file.
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".json,application/json";
+    input.addEventListener("change", (ev) => {
+        const file = ev.target.files && ev.target.files[0];
+        if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      try {
-        const saveData = JSON.parse(e.target.result);
-        applySave(saveData);
-      } catch (err) {
-        alert("Failed to parse save file: " + err);
-      }
-    };
-    reader.onerror = function() {
-      alert("Failed to read file.");
-    };
-    reader.readAsText(file);
-  });
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            try {
+                const saveData = JSON.parse(e.target.result);
+                applySave(saveData);
+            } catch (err) {
+                alert("Failed to parse save file: " + err);
+            }
+        };
+        reader.onerror = function () {
+            alert("Failed to read file.");
+        };
+        reader.readAsText(file);
+    });
 
-  // trigger the picker
-  input.click();
+    // trigger the picker
+    input.click();
 }
 
 // applySave: given a parsed saveData object, apply it to the game state
 function applySave(saveData) {
-  if (!saveData || typeof saveData !== "object") {
-    alert("Invalid save data.");
-    return;
-  }
-
-  // 1) Cancel any dialogue immediately
-  try {
-    if (typeof dialogueManager === "object") {
-      dialogueManager.running = false; // stop current dialogue loop immediately
+    if (!saveData || typeof saveData !== "object") {
+        alert("Invalid save data.");
+        return;
     }
-  } catch (e) {
-    console.warn("Couldn't access dialogue manager to stop it:", e);
-  }
 
-  // 1b) Clear the current log TODO
+    // 1) Cancel any dialogue immediately
+    try {
+        if (typeof dialogueManager === "object") {
+            dialogueManager.running = false; // stop current dialogue loop immediately
+        }
+    } catch (e) {
+        console.warn("Couldn't access dialogue manager to stop it:", e);
+    }
+
+    // 1b) Clear the current log TODO
     const logDiv = document.getElementById('gameLog');
     logDiv.innerHTML = '';
 
     // 2) Restore resources: overwrite fields for each resource and update displays
     if (saveData.resources && typeof saveData.resources === "object") {
-        Object.keys(saveData.resources).forEach(function(resName) {
+        Object.keys(saveData.resources).forEach(function (resName) {
             const saved = saveData.resources[resName];
             // If you already have a resource object, copy saved properties into it; otherwise create it
             if (typeof resource[resName] === "object") {
@@ -312,78 +398,78 @@ function applySave(saveData) {
             }
         });
     }
-  
-  // 3) Restore progress
-  if (typeof saveData.progress !== "undefined") {
-    progress = saveData.progress;
-  }
-  // 3.5) Restore dialogue queue
-  if (Array.isArray(saveData.dialogueQueue)) {
-    dialogueQueue = saveData.dialogueQueue;
-  }
 
-  // 4) Reveal/hide elements according to saved element states
-  if (Array.isArray(saveData.elements)) {
-    // First remove the classes from all currently marked elements (so we have a clean slate)
-    const currently = document.querySelectorAll('.show, .border');
-    currently.forEach(el => {
-      el.classList.remove('show');
-      el.classList.remove('border');
-    });
+    // 3) Restore progress
+    if (typeof saveData.progress !== "undefined") {
+        progress = saveData.progress;
+    }
+    // 3.5) Restore dialogue queue
+    if (Array.isArray(saveData.dialogueQueue)) {
+        dialogueQueue = saveData.dialogueQueue;
+    }
 
-    // Apply saved classes
-    saveData.elements.forEach(item => {
-      if (!item || !item.id) return;
-      const el = document.getElementById(item.id);
-      if (!el) return;
-      // remove both just in case, then add the ones that were saved
-      el.classList.remove('show');
-      el.classList.remove('border');
+    // 4) Reveal/hide elements according to saved element states
+    if (Array.isArray(saveData.elements)) {
+        // First remove the classes from all currently marked elements (so we have a clean slate)
+        const currently = document.querySelectorAll('.show, .border');
+        currently.forEach(el => {
+            el.classList.remove('show');
+            el.classList.remove('border');
+        });
 
-      if (Array.isArray(item.classes)) {
-        item.classes.forEach(c => el.classList.add(c));
-      }
-    });
-  }
+        // Apply saved classes
+        saveData.elements.forEach(item => {
+            if (!item || !item.id) return;
+            const el = document.getElementById(item.id);
+            if (!el) return;
+            // remove both just in case, then add the ones that were saved
+            el.classList.remove('show');
+            el.classList.remove('border');
 
-  // 5) Resume dialogue from where left off 
+            if (Array.isArray(item.classes)) {
+                item.classes.forEach(c => el.classList.add(c));
+            }
+        });
+    }
+
+    // 5) Resume dialogue from where left off 
     if (saveData.dialogue && typeof saveData.dialogue === "object") {
         try {
             // map fields to the in-memory dialogueManager (the one you showed earlier)
             if (typeof dialogueManager === "object") {
                 dialogueManager.currentDialogue = saveData.dialogue.currentDialogue || saveData.dialogue.currentDialogueName || null;
-                dialogueManager.currentLine     = Number(saveData.dialogue.currentLine ?? saveData.dialogue.currentIndex ?? 0);
-                dialogueManager.running         = false; // don't auto-run until we call queueDialogue
+                dialogueManager.currentLine = Number(saveData.dialogue.currentLine ?? saveData.dialogue.currentIndex ?? 0);
+                dialogueManager.running = false; // don't auto-run until we call queueDialogue
             } else if (typeof dialogueState === "object") {
                 dialogueState.currentDialogue = saveData.dialogue.currentDialogue || saveData.dialogue.currentDialogueName || null;
-                dialogueState.currentIndex    = Number(saveData.dialogue.currentIndex ?? saveData.dialogue.currentLine ?? 0);
-                dialogueState.running         = false;
+                dialogueState.currentIndex = Number(saveData.dialogue.currentIndex ?? saveData.dialogue.currentLine ?? 0);
+                dialogueState.running = false;
             }
 
-      // If a dialogue name exists, try to resume it by calling queueDialogue
-      const nameToResume = (dialogueManager && dialogueManager.currentDialogue) ||
-                           (dialogueState && dialogueState.currentDialogue);
+            // If a dialogue name exists, try to resume it by calling queueDialogue
+            const nameToResume = (dialogueManager && dialogueManager.currentDialogue) ||
+                (dialogueState && dialogueState.currentDialogue);
 
-      const indexToResume = (dialogueManager && Number(dialogueManager.currentLine ?? 0)) ||
-                            (dialogueState && Number(dialogueState.currentIndex ?? 0)) || 0;
+            const indexToResume = (dialogueManager && Number(dialogueManager.currentLine ?? 0)) ||
+                (dialogueState && Number(dialogueState.currentIndex ?? 0)) || 0;
 
-      if (nameToResume && typeof runDialogue === "function") {
-        // small timeout to let the UI update first
-        setTimeout(() => runDialogue(nameToResume, indexToResume), 50);
-      }
-    } catch (e) {
-      console.warn("Could not resume dialogue from save:", e);
+            if (nameToResume && typeof runDialogue === "function") {
+                // small timeout to let the UI update first
+                setTimeout(() => runDialogue(nameToResume, indexToResume), 50);
+            }
+        } catch (e) {
+            console.warn("Could not resume dialogue from save:", e);
+        }
     }
-  }
 
-  //Update rune level text
-  const runeLevelDisplay = document.getElementById('runeLevel');
+    //Update rune level text
+    const runeLevelDisplay = document.getElementById('runeLevel');
     if (runeLevelDisplay) {
         runeLevelDisplay.textContent = `Rune Level: ${progress.runeLevel}`;
     }
 
-  // Final: give a small notification
-  console.log("Save imported successfully.");
+    // Final: give a small notification
+    console.log("Save imported successfully.");
 };
 
 document.getElementById('saveBtn').addEventListener('click', saveGame);
@@ -410,7 +496,7 @@ function researchClick() {
         knowledgeAmount.innerHTML = resource.knowledge.amount;
     }
     //Orb unlocker
-    if (progress.orbUnlock === false && resource.knowledge.amount >=10) {
+    if (progress.orbUnlock === false && resource.knowledge.amount >= 10) {
         let orbUnlockRandom = getRandomInt(1, 30);
         if (orbUnlockRandom !== 1) {
             console.log('failed orb unlock check');
@@ -440,7 +526,7 @@ function researchClick() {
 //---------------------------//
 // Buyers                    //
 //---------------------------//
- 
+
 const buyer = {
     orb: {
         resourceNeed: ['gold'],
@@ -512,9 +598,9 @@ function buy(resourceNeed, costs, resourceGet) {
     return true;
 }
 
-document.getElementById('buyOrbBtn').addEventListener('click', function() {
+document.getElementById('buyOrbBtn').addEventListener('click', function () {
     const orbData = buyer.orb;
-    if(resource.orb.visible === false) {
+    if (resource.orb.visible === false) {
         if (buy(orbData.resourceNeed, orbData.costs, orbData.resourceGet[0]) === true) {
             console.log('Attempting to show orb');
             const orbDisplay = document.getElementById('orbDisplay');
@@ -536,7 +622,7 @@ document.getElementById('buyOrbBtn').addEventListener('click', function() {
 //---------------------------//
 // Generators                //
 //---------------------------//
- 
+
 function generatorTick() {
     //search for all resources that generate
     for (const prop in resource) {
@@ -575,7 +661,7 @@ function generatorTick() {
         queueDialogue("unlockDoor", 0);
     }
 }
-   
+
 
 // Run generatorTick every second
 setInterval(generatorTick, 1000);
@@ -597,18 +683,18 @@ function openMainTab(tabId) {
         }
     });
     const currentTab = document.getElementById(tabId);
-            currentTab.classList.add('show');
+    currentTab.classList.add('show');
 }
 
-document.getElementById('pcTabBtn').addEventListener('click', function(e) {
+document.getElementById('pcTabBtn').addEventListener('click', function (e) {
     e.preventDefault();
     openMainTab('pcMainCenter');
 });
-document.getElementById('deskTabBtn').addEventListener('click', function(e) {
+document.getElementById('deskTabBtn').addEventListener('click', function (e) {
     e.preventDefault();
     openMainTab('deskMainCenter');
 });
-document.getElementById('doorTabBtn').addEventListener('click', function(e) {
+document.getElementById('doorTabBtn').addEventListener('click', function (e) {
     e.preventDefault();
     openMainTab('doorMainCenter');
 });
@@ -629,26 +715,21 @@ function openSubTab(tabId) {
     }
 }
 
-document.getElementById('researchTabBtn').addEventListener('click', function(e) {
+document.getElementById('researchTabBtn').addEventListener('click', function (e) {
     e.preventDefault();
     openSubTab('researchTab');
 });
-document.getElementById('shopTabBtn').addEventListener('click', function(e) {
+document.getElementById('shopTabBtn').addEventListener('click', function (e) {
     e.preventDefault();
     openSubTab('shopTab');
 });
 
 
 //Go outside
-document.getElementById('leaveHouseBtn').addEventListener('click', function(e) {
+document.getElementById('leaveHouseBtn').addEventListener('click', function (e) {
     e.preventDefault();
     goOutside();
 
-});
-//Go inside
-document.getElementById('tempGoHome').addEventListener('click', function(e) {
-    e.preventDefault();
-    goInside();
 });
 
 function goOutside() {
@@ -656,6 +737,10 @@ function goOutside() {
     document.getElementById('worldMap').classList.add('show');
     document.getElementById('hoverBoxBuy').classList.remove('show');
     document.getElementById('hoverBoxMap').classList.add('show');
+    if (!progress.goneOutside) {
+        progress.goneOutside = true;
+        queueDialogue("goOutside", 0);
+    }
 }
 
 function goInside() {
@@ -685,7 +770,7 @@ function setBuyText(desc, cost, effect, flavor) {
     hoverBuyFlavor.innerHTML = flavor;
 }
 
-buyOrbBtn.addEventListener ('mouseover', function() {
+buyOrbBtn.addEventListener('mouseover', function () {
     hoverBox.classList.add('show');
     console.log('Hover box shown for Buy Orb button');
     setBuyText(
@@ -702,12 +787,12 @@ buyOrbBtn.addEventListener ('mouseover', function() {
     }
 });
 
-buyOrbBtn.addEventListener('mousemove', function(e) {
+buyOrbBtn.addEventListener('mousemove', function (e) {
     hoverBox.style.left = (e.pageX + 10) + 'px';
     hoverBox.style.top = (e.pageY + 10) + 'px';
 });
 
-buyOrbBtn.addEventListener ('mouseleave', function() {
+buyOrbBtn.addEventListener('mouseleave', function () {
     hoverBox.classList.remove('show');
     console.log('Hover box hidden for Buy Orb button');
 });
@@ -721,60 +806,68 @@ buyOrbBtn.addEventListener ('mouseleave', function() {
 //---------------------------//
 let dialogues = {
     startGame: [
-        {type: 'line', text: 'You sit at your desk, the white-ish light of your computer monitor illuminating your face.', time: 4000},
-        {type: 'line', text: 'You spent most of the day doing what can only be described as', time: 2000},
-        {type: 'line', text: 'Goofing Off.', time: 4000},
-        {type: 'line', text: 'However, most of your friends have gone to bed, and you are left with nothing to entertain yourself.', time: 4000},
-        {type: 'line', text: 'You suppose it is finally time to actually do something productive.', time: 4000},
-        {type: 'line', text: 'Magic isn\'t going to learn itself, after all.', time: 1000},
-        {type: 'function', fn: startGame}
-        
+        { type: 'line', text: 'You sit at your desk, the white-ish light of your computer monitor illuminating your face.', time: 4000 },
+        { type: 'line', text: 'You spent most of the day doing what can only be described as', time: 2000 },
+        { type: 'line', text: 'Goofing Off.', time: 4000 },
+        { type: 'line', text: 'However, most of your friends have gone to bed, and you are left with nothing to entertain yourself.', time: 4000 },
+        { type: 'line', text: 'You suppose it is finally time to actually do something productive.', time: 4000 },
+        { type: 'line', text: 'Magic isn\'t going to learn itself, after all.', time: 1000 },
+        { type: 'function', fn: startGame }
+
     ],
     unlockRune: [
-        {type: 'line', text: ' ', time: 0},
-        {type: 'line', text: 'You continue your research for a while.', time: 4000},
-        {type: 'line', text: 'It\'s difficult to find anything of real use, especially to a beginner such as yourself.', time: 4000},
-        {type: 'line', text: 'Pouring over wizard chatrooms leaves you with more questions than answers.', time: 4000},
-        {type: 'line', text: 'Such as', time: 2000},
-        {type: 'line', text: 'What the hell is a Power Word: Scrunch?', time: 4000},
-        {type: 'line', text: 'However, you do find some information.', time: 4000},
-        {type: 'line', text: 'Something that even you can manage:', time: 4000},
-        {type: 'line', text: 'Runes.', time: 4000},
-        {type: 'line', text: 'Apparently, all some wizards do is draw a couple squiggles on a piece of paper and call it a day.', time: 4000},
-        {type: 'line', text: 'You turn to the empty space on your desk and pull out a notebook and a pencil.', time: 1000},
-        {type: 'function', fn: unlockRune}
+        { type: 'line', text: ' ', time: 0 },
+        { type: 'line', text: 'You continue your research for a while.', time: 4000 },
+        { type: 'line', text: 'It\'s difficult to find anything of real use, especially to a beginner such as yourself.', time: 4000 },
+        { type: 'line', text: 'Pouring over wizard chatrooms leaves you with more questions than answers.', time: 4000 },
+        { type: 'line', text: 'Such as', time: 2000 },
+        { type: 'line', text: 'What the hell is a Power Word: Scrunch?', time: 4000 },
+        { type: 'line', text: 'However, you do find some information.', time: 4000 },
+        { type: 'line', text: 'Something that even you can manage:', time: 4000 },
+        { type: 'line', text: 'Runes.', time: 4000 },
+        { type: 'line', text: 'Apparently, all some wizards do is draw a couple squiggles on a piece of paper and call it a day.', time: 4000 },
+        { type: 'line', text: 'You turn to the empty space on your desk and pull out a notebook and a pencil.', time: 1000 },
+        { type: 'function', fn: unlockRune }
     ],
     unlockOrb: [
-        {type: 'line', text: ' ', time: 0},
-        {type: 'line', text: 'After a few minutes of research, you feel like you\'ve learned something.', time: 4000},
-        {type: 'line', text: 'To use magic, you need mana. You do not currently have any mana.', time: 4000},
-        {type: 'line', text: 'Luckily, they sell mana orbs online nowadays.', time: 4000},
-        {type: 'line', text: 'You think that maybe you should buy one.', time: 1000},
-        {type: 'function', fn: unlockOrb}
+        { type: 'line', text: ' ', time: 0 },
+        { type: 'line', text: 'After a few minutes of research, you feel like you\'ve learned something.', time: 4000 },
+        { type: 'line', text: 'To use magic, you need mana. You do not currently have any mana.', time: 4000 },
+        { type: 'line', text: 'Luckily, they sell mana orbs online nowadays.', time: 4000 },
+        { type: 'line', text: 'You think that maybe you should buy one.', time: 1000 },
+        { type: 'function', fn: unlockOrb }
     ],
     runeTwo: [
-        {type: 'line', text: ' ', time: 0},
-        {type: 'line', text: 'The first couple runes you drew were pretty, uh,', time: 1000},
-        {type: 'line', text: 'Rough.', time: 4000},
-        {type: 'line', text: 'But now that you\'ve had some practice, you think you sort of understand what you\'re doing.', time: 4000},
-        {type: 'line', text: 'At the very least, it feels a little bit easier now.', time: 4000},
-        {type: 'function', fn: runeTwo}
+        { type: 'line', text: ' ', time: 0 },
+        { type: 'line', text: 'The first couple runes you drew were pretty, uh,', time: 1000 },
+        { type: 'line', text: 'Rough.', time: 4000 },
+        { type: 'line', text: 'But now that you\'ve had some practice, you think you sort of understand what you\'re doing.', time: 4000 },
+        { type: 'line', text: 'At the very least, it feels a little bit easier now.', time: 4000 },
+        { type: 'function', fn: runeTwo }
     ],
     runeFive: [
-        {type: 'line', text: ' ', time: 0},
-        {type: 'line', text: 'Now that you\'ve been drawing runes for a while, you\'re confident that your skills have improved', time: 4000},
-        {type: 'line', text: 'You\'re not quite sure if it\'s muscle memory or something else, but you\'re more confident in your earlier intuition:', time: 2000},
-        {type: 'line', text: 'They <i>are</i> getting easier to draw.', time: 1000},
-        {type: 'function', fn: runeFive}
+        { type: 'line', text: ' ', time: 0 },
+        { type: 'line', text: 'Now that you\'ve been drawing runes for a while, you\'re confident that your skills have improved', time: 4000 },
+        { type: 'line', text: 'You\'re not quite sure if it\'s muscle memory or something else, but you\'re more confident in your earlier intuition:', time: 2000 },
+        { type: 'line', text: 'They <i>are</i> getting easier to draw.', time: 1000 },
+        { type: 'function', fn: runeFive }
     ],
     unlockDoor: [
-        {type: 'line', text: ' ', time: 0},
-        {type: 'line', text: 'You\'ve been generating mana, but you feel like you don\'t have enough to do anything with.', time: 4000},
-        {type: 'line', text: 'On top of this, you lack the funds to get any more mana orbs.', time: 4000},
-        {type: 'line', text: 'Unfortunately, all of this world\'s funds exist outside of the safety of your room', time: 4000},
-        {type: 'line', text: 'You decide to venture out into the world to find some way to earn gold', time: 1000},
-        {type: 'function', fn: unlockDoor}
+        { type: 'line', text: ' ', time: 0 },
+        { type: 'line', text: 'You\'ve been generating mana, but you feel like you don\'t have enough to do anything with.', time: 4000 },
+        { type: 'line', text: 'On top of this, you lack the funds to get any more mana orbs.', time: 4000 },
+        { type: 'line', text: 'Unfortunately, all of this world\'s funds exist outside of the safety of your room', time: 4000 },
+        { type: 'line', text: 'You decide to venture out into the world to find some way to earn gold', time: 1000 },
+        { type: 'function', fn: unlockDoor }
     ],
+    goOutside: [
+        { type: 'line', text: ' ', time: 0 },
+        { type: 'line', text: 'You open your door, and are greeted with the not very fresh air of your college dorms.', time: 4000 },
+        { type: 'line', text: 'It is time to', time: 1000 },
+        { type: 'line', text: 'As they say', time: 1000 },
+        { type: 'line', text: 'Make money.', time: 4000 },
+        { type: 'line', text: 'You have no idea how you\'re going to get money from these goobers.', time: 4000 },
+    ]
 }
 
 let dialogueManager = {
@@ -825,9 +918,9 @@ function unlockDoor() {
     showMainSelector();
 }
 
-function showMainSelector(){
+function showMainSelector() {
     console.log("Checking to show main selector");
-    if (!progress.mainSelector) { 
+    if (!progress.mainSelector) {
         console.log("Showing main selector");
         document.getElementById('mainSelector').classList.add('show');
         document.getElementById('pcTabBtn').classList.add('show');
@@ -891,22 +984,22 @@ const diaryForGradient = document.getElementById("gameLog");
 const diaryGradient = document.querySelector(".logGradient");
 
 diaryForGradient.addEventListener("scroll", () => {
-  if (diaryForGradient.scrollTop > 0) {
-    diaryGradient.style.opacity = "1";
-  } else {
-    diaryGradient.style.opacity = "0";
-  }
+    if (diaryForGradient.scrollTop > 0) {
+        diaryGradient.style.opacity = "1";
+    } else {
+        diaryGradient.style.opacity = "0";
+    }
 });
 
 const logForGradient = document.getElementById("gameLog2");
 const logGradient = document.querySelector(".logGradient2");
 
 logForGradient.addEventListener("scroll", () => {
-  if (logForGradient.scrollTop > 0) {
-    logGradient.style.opacity = "1";
-  } else {
-    logGradient.style.opacity = "0";
-  }
+    if (logForGradient.scrollTop > 0) {
+        logGradient.style.opacity = "1";
+    } else {
+        logGradient.style.opacity = "0";
+    }
 });
 
 
@@ -937,17 +1030,17 @@ const runes = {
     ur: {
         name: "ur",   //fucked up lowercase n
         lines: [
-            { start: [70,50], end: [70,250] }, //vertical
-            { start: [70,50], end: [130,250] } //diagonal
+            { start: [70, 50], end: [70, 250] }, //vertical
+            { start: [70, 50], end: [130, 250] } //diagonal
         ],
-        midpoints: [ [70, 50], [70, 250], [130, 250]],
+        midpoints: [[70, 50], [70, 250], [130, 250]],
         lineCount: 1
     },
     cen: {
         name: "cen",  // the spiky lowercase h
         lines: [
-            { start: [70,50], end: [70,250] }, //vertical
-            { start: [70,190], end: [130,250] } //diagonal down
+            { start: [70, 50], end: [70, 250] }, //vertical
+            { start: [70, 190], end: [130, 250] } //diagonal down
         ],
         midpoints: [[70, 50], [70, 250], [70, 190], [130, 250]],
         lineCount: 2
@@ -1003,12 +1096,12 @@ function renderRuneEndpoints(ctx, rune) {
     const uniqueMidpoints = [];
     const midpointKeySet = new Set();
     for (const pt of rune.midpoints) {
-            const key = pt[0] + ',' + pt[1];
-            if (!midpointKeySet.has(key)) {
-                uniqueMidpoints.push(pt);
-                midpointKeySet.add(key);
-            }
+        const key = pt[0] + ',' + pt[1];
+        if (!midpointKeySet.has(key)) {
+            uniqueMidpoints.push(pt);
+            midpointKeySet.add(key);
         }
+    }
     // Draw midpoints in yellow
     ctx.strokeStyle = 'yellow';
     for (const pt of uniqueMidpoints) {
@@ -1020,7 +1113,7 @@ function renderRuneEndpoints(ctx, rune) {
 };
 
 // Render a rune as soon as the Rune tab appears
-window.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('DOMContentLoaded', function () {
     const canvas = document.getElementById('runeCanvas');
     if (canvas) {
         const ctx = canvas.getContext('2d');
@@ -1085,7 +1178,7 @@ function enableRuneDrawing(canvas, ctx, rune) {
 function gradeRune(drawnLines, rune) {
     // Helper: distance between two points
     function dist(a, b) {
-        return Math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2);
+        return Math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2);
     }
     const TOLERANCE = 12; // px, adjust as needed
 
@@ -1094,7 +1187,7 @@ function gradeRune(drawnLines, rune) {
     // Collect all user-drawn points from all lines
     let allDrawnPoints = [];
     for (const line of drawnLines) {
-    allDrawnPoints = allDrawnPoints.concat(line);
+        allDrawnPoints = allDrawnPoints.concat(line);
     }
 
     // Check if all midpoints are visited by any drawn point
@@ -1124,12 +1217,12 @@ function gradeRune(drawnLines, rune) {
         // For each user point, check if it is close to any segment of the rune
         let onRuneCount = 0;
         let totalCount = userPoints.length;
-    let TOLERANCE = progress.runeLevel; // px, even tighter for accuracy
+        let TOLERANCE = progress.runeLevel; // px, even tighter for accuracy
 
         // Flatten rune segments for easier checking
         let runeSegments = [];
         for (const seg of rune.lines) {
-            runeSegments.push({start: seg.start, end: seg.end});
+            runeSegments.push({ start: seg.start, end: seg.end });
         }
 
         // Helper: distance from point to segment
@@ -1176,8 +1269,8 @@ function gradeRune(drawnLines, rune) {
             grade = "garbage";
             progress.runeXP += 10;
         }
-        console.log(`Accuracy: ${(percentOnRune*100).toFixed(1)}% | Grade: ${grade}`);
-        sendToLog(`You drew a ${grade} rune with ${(percentOnRune*100).toFixed(1)}% accuracy.`);
+        console.log(`Accuracy: ${(percentOnRune * 100).toFixed(1)}% | Grade: ${grade}`);
+        sendToLog(`You drew a ${grade} rune with ${(percentOnRune * 100).toFixed(1)}% accuracy.`);
     }
 
     //Step 3: Return rune of whatever grade
@@ -1231,7 +1324,7 @@ function gradeRune(drawnLines, rune) {
         resource.okRune.visible = true;
         resource.goodRune.visible = true;
         resource.perfectRune.visible = true;
-        
+
     }
     // Step 4: Update rune level and display
     console.log(`Rune XP now at ${progress.runeXP}`);
@@ -1247,11 +1340,11 @@ function gradeRune(drawnLines, rune) {
 
     // Step 4.5: run rune level dialogues
     if (progress.runeLevel === 2 && !progress.runeTwo) {
-        queueDialogue("runeTwo",0)
+        queueDialogue("runeTwo", 0)
         progress.runeTwo = true;
     }
     if (progress.runeLevel === 5 && !progress.runeFive) {
-        queueDialogue("runeFive",0)
+        queueDialogue("runeFive", 0)
         progress.runeFive = true;
     }
 
@@ -1274,9 +1367,11 @@ function gradeRune(drawnLines, rune) {
 //---------------------------//
 
 //Show debug window if debug is true
-if (Debug) {
+if (debug) {
     const debugWindow = document.getElementById('debugWindow');
     debugWindow.classList.add('show');
+    const debugBox = document.getElementById('debugHoverBox');
+    if (debugBox) { debugBox.classList.add('show'); }
 }
 
 //Debug variables
@@ -1290,7 +1385,7 @@ window.DEBUG_MODE = {
 const debugWindow = document.getElementById('debugWindow');
 const debugHeader = debugWindow.querySelector('.debugHeader');
 let offsetX = 0, offsetY = 0, isDragging = false;
-debugHeader.addEventListener('mousedown', function(e) {
+debugHeader.addEventListener('mousedown', function (e) {
     isDragging = true;
     // Calculate offset
     const rect = debugWindow.getBoundingClientRect();
@@ -1298,14 +1393,14 @@ debugHeader.addEventListener('mousedown', function(e) {
     offsetY = e.clientY - rect.top;
     document.body.style.userSelect = 'none'; // Prevent text selection
 });
-document.addEventListener('mousemove', function(e) {
+document.addEventListener('mousemove', function (e) {
     if (isDragging) {
         debugWindow.style.position = 'fixed';
         debugWindow.style.left = (e.clientX - offsetX) + 'px';
         debugWindow.style.top = (e.clientY - offsetY) + 'px';
     }
 });
-document.addEventListener('mouseup', function() {
+document.addEventListener('mouseup', function () {
     isDragging = false;
     document.body.style.userSelect = '';
 });
@@ -1318,7 +1413,7 @@ const skipToRunesBtn = document.getElementById('skipToRunesBtn');
 
 //fastmode button
 if (fastmodeBtn) {
-    fastmodeBtn.addEventListener('click', function() {
+    fastmodeBtn.addEventListener('click', function () {
         DEBUG_MODE.fastmode = !DEBUG_MODE.fastmode;
         fastmodeBtn.textContent = DEBUG_MODE.fastmode ? 'Fastmode: ON' : 'Fastmode: OFF';
     });
@@ -1328,7 +1423,7 @@ if (fastmodeBtn) {
 
 
 if (dummyResourcesBtn) {
-    dummyResourcesBtn.addEventListener('click', function() {
+    dummyResourcesBtn.addEventListener('click', function () {
         DEBUG_MODE.dummies = !DEBUG_MODE.dummies;
         dummyResourcesBtn.textContent = DEBUG_MODE.dummies ? 'Dummy Resources: ON' : 'Dummy Resources: OFF';
         // Show/hide dummy resources immediately
@@ -1346,14 +1441,14 @@ if (dummyResourcesBtn) {
     dummyResourcesBtn.textContent = DEBUG_MODE.dummies ? 'Dummy Resources: ON' : 'Dummy Resources: OFF';
 }
 if (skipToRunesBtn) {
-    skipToRunesBtn.addEventListener('click', function() {
+    skipToRunesBtn.addEventListener('click', function () {
         skipToRunes();
     });
 }
 
 //rune endpoints button
 if (renderEndpointsBtn) {
-    renderEndpointsBtn.addEventListener('click', function() {
+    renderEndpointsBtn.addEventListener('click', function () {
         window.DEBUG_MODE.endpoints = !window.DEBUG_MODE.endpoints;
         renderEndpointsBtn.textContent = window.DEBUG_MODE.endpoints ? 'Render Rune Endpoints: ON' : 'Render Rune Endpoints: OFF';
         const canvas = document.getElementById('runeCanvas');

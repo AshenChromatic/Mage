@@ -199,7 +199,7 @@ html, body {
 
 .logGradient2 {
   position: absolute;
-  top: 27px;
+  top: 28px;
   left: 0;
   right: 0;
   height: 40px;
@@ -231,6 +231,19 @@ html, body {
     opacity: 1;
 }
 
+span[style] a.dialogue {
+    color: inherit !important;
+    font-weight: bold;
+}
+
+.dialogue.link {
+    color: gray;
+}
+
+.dialogue.link:hover{
+    color:rgb(84, 84, 84);
+}
+
 .dummy {
-    color: #00c0c0;
+    color: #373737;
 }

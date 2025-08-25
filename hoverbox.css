@@ -1,17 +1,21 @@
-.hoverBox {
+.hoverBox, .debugHoverBox {
     position: absolute;
     border-style: solid;
     border-color: black;
     border-width: 1px;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 0.2;
     z-index: 1000;
     background-color: white;
 }
 
 .hoverBox.show {
     opacity: 1;
+}
+
+.debugHoverBox.show {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .hoverBoxBuy {

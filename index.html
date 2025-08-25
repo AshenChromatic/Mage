@@ -203,8 +203,6 @@
             </div>
             <!-- World map-->
             <div class="worldMap" id="worldMap">
-                <!-- REMOVE THIS BUTTON L8R-->
-                <button id="tempGoHome">Go Home</button>
                 <div class="worldMapDisplay" id="worldMapDisplay">
                     <!-- World map go here -->
                 </div>
@@ -235,13 +233,13 @@
                 </div>
 
                 <hr class="logDivider">
-                <div class="logGradient"></div>
+                <div class="logGradient2"></div>
                 <div class="log" id="gameLog2">
                     <!-- Log messages appear here -->
                 </div>
             </div>
         </div>
-
+    </div>
         <div class="hoverBox" id="hoverBox">
             <!-- Hover box content for buying/unlocking things for a cost-->
             <div class="hoverBoxBuy show" id="hoverBoxBuy">
@@ -277,7 +275,8 @@
                     <!-- Text -->
                 </div>
             </div>
-
+        </div>
+        <div class="debugHoverBox" id="debugHoverBox">
             <!-- Debug Window -->
             <div id="debugWindow" class="debugWindow">
                 <div class="debugHeader">Debug</div>
@@ -288,9 +287,11 @@
                     <button id="renderEndpointsBtn">Render Rune Endpoints</button>
                 </div>
             </div>
+        </div>
 
             <!-- js -->
             <script src="script.js?v=7"></script>
+            <script src="maps/maps.js?v=7"></script>
             <script src="maps/world.js?v=7"></script>
 </body>
 
