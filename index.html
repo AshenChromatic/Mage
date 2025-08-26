@@ -4,16 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css?v=7">
-    <link rel="stylesheet" href="research_tab.css?v=7">
-    <link rel="stylesheet" href="shop_tab.css?v=7">
-    <link rel="stylesheet" href="resources.css?v=7">
-    <link rel="stylesheet" href="hoverbox.css?v=7">
-    <link rel="stylesheet" href="tab_selector.css?v=7">
-    <link rel="stylesheet" href="rune_tab.css?v=7">
-    <link rel="stylesheet" href="debug.css?v=7">
-    <link rel="stylesheet" href="door_tab.css?v=7">
-    <link rel="stylesheet" href="maps/map.css?v=7">
+    <link rel="stylesheet" href="style.css?v=8">
+    <link rel="stylesheet" href="research_tab.css?v=8">
+    <link rel="stylesheet" href="shop_tab.css?v=8">
+    <link rel="stylesheet" href="resources.css?v=8">
+    <link rel="stylesheet" href="hoverbox.css?v=8">
+    <link rel="stylesheet" href="tab_selector.css?v=8">
+    <link rel="stylesheet" href="rune_tab.css?v=8">
+    <link rel="stylesheet" href="debug.css?v=8">
+    <link rel="stylesheet" href="door_tab.css?v=8">
+    <link rel="stylesheet" href="maps/map.css?v=8">
     <title>Mage</title>
 </head>
 
@@ -30,8 +30,7 @@
             <span class="tilde show" id="importSpace"> | </span>
             <a href="#" class="tabLink show" id="importBtn">Import Save</a>
         </div>
-        <div class="version">
-            Alpha 0.2.2
+        <div class="settings">
         </div>
     </div>
 
@@ -243,59 +242,66 @@
             </div>
         </div>
     </div>
-        <div class="hoverBox" id="hoverBox">
-            <!-- Hover box content for buying/unlocking things for a cost-->
-            <div class="hoverBoxBuy show" id="hoverBoxBuy">
-                <div class=" hoverBuyDesc" id="hoverBuyDesc">
-                    <!-- Description -->
-                </div>
+    <div class="bottomBar">
+        <div class="version">
+            Alpha 0.2.3
+        </div>
+    </div>
 
-                <hr class="hoverBuyDiv">
 
-                <div class="hoverBuyCost" id="hoverBuyCost">
-                    <!-- Costs -->
-                </div>
-
-                <hr class="hoverBuyDiv">
-
-                <div class="hoverBuyEffect" id="hoverBuyEffect">
-                    <!-- Stuff you get -->
-                </div>
-
-                <div class="hoverBuyFlavor" id="hoverBuyFlavor">
-                    <!-- Flavor text -->
-                </div>
+    <div class="hoverBox" id="hoverBox">
+        <!-- Hover box content for buying/unlocking things for a cost-->
+        <div class="hoverBoxBuy show" id="hoverBoxBuy">
+            <div class=" hoverBuyDesc" id="hoverBuyDesc">
+                <!-- Description -->
             </div>
-            <!-- Hover box content for mousing over map icons-->
-            <div class="hoverBoxMap" id="hoverBoxMap">
-                <div class="hoverMapTitle" id="hoverMapTitle">
-                    <!-- Title -->
-                </div>
 
-                <hr class="hoverMapDiv">
+            <hr class="hoverBuyDiv">
 
-                <div class="hoverMapText" id="hoverMapText">
-                    <!-- Text -->
-                </div>
+            <div class="hoverBuyCost" id="hoverBuyCost">
+                <!-- Costs -->
+            </div>
+
+            <hr class="hoverBuyDiv">
+
+            <div class="hoverBuyEffect" id="hoverBuyEffect">
+                <!-- Stuff you get -->
+            </div>
+
+            <div class="hoverBuyFlavor" id="hoverBuyFlavor">
+                <!-- Flavor text -->
             </div>
         </div>
-        <div class="debugHoverBox" id="debugHoverBox">
-            <!-- Debug Window -->
-            <div id="debugWindow" class="debugWindow">
-                <div class="debugHeader">Debug</div>
-                <div class="debugContent">
-                    <button id="fastmodeBtn">Toggle Fastmode</button>
-                    <button id="dummyResourcesBtn">Toggle Dummy Resources</button>
-                    <button id="skipToRunesBtn">Skip to Runes</button>
-                    <button id="renderEndpointsBtn">Render Rune Endpoints</button>
-                </div>
+        <!-- Hover box content for mousing over map icons-->
+        <div class="hoverBoxMap" id="hoverBoxMap">
+            <div class="hoverMapTitle" id="hoverMapTitle">
+                <!-- Title -->
+            </div>
+
+            <hr class="hoverMapDiv">
+
+            <div class="hoverMapText" id="hoverMapText">
+                <!-- Text -->
             </div>
         </div>
+    </div>
+    <div class="debugHoverBox" id="debugHoverBox">
+        <!-- Debug Window -->
+        <div id="debugWindow" class="debugWindow">
+            <div class="debugHeader">Debug</div>
+            <div class="debugContent">
+                <button id="fastmodeBtn">Toggle Fastmode</button>
+                <button id="dummyResourcesBtn">Toggle Dummy Resources</button>
+                <button id="skipToRunesBtn">Skip to Runes</button>
+                <button id="renderEndpointsBtn">Render Rune Endpoints</button>
+            </div>
+        </div>
+    </div>
 
-            <!-- js -->
-            <script src="script.js?v=7"></script>
-            <script src="maps/maps.js?v=7"></script>
-            <script src="maps/world.js?v=7"></script>
+    <!-- js -->
+    <script src="script.js?v=8"></script>
+    <script src="maps/maps.js?v=8"></script>
+    <script src="maps/world.js?v=8"></script>
 </body>
 
 </html>

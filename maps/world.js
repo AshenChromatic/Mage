@@ -287,31 +287,35 @@ function friendlyClassmate3C() {
 }
 
 //shadyClassmate
-function clickShadyClassmate() {
-    sendPlayerLeft();
+function clickShadyClassmate(position) {
+    sendPlayerLeft(position);
     sendToLog("You approach the individual tucked away in the corner. Despite the sunglasses on his face, you can tell he's watching you as you walk up to him.");
-    choiceToLog("Why are you skulking around?", shadyClassmate1A);
-    choiceToLog("?", shadyClassmate1B);
-    choiceToLog("Where can I get shades like that?", shadyClassmate1C);
+    choiceToLog("Why are you skulking around?", shadyClassmateA);
+    choiceToLog("?", shadyClassmateB);
+    choiceToLog("Where can I get shades like that?", shadyClassmateC);
 }
 
-function shadyClassmate1A() {
+function shadyClassmateA() {
     sendToLog("He glances around for a moment, then cautiously opens up his trenchcoat.");
     sendToLog("From within, he slowly pulls out a toad. A very warty toad.");
-    sendClickLog(maps.dorms.keyData["4"].name + ": I beg of you. Buy my [click:shadyClassmate2]toad[/click]", "#453f4a");
-
+    sendClickLog(maps.dorms.keyData["4"].name + ": I beg of you. Buy my [click:shadyClassmateA1]toad[/click]", "#453f4a");
 }
 
-function shadyClassmate2() {
+function shadyClassmateA1() {
     sendToLog("He looks at you with pleading eyes.");
     sendClickLog(maps.dorms.keyData["4"].name + ": Please, I need this.", "#453f4a");
     sendToLog("You are not touching that toad.");
     sendToLog("He looks disappointed, and solemnly places the toad back in his trenchcoat.");
-    sendClickLog(maps.dorms.keyData["4"].name + ": Well, perhaps I can interest you in [click:shadyClassmate3]something else[/click]", "#453f4a");
+    sendClickLog(maps.dorms.keyData["4"].name + ": Well, perhaps I can interest you in [click:shadyClassmateA1_1]something else[/click]...", "#453f4a");
+}
+function shadyClassmateA1_1() {
+
 }
 
+function shadyClassmateB() {
+}
 
-function shadyClassmate1C() {
+function shadyClassmateC() {
 }
 
 
