@@ -1,4 +1,5 @@
-window.maps = {
+window.mage = window.mage || {};
+window.mage.maps = {
   dorms: {
     name: "dorms",
     tiles: [
@@ -74,7 +75,7 @@ window.maps = {
         type: "player",
         color: "window.mage.playerColor",
         hoverTitle: "You",
-        hoverText: "It's you!",
+        hoverText: "It's you! You've not seen nearly enough use lately.",
         fn: "clickPlayer"
       },
       "1": {
@@ -106,7 +107,7 @@ window.maps = {
       },
       "4": {
         type: "npc",
-        name: "tbd",
+        name: "Shady Classmate",
         dialogue: "tbd",
         color: "#453f4a",
         hoverTitle: "Shady Classmate",
@@ -153,7 +154,7 @@ window.maps = {
         type: "decor",
         color: "ignore",
         hoverTitle: "Desk",
-        hoverText: "Has seen a moderate amount of use lately. Mostly for dino nuggies."
+        hoverText: "Has seen a little use lately. Mostly for eating dino nuggies."
       },
       "B": {
         type: "decor",

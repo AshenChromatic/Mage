@@ -1,4 +1,4 @@
-const debug = false;
+const debug = true;
 window.mage = {
     playerColor: "#ff0000ff",
     slut: 0
@@ -148,7 +148,7 @@ function getRandomInt(min, max) {
 //---------------------------//
 // Resources                 //
 //---------------------------//
-let resource = {
+window.mage.resource = {
     dummyResource: {
         name: 'dummyResource',
         amount: 0,
@@ -221,12 +221,13 @@ let resource = {
         visible: false
     }
 };
+let resource = window.mage.resource;
 
 //---------------------------//
 // Saving                    //
 //---------------------------//
 
-let progress = {
+window.mage.progress = {
     orbUnlock: false,
     runeUnlock: false,
     runeTwo: false,
@@ -237,14 +238,15 @@ let progress = {
     unlockDoor: false,
     mainSelector: false,
     goneOutside: false,
+    deskRunes: false,
 };
+let progress = window.mage.progress;
 
 function saveGame() {
     console.log('Attempting export')
     // Collect all resources and progress
     const saveData = {
-        resources: resource,
-        progress: progress,
+        main: window.mage,
         elements: getElementStates(),
         dialogue: dialogueManager,
         dialogueQueue: dialogueQueue,
@@ -254,10 +256,10 @@ function saveGame() {
 }
 function exportGame() {
     const saveData = {
-        resources: resource,
-        progress: progress,
+        main: window.mage,
         elements: getElementStates(),
-        dialogue: dialogueManager
+        dialogue: dialogueManager,
+        dialogueQueue: dialogueQueue,
     };
 
     // Convert to JSON string
@@ -370,9 +372,17 @@ function applySave(saveData) {
     logDiv.innerHTML = '';
 
     // 2) Restore resources: overwrite fields for each resource and update displays
+    //Fallback for old resource object
     if (saveData.resources && typeof saveData.resources === "object") {
-        Object.keys(saveData.resources).forEach(function (resName) {
-            const saved = saveData.resources[resName];
+        console.log("Attempting to set saveData.main.resource")
+        saveData.main = (saveData.main || {});
+        console.log("Made empty main object successfully")
+        saveData.main.resource = saveData.resources;
+        console.log("Copied old resource data successfully:", saveData.main.resource);
+    }
+    if (saveData.main.resource && typeof saveData.main.resource === "object") {
+        Object.keys(saveData.main.resource).forEach(function (resName) {
+            const saved = saveData.main.resource[resName];
             // If you already have a resource object, copy saved properties into it; otherwise create it
             if (typeof resource[resName] === "object") {
                 // Overwrite existing values with saved ones
@@ -398,10 +408,18 @@ function applySave(saveData) {
             }
         });
     }
-
-    // 3) Restore progress
-    if (typeof saveData.progress !== "undefined") {
-        progress = saveData.progress;
+    //Fallback for old progress object
+    if (saveData.progress && typeof saveData.progress === "object") {
+        console.log("Attempting to set saveData.main.progress")
+        saveData.main = (saveData.main || {});
+        console.log("Made empty main object successfully")
+        saveData.main.progress = saveData.progress;
+        console.log("Copied old progress data successfully:", saveData.main.progress);
+    }
+    // 3) Restore game state
+    if (typeof saveData.main !== "undefined") {
+        window.mage = saveData.main;
+        progress = window.mage.progress;
     }
     // 3.5) Restore dialogue queue
     if (Array.isArray(saveData.dialogueQueue)) {
@@ -1324,8 +1342,13 @@ function gradeRune(drawnLines, rune) {
         resource.okRune.visible = true;
         resource.goodRune.visible = true;
         resource.perfectRune.visible = true;
-
     }
+    //Change desk dialogue at 100 total runes
+    if (!progress.deskRunes && (resource.garbageRune.amount + resource.okRune.amount + resource.goodRune.amount + resource.perfectRune.amount) >= 100) {
+        maps.dorms.keyData["D"].hoverText = "Has seen a some use lately. A stack of paper sits neatly on one side, while a heap of runes you have drawn is scattered across the other."
+        progress.deskRunes = true;
+    }
+
     // Step 4: Update rune level and display
     console.log(`Rune XP now at ${progress.runeXP}`);
     while (progress.runeLevel < runeXPBenchmarks.length && progress.runeXP >= runeXPBenchmarks[progress.runeLevel]) {

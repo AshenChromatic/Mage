@@ -1,6 +1,6 @@
 # Mage TODO
 
-_Last updated: 2025-8-20_
+_Last updated: 2025-8-26_
 
 ## Currently Working On
 - [ ] 
@@ -14,7 +14,6 @@ _Last updated: 2025-8-20_
 ## Bugs / Fixes
 - [ ] Fuck the indefinite article bruh.
 - [ ] Tabs don't fade in anymore for some reason.
-- [ ] Fix log gradient thingy
 
 ---
 
@@ -22,10 +21,10 @@ _Last updated: 2025-8-20_
 - [ ] Add bars to resources
 - [ ] Make Rune XP visible
 - [ ] Add even more runes (esp some that unlock at certain levels)
-- [ ] Change worldmap rune dialogue when runes are high enough
+- [ ] Add check for save data + wipe save button
+- [ ] Add settings
 
 ## Code garbagae
-- [ ] Rework dialogue god help me
 
 ---
 
@@ -35,7 +34,9 @@ _Last updated: 2025-8-20_
 ---
 
 ## Done
+- [x] Change worldmap rune dialogue when runes are high enough 8/26/25
 - [x] Fix Debug Hoverbox 8/25/25
+- [x] Fix log gradient thingy 8/24/25
 - [x] Add dialogue to map 8/24/25
 - [x] Secondary Logs 8/24/25
 - [x] Implement world map 8/24/25

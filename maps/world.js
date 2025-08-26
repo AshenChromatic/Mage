@@ -8,11 +8,11 @@ function resolveGlobal(path) {
 
 // Load Map from window.maps
 function loadMap(mapName) {
-    if (!window.maps || !window.maps[mapName]) {
-        console.error(`Map '${mapName}' not found in window.maps.`);
+    if (!window.mage.maps || !window.mage.maps[mapName]) {
+        console.error(`Map '${mapName}' not found in window.mage.maps.`);
         return;
     }
-    currentMap = window.maps[mapName];
+    currentMap = window.mage.maps[mapName];
     currentMapName = mapName;
     console.log(`Loaded ${mapName}:`, currentMap);
     fillMap(currentMap);
@@ -231,11 +231,10 @@ function doorHome(position) {
 }
 
 //Friendly Classmate
-function clickFriendlyClassmate(position) {
+function clickFriendlyClassmate() {
     console.log("Clicked Friendly Classmate");
     sendPlayerRight(position);
     sendClickLog(maps.dorms.keyData["1"].name + ": Hey man. You [click:friendlyClassmate1]need something[/click]?", "#399500");
-
 }
 
 function friendlyClassmate1() {
@@ -249,7 +248,7 @@ function friendlyClassmate1() {
 
 function friendlyClassmate2A() {
     console.log("Clicked Friendly Classmate 2A");
-    sendToLog("<span style='color: #399500;'>" + maps.dorms.keyData["1"].name + ": You don't remember me, dude? It's me, Gribbletharp, I live RIGHT nextdoor, hello?</span>");
+    sendToLog("<span style='color: #399500;'>" + maps.dorms.keyData["1"].name + ": You don't remember me, dude? It's me, Gribbletharp, I live RIGHT next door, hello?</span>");
     sendToLog("You think that name sucks.");
     maps.dorms.keyData["1"].name = "Gribbletharp";
 }
@@ -262,7 +261,7 @@ function friendlyClassmate2B() {
 
 function friendlyClassmate2C() {
     console.log("Clicked Friendly Classmate 2C");
-    sendToLog("<span style='color: #399500;'>" + maps.dorms.keyData["1"].name + ":...yes? I live here, idiot.</span>");
+    sendToLog("<span style='color: #399500;'>" + maps.dorms.keyData["1"].name + ": ...yes? I live here, idiot.</span>");
     choiceToLog("Woah, what a coincidence, I also live here! We should kiss...", friendlyClassmate3A);
     choiceToLog("That can't be true. I've never seen you before.", friendlyClassmate3B);
     choiceToLog("*leave*", friendlyClassmate3C);
@@ -276,8 +275,8 @@ function friendlyClassmate3A() {
 }
 
 function friendlyClassmate3B() {
-    sendToLog("<span style='color: #399500;'>" + maps.dorms.keyData["1"].name + ": Oh really? The shut-in mage hasn't seem me around? I'm truly baffled.</span>");
-    sendToLog("You realize there may have been alternate reasons you haven't seen this man this semester.");
+    sendToLog("<span style='color: #399500;'>" + maps.dorms.keyData["1"].name + ": Oh really? The shut-in mage hasn't seen me around? I'm truly baffled.</span>");
+    sendToLog("You appear to lack a counterargument to this.");
 }
 
 function friendlyClassmate3C() {
@@ -285,8 +284,43 @@ function friendlyClassmate3C() {
     mapDialogue.gribbletharp.comeHereOften = false;
 }
 
+//shadyClassmate
+function clickShadyClassmate() {
+    sendPlayerLeft();
+    sendToLog("You approach the individual tucked away in the corner. Despite the sunglasses on his face, you can tell he's watching you as you walk up to him.");
+    choiceToLog("Why are you skulking around?", shadyClassmate1A);
+    choiceToLog("?", shadyClassmate1B);
+    choiceToLog("Where can I get shades like that?", shadyClassmate1C);
+}
+
+function shadyClassmate1A() {
+    sendToLog("He glances around for a moment, then cautiously opens up his trenchcoat.");
+    sendToLog("From within, he slowly pulls out a toad. A very warty toad.");
+    sendClickLog(maps.dorms.keyData["4"].name + ": I beg of you. Buy my [click:shadyClassmate2]toad[/click]", "#453f4a");
+
+}
+
+function shadyClassmate2() {
+    sendToLog("He looks at you with pleading eyes.");
+    sendClickLog(maps.dorms.keyData["4"].name + ": Please, I need this.", "#453f4a");
+    sendToLog("You are not touching that toad.");
+    sendToLog("He looks disappointed, and solemnly places the toad back in his trenchcoat.");
+    sendClickLog(maps.dorms.keyData["4"].name + ": Well, perhaps I can interest you in [click:shadyClassmate3]something else[/click]", "#453f4a");
+}
+
+
+function shadyClassmate1C() {
+}
+
+
+
 //Doors
-function doorUp(position) {
+function checkLock(position) {
+
+}
+
+
+function doorUp(position, lock) {
     console.log("Clicked Up Door");
     let doorMessage = getRandomInt(1, 2);
     if (doorMessage === 1) {
@@ -298,7 +332,7 @@ function doorUp(position) {
     sendPlayerDown(position);
 }
 
-function doorDown(position) {
+function doorDown(position, lock) {
     console.log("Clicked Down Door");
     let doorMessage = getRandomInt(1, 2);
     if (doorMessage === 1) {
@@ -381,6 +415,7 @@ let mapFunctions = {
     doorUp: doorUp,
     doorDown: doorDown,
     clickFriendlyClassmate: clickFriendlyClassmate,
+    clickShadyClassmate: clickShadyClassmate,
 }
 
 //---------------------------//
@@ -445,7 +480,7 @@ function fillMap(map) {
             if (keyData.fn && mapFunctions[keyData.fn]) {
                 allSpans[i].addEventListener("click", function () {
                     clearActives("worldmap"); 
-                    mapFunctions[keyData.fn](i);
+                    mapFunctions[keyData.fn](i, keyData);
                 });
             }
         }
