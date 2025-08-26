@@ -1,3 +1,5 @@
+maps = mage.maps;
+
 let currentMap = {};
 let currentMapName = "";
 function resolveGlobal(path) {
@@ -231,7 +233,7 @@ function doorHome(position) {
 }
 
 //Friendly Classmate
-function clickFriendlyClassmate() {
+function clickFriendlyClassmate(position) {
     console.log("Clicked Friendly Classmate");
     sendPlayerRight(position);
     sendClickLog(maps.dorms.keyData["1"].name + ": Hey man. You [click:friendlyClassmate1]need something[/click]?", "#399500");
