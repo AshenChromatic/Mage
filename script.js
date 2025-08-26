@@ -367,10 +367,13 @@ function applySave(saveData) {
         console.warn("Couldn't access dialogue manager to stop it:", e);
     }
 
-    // 1b) Clear the current log TODO
+    // 1b) Clear the current log
     const logDiv = document.getElementById('gameLog');
     logDiv.innerHTML = '';
-
+    //Fallback for old save data that doesn't include window.mage
+    if (!saveData.main) {
+        saveData.main = window.mage;
+    }
     // 2) Restore resources: overwrite fields for each resource and update displays
     //Fallback for old resource object
     if (saveData.resources && typeof saveData.resources === "object") {

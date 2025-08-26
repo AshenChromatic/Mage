@@ -6,7 +6,7 @@ function resolveGlobal(path) {
     }, window);
 }
 
-// Load Map from window.maps
+// Load Map from window.mage.maps
 function loadMap(mapName) {
     if (!window.mage.maps || !window.mage.maps[mapName]) {
         console.error(`Map '${mapName}' not found in window.mage.maps.`);
@@ -320,7 +320,7 @@ function checkLock(position) {
 }
 
 
-function doorUp(position, lock) {
+function doorUp(position) {
     console.log("Clicked Up Door");
     let doorMessage = getRandomInt(1, 2);
     if (doorMessage === 1) {
@@ -332,7 +332,7 @@ function doorUp(position, lock) {
     sendPlayerDown(position);
 }
 
-function doorDown(position, lock) {
+function doorDown(position) {
     console.log("Clicked Down Door");
     let doorMessage = getRandomInt(1, 2);
     if (doorMessage === 1) {
@@ -363,7 +363,7 @@ function sendPlayerDown(position) {
         currentMap.keys[row] = replaceCharAt(currentMap.keys[row], col, '@');
     }
     console.log(currentMap);
-    window.maps[currentMapName] = currentMap;
+    window.mage.maps[currentMapName] = currentMap;
     fillMap(currentMap);
 }
 
@@ -377,7 +377,7 @@ function sendPlayerUp(position) {
         currentMap.keys[row] = replaceCharAt(currentMap.keys[row], col, '@');
     }
     console.log(currentMap);
-    window.maps[currentMapName] = currentMap;
+    window.mage.maps[currentMapName] = currentMap;
     fillMap(currentMap);
 }
 
@@ -391,7 +391,7 @@ function sendPlayerLeft(position) {
         currentMap.keys[row] = replaceCharAt(currentMap.keys[row], col, '@');
     }
     console.log(currentMap);
-    window.maps[currentMapName] = currentMap;
+    window.mage.maps[currentMapName] = currentMap;
     fillMap(currentMap);
 }
 
@@ -405,7 +405,7 @@ function sendPlayerRight(position) {
         currentMap.keys[row] = replaceCharAt(currentMap.keys[row], col, '@');
     }
     console.log(currentMap);
-    window.maps[currentMapName] = currentMap;
+    window.mage.maps[currentMapName] = currentMap;
     fillMap(currentMap);
 }
 
