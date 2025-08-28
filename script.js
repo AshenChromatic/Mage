@@ -3,7 +3,7 @@ window.mage = {
     playerColor: "#ff0000ff",
     slut: 0
 };
-
+window.defaults = window.defaults || {};
 
 //This function is for waiiiting
 function sleep(ms) {
@@ -363,6 +363,21 @@ function importGame() {
     input.click();
 }
 
+function deepMergeDefaults(target, defaults) {
+    for (const key in defaults) {
+        if (
+            typeof defaults[key] === 'object' &&
+            defaults[key] !== null &&
+            !Array.isArray(defaults[key])
+        ) {
+            if (!target[key]) target[key] = {};
+            deepMergeDefaults(target[key], defaults[key]);
+        } else if (!(key in target)) {
+            target[key] = defaults[key];
+        }
+    }
+}
+
 // applySave: given a parsed saveData object, apply it to the game state
 function applySave(saveData) {
     if (!saveData || typeof saveData !== "object") {
@@ -386,6 +401,7 @@ function applySave(saveData) {
     if (!saveData.main) {
         saveData.main = window.mage;
     }
+    
     // 2) Restore resources: overwrite fields for each resource and update displays
     //Fallback for old resource object
     if (saveData.resources && typeof saveData.resources === "object") {
@@ -434,7 +450,9 @@ function applySave(saveData) {
     // 3) Restore game state
     if (typeof saveData.main !== "undefined") {
         window.mage = saveData.main;
+        deepMergeDefaults(window.mage, window.defaults);
         progress = window.mage.progress;
+        
     }
     // 3.5) Restore dialogue queue
     if (Array.isArray(saveData.dialogueQueue)) {

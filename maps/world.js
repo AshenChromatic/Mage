@@ -1,5 +1,6 @@
 hoverBox2 = document.getElementById('hoverBox2');
 maps = mage.maps;
+window.defaults = window.defaults || {};
 
 mage.mapManager = {};
 if (!mage.mapManager.currentMap) {
@@ -40,9 +41,13 @@ window.addEventListener('DOMContentLoaded', function () {
 //---------------------------//
 // Dialogue Management       //
 //---------------------------//
-mage.mapManager.dialogue = {
+defaults.mapManager = defaults.mapManager || {};
+defaults.mapManager.dialogue = {
     gribbletharp: {
         comeHereOften: true
+    },
+    shadyClassmate: {
+        shadyShop: false
     }
 }
 let mapDialogue = mage.mapManager.dialogue;
@@ -201,6 +206,14 @@ function clearActives(source, handlerName, isChoice) {
             }
         }
     }
+
+    // Remove all children from mapBox and hide it
+    if (typeof mapBox !== 'undefined' && mapBox) {
+        while (mapBox.firstChild) {
+            mapBox.removeChild(mapBox.firstChild);
+        }
+        mapBox.classList.remove('show');
+    }
 }
 
 
@@ -330,7 +343,12 @@ function friendlyClassmate3C() {
 function clickShadyClassmate(position) {
     sendPlayerLeft(position);
     sendToLog("You approach the individual tucked away in the corner. Despite the sunglasses on his face, you can tell he's watching you as you walk up to him.");
-    choiceToLog("Why are you skulking around?", shadyClassmateA);
+    if (!mage.mapManager.dialogue.shadyClassmate.shadyShop) {
+        choiceToLog("Why are you skulking around?", shadyClassmateA);
+    };
+    if (mage.mapManager.dialogue.shadyClassmate.shadyShop) {
+        choiceToLog("Show me the goods.", shadyClassmateA1_1);
+    };
     choiceToLog("?", shadyClassmateB);
     choiceToLog("Where can I get shades like that?", shadyClassmateC);
 }
@@ -351,6 +369,7 @@ function shadyClassmateA1() {
 function shadyClassmateA1_1() {
     mapBox.classList.add("show");
     mapBox.appendChild(shadyShop);
+    mage.mapManager.dialogue.shadyClassmate.shadyShop = true;
 }
 
 function shadyClassmateB() {

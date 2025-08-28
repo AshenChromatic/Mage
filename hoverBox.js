@@ -22,7 +22,14 @@ mage.shopItems = {
   shadyFrog: {
     desc: () => `He is very ugly and warty, but ${mage.maps.dorms.keyData[4].name} tells you it's where he gets all his ink from.`,
     effect: '+.001 Ink/s',
-    flavor: '',
+    flavor: () => {
+    const options = [
+      "Thankfully, I can just milk some more from my creature.",
+      "Little do they know, it was harvested from my creature.",
+      "The creature whimpered, he knows it's time for another milking session."
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  },
     resourceNeed: ['gold'],
     costs: [100],
     resourceGet: ['Frog']
@@ -37,6 +44,8 @@ const hoverBox = document.getElementById('hoverBox');
 const buyOrbBtn = document.getElementById('buyOrbBtn');
 
 let desc = typeof shopItems.orb.desc === 'function' ? shopItems.orb.desc() : shopItems.orb.desc;
+let flavor = typeof shopItems.orb.flavor === 'function' ? shopItems.orb.flavor() : shopItems.orb.flavor;
+
 function setBuyText(desc, costs, effect, flavor, resourceNeed) {
   const hoverBuyDesc = document.getElementById('hoverBuyDesc');
   const hoverBuyCost = document.getElementById('hoverBuyCost');
@@ -60,7 +69,8 @@ function setBuyText(desc, costs, effect, flavor, resourceNeed) {
   hoverBuyCost.innerHTML = costLines;
 
   hoverBuyEffect.innerHTML = effect;
-  hoverBuyFlavor.innerHTML = flavor;
+  // If flavor is a function, call it
+  hoverBuyFlavor.innerHTML = (typeof flavor === 'function') ? flavor() : flavor;
 }
 
 
@@ -85,7 +95,8 @@ document.body.addEventListener('mouseover', function (e) {
   hoverBox.classList.add('show');
   console.log('[mouseover] hoverBox shown');
   let desc = typeof item.desc === 'function' ? item.desc() : item.desc;
-  setBuyText(desc, item.costs, item.effect, item.flavor, item.resourceNeed);
+  let flavor = typeof item.flavor === 'function' ? item.flavor() : item.flavor;
+  setBuyText(desc, item.costs, item.effect, flavor, item.resourceNeed);
   const hoverBoxBuy = document.getElementById('hoverBoxBuy');
   if (checkIfEnoughResources(item.resourceNeed, item.costs)) {
     hoverBoxBuy.classList.remove('broke');
@@ -116,11 +127,14 @@ document.body.addEventListener('mousemove', function (e) {
   }
 });
 
-document.body.addEventListener('mouseleave', function (e) {
+document.body.addEventListener('mouseout', function (e) {
   const btn = e.target.closest('.shopBuyBtn');
   if (!btn) return;
-  hoverBox.classList.remove('show');
-  console.log('[mouseleave] hoverBox hidden');
+  // Only trigger if the mouse is leaving the button, not moving to a child
+  if (!btn.contains(e.relatedTarget)) {
+    hoverBox.classList.remove('show');
+    console.log('[mouseleave] hoverBox hidden');
+  }
 });
 
 document.body.addEventListener('click', function (e) {
@@ -297,3 +311,5 @@ document.querySelectorAll('.shopBuyBtn').forEach(btn => {
     console.log('[click] buy attempted for', itemKey);
   });
 });
+
+deepMergeDefaults(window.mage, window.defaults);
