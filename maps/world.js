@@ -36,10 +36,12 @@ defaults.mapManager.dialogue = {
     goodClassmate: {
         alive: true,
         affection: 0,
+        first: true,
     },
     evilClassmate: {
         alive: true,
         affection: 0,
+        first: true,
     }
 }
 
@@ -413,8 +415,9 @@ function clickEvilClassmate(position) {
     if (mage.mapManager.dialogue.goodClassmate.alive && mage.mapManager.dialogue.evilClassmate.alive) {
         sendClickLog("He appears to be in a duel with Good Classmate. Are you sure you want to [click:evilClassmateA]bother him?[/click]");
     }
-    else if (mage.mapManager.dialogue.evilClassmate.alive && !mage.mapManager.dialogue.goodClassmate.alive) {
-        sendClickLog("He seems to be free from any distractions. Are you sure you want to [click:evilClassmateA]bother him?[/click]");
+    else if (mage.mapManager.dialogue.evilClassmate.alive && !mage.mapManager.dialogue.goodClassmate.alive && mage.mapManager.dialogue.evilClassmate.first === true) {
+        sendClickLog(mage.maps.dorms.keyData["2"].name + ": Wow.", "#5700AE");
+        sendClickLog(mage.maps.dorms.keyData["2"].name + ": Was not expecting [click:evilClassmate1]that[/click] to happen. Get fucking owned I guess.", "#5700AE");
     }
 }
 
@@ -423,14 +426,15 @@ function clickGoodClassmate(position) {
     if (mage.mapManager.dialogue.goodClassmate.alive && mage.mapManager.dialogue.evilClassmate.alive) {
         sendClickLog("She appears to be in a duel with Evil Classmate. Are you sure you want to [click:goodClassmateA]bother her?[/click]");
     }
-    else if (mage.mapManager.dialogue.goodClassmate.alive && !mage.mapManager.dialogue.evilClassmate.alive) {
-        sendClickLog("She seems to be free from any distractions. Are you sure you want to [click:goodClassmateA]bother her?[/click]");
+    else if (mage.mapManager.dialogue.goodClassmate.alive && !mage.mapManager.dialogue.evilClassmate.alive && mage.mapManager.dialogue.goodClassmate.first === true) {
+        sendClickLog(mage.maps.dorms.keyData["3"].name + ": Oh... oh my god...", "#ffb700");
+        sendClickLog(mage.maps.dorms.keyData["3"].name + ": We were just having a [click:goodClassmate1]duel[/click]... I never wanted this to happen...", "#ffb700");
     }
 }
 
 function evilClassmateA() {
     sendClickLog("Evil Classmate: Hey, what are you-", "#5700AE");
-    sendToLog("You watch as he is obliterated by a spell, his guts and giblets flying everywhere.");
+    sendToLog("You watch as he is obliterated by a beam of holy light, his guts and giblets flying everywhere.");
     setTile(5, 26, "x");
     setKeys([[4,26], [3,26], [4,25], [5,24], [3,23]], "x");
     setTiles([[4,26], [3,26], [4,25], [5,24], [3,23]], ",");
@@ -439,10 +443,12 @@ function evilClassmateA() {
     mage.maps.dorms.keyData["2"].fn = "ignore";
 }
 function goodClassmateA() {
+    sendClickLog("Good Classmate: Hm, what do you-", "#ffb700");
+    sendToLog("You watch as she is obliterated by a beam of dark magic, her guts and giblets flying everywhere")
     setTile(6, 26, "x");
     setKeys([[7,26], [8,26], [7,25], [6,24], [8,23]], "x");
     setTiles([[7,26], [8,26], [7,25], [6,24], [8,23]], ",");
-    mage.mapManager.dialogue.evilClassmate.alive = false;
+    mage.mapManager.dialogue.goodClassmate.alive = false;
     mage.maps.dorms.keyData["3"].hoverText = "She is very much dead.";
     mage.maps.dorms.keyData["3"].fn = "ignore";
 }

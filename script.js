@@ -393,6 +393,13 @@ function deepMergeDefaults(target, defaults, overrides) {
             }
         }
     }
+    //Manual overrides for Reasons
+    if (mage.maps.dorms.keyData["3"].name === "tbd") {
+        mage.maps.dorms.keyData["3"].name = "Good Classmate";
+    }
+    if(mage.maps.dorms.keyData["2"].name === "tbd") {
+        mage.maps.dorms.keyData["2"].name = "Evil Classmate";
+    }
 }
 
 // applySave: given a parsed saveData object, apply it to the game state
