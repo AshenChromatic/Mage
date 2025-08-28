@@ -1,8 +1,7 @@
-console.log(mage.maps);
-if (!mage.maps) {
-  window.mage.maps = {}
-  console.log ("writing maps...")
-  mage.maps = {
+
+
+window.defaults = window.defaults || {};
+  defaults.maps = {
     dorms: {
       name: "dorms",
       tiles: [
@@ -92,16 +91,16 @@ if (!mage.maps) {
         },
         "2": {
           type: "npc",
-          name: "tbd",
+          name: "Evil Classmate",
           dialogue: "tbd",
-          color: "##5700ae",
+          color: "#5700ae",
           hoverTitle: "Evil Classmate",
           hoverText: "Seems to be busy in a wizard duel with Good Classmate",
           fn: "clickEvilClassmate"
         },
         "3": {
           type: "npc",
-          name: "tbd",
+          name: "Good Classmate",
           dialogue: "tbd",
           color: "#ffb700",
           hoverTitle: "Good Classmate",
@@ -164,8 +163,18 @@ if (!mage.maps) {
           color: "ignore",
           hoverTitle: "Bed",
           hoverText: "It's just a mattress on the floor. Has not seen nearly enough use lately."
+        },
+        "x" : {
+          color: "#ff0000",
+          hoverTitle: "ignore",
+          hoverText: "ignore"
         }
       }
     }
-  };
-}
+  }
+  window.forceDefaults = window.forceDefaults || {};
+  window.forceDefaults.maps = window.forceDefaults.maps || {};
+  window.forceDefaults.maps.dorms = window.forceDefaults.maps.dorms || {};
+  window.forceDefaults.maps.dorms.keyData = window.forceDefaults.maps.dorms.keyData || {};
+  window.forceDefaults.maps.dorms.keyData["2"] = window.forceDefaults.maps.dorms.keyData["2"] || {};
+  window.forceDefaults.maps.dorms.keyData["2"].color = "#5700AE";

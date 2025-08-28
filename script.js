@@ -363,7 +363,7 @@ function importGame() {
     input.click();
 }
 
-function deepMergeDefaults(target, defaults) {
+function deepMergeDefaults(target, defaults, overrides) {
     for (const key in defaults) {
         if (
             typeof defaults[key] === 'object' &&
@@ -374,6 +374,23 @@ function deepMergeDefaults(target, defaults) {
             deepMergeDefaults(target[key], defaults[key]);
         } else if (!(key in target)) {
             target[key] = defaults[key];
+        }
+    }
+    // If overrides is provided, merge its properties into target, overwriting existing data
+    if (overrides && typeof overrides === 'object') {
+        for (const key in overrides) {
+            if (
+                typeof overrides[key] === 'object' &&
+                overrides[key] !== null &&
+                !Array.isArray(overrides[key])
+            ) {
+                if (!target[key] || typeof target[key] !== 'object') {
+                    target[key] = {};
+                }
+                deepMergeDefaults(target[key], {}, overrides[key]);
+            } else {
+                target[key] = overrides[key];
+            }
         }
     }
 }
@@ -450,7 +467,7 @@ function applySave(saveData) {
     // 3) Restore game state
     if (typeof saveData.main !== "undefined") {
         window.mage = saveData.main;
-        deepMergeDefaults(window.mage, window.defaults);
+        deepMergeDefaults(window.mage, window.defaults, window.forceDefaults);
         progress = window.mage.progress;
         
     }

@@ -17,26 +17,6 @@ function resolveGlobal(path) {
     }, window);
 }
 
-// Load Map from window.mage.maps
-function loadMap(mapName) {
-    if (!window.mage.maps || !window.mage.maps[mapName]) {
-        console.error(`Map '${mapName}' not found in window.mage.maps.`);
-        return;
-    }
-    currentMap = window.mage.maps[mapName];
-    currentMapName = mapName;
-    console.log(`Loaded ${mapName}:`, currentMap);
-    fillMap(currentMap);
-}
-
-// Render the map as soon as the Map tab appears
-window.addEventListener('DOMContentLoaded', function () {
-    const mapDisplay = document.getElementById('worldMap');
-    if (mapDisplay) {
-        console.log("Map Display On Screen");
-        loadMap(currentMapName);
-    }
-});
 
 //---------------------------//
 // Dialogue Management       //
@@ -44,13 +24,24 @@ window.addEventListener('DOMContentLoaded', function () {
 defaults.mapManager = defaults.mapManager || {};
 defaults.mapManager.dialogue = {
     gribbletharp: {
-        comeHereOften: true
+        comeHereOften: true,
+        affection: 0,
+        named: false
     },
     shadyClassmate: {
-        shadyShop: false
+        shadyShop: false,
+        affection: 0,
+        shades: false
+    },
+    goodClassmate: {
+        alive: true,
+        affection: 0,
+    },
+    evilClassmate: {
+        alive: true,
+        affection: 0,
     }
 }
-let mapDialogue = mage.mapManager.dialogue;
 
 // helper: resolve a handler function for a node
 function resolveHandler(node) {
@@ -286,37 +277,40 @@ function doorHome(position) {
 function clickFriendlyClassmate(position) {
     console.log("Clicked Friendly Classmate");
     sendPlayerRight(position);
-    sendClickLog(maps.dorms.keyData["1"].name + ": Hey man. You [click:friendlyClassmate1]need something[/click]?", "#399500");
+    sendClickLog(mage.maps.dorms.keyData["1"].name + ": Hey man. You [click:friendlyClassmate1]need something[/click]?", "#399500");
 }
 
 function friendlyClassmate1() {
     console.log("Clicked Friendly Classmate 1");
-    choiceToLog("Who are you?", friendlyClassmate2A);
+    if (mage.mapManager.dialogue.gribbletharp.named === false) {
+        choiceToLog("Who are you?", friendlyClassmate2A);
+    };
     choiceToLog("How do I get money?", friendlyClassmate2B);
-    if (mapDialogue.gribbletharp.comeHereOften === true) {
+    if (mage.mapManager.dialogue.gribbletharp.comeHereOften === true) {
         choiceToLog("Come here often?", friendlyClassmate2C);
-    }
+    };
 }
 
 function friendlyClassmate2A() {
     console.log("Clicked Friendly Classmate 2A");
-    sendToLog("<span style='color: #399500;'>" + maps.dorms.keyData["1"].name + ": You don't remember me, dude? It's me, Gribbletharp, I live RIGHT next door, hello?</span>");
+    sendToLog("<span style='color: #399500;'>" + mage.maps.dorms.keyData["1"].name + ": You don't remember me, dude? It's me, Gribbletharp, I live RIGHT next door, hello?</span>");
     sendToLog("You think that name sucks.");
-    maps.dorms.keyData["1"].name = "Gribbletharp";
+    mage.maps.dorms.keyData["1"].name = "Gribbletharp";
     mage.maps.dorms.keyData["1"].name = "Gribbletharp";
     mage.maps.dorms.keyData["1"].hoverTitle = "Gribbletharp";
-    maps.dorms.keyData["1"].hoverTitle = "Gribbletharp";
+    mage.maps.dorms.keyData["1"].hoverTitle = "Gribbletharp";
+    mage.mapManager.dialogue.gribbletharp.named = true;
 }
 
 function friendlyClassmate2B() {
     console.log("Clicked Friendly Classmate 2B");
-    sendToLog("<span style='color: #399500;'>" + maps.dorms.keyData["1"].name + ": Uh, you get a job??? I'm not giving you any money, freak.</span>");
-    sendToLog("What a foolish idea. " + maps.dorms.keyData["1"].name + " must be some type of moron.");
+    sendToLog("<span style='color: #399500;'>" + mage.maps.dorms.keyData["1"].name + ": Uh, you get a job??? I'm not giving you any money, freak.</span>");
+    sendToLog("What a foolish idea. " + mage.maps.dorms.keyData["1"].name + " must be some type of moron.");
 }
 
 function friendlyClassmate2C() {
     console.log("Clicked Friendly Classmate 2C");
-    sendToLog("<span style='color: #399500;'>" + maps.dorms.keyData["1"].name + ": ...yes? I live here, idiot.</span>");
+    sendToLog("<span style='color: #399500;'>" + mage.maps.dorms.keyData["1"].name + ": ...yes? I live here, idiot.</span>");
     choiceToLog("Woah, what a coincidence, I also live here! We should kiss...", friendlyClassmate3A);
     choiceToLog("That can't be true. I've never seen you before.", friendlyClassmate3B);
     choiceToLog("*leave*", friendlyClassmate3C);
@@ -324,19 +318,19 @@ function friendlyClassmate2C() {
 
 function friendlyClassmate3A() {
     mage.slut += 1;
-    sendToLog("<span style='color: #399500;'>" + maps.dorms.keyData["1"].name + ": ???</span>");
+    sendToLog("<span style='color: #399500;'>" + mage.maps.dorms.keyData["1"].name + ": ???</span>");
     sendToLog("He gives you a weird look. Thankfully, nobody else was watching. You decide to walk away and never speak of this again.");
-    mapDialogue.gribbletharp.comeHereOften = false;
+    mage.mapManager.dialogue.gribbletharp.comeHereOften = false;
 }
 
 function friendlyClassmate3B() {
-    sendToLog("<span style='color: #399500;'>" + maps.dorms.keyData["1"].name + ": Oh really? The shut-in mage hasn't seen me around? I'm truly baffled.</span>");
+    sendToLog("<span style='color: #399500;'>" + mage.maps.dorms.keyData["1"].name + ": Oh really? The shut-in mage hasn't seen me around? I'm truly baffled.</span>");
     sendToLog("You appear to lack a counterargument to this.");
 }
 
 function friendlyClassmate3C() {
     sendToLog("You decide you do not care about this man's existence.")
-    mapDialogue.gribbletharp.comeHereOften = false;
+    mage.mapManager.dialogue.gribbletharp.comeHereOften = false;
 }
 
 //shadyClassmate
@@ -349,22 +343,24 @@ function clickShadyClassmate(position) {
     if (mage.mapManager.dialogue.shadyClassmate.shadyShop) {
         choiceToLog("Show me the goods.", shadyClassmateA1_1);
     };
-    choiceToLog("?", shadyClassmateB);
-    choiceToLog("Where can I get shades like that?", shadyClassmateC);
+    choiceToLog("Hey man, what's up?", shadyClassmateB);
+    if (mage.mapManager.dialogue.shadyClassmate.shades !== true) {
+        choiceToLog("Where can I get shades like that?", shadyClassmateC);
+    }
 }
 
 function shadyClassmateA() {
     sendToLog("He glances around for a moment, then cautiously opens up his trenchcoat.");
     sendToLog("From within, he slowly pulls out a toad. It is very warty, and you do not like looking at it.");
-    sendClickLog(maps.dorms.keyData["4"].name + ": I beg of you. Buy my [click:shadyClassmateA1]toad[/click]", "#453f4a");
+    sendClickLog(mage.maps.dorms.keyData["4"].name + ": I beg of you. Buy my [click:shadyClassmateA1]toad[/click]", "#453f4a");
 }
 
 function shadyClassmateA1() {
     sendToLog("He looks at you with pleading eyes.");
-    sendClickLog(maps.dorms.keyData["4"].name + ": Please, I need this.", "#453f4a");
+    sendClickLog(mage.maps.dorms.keyData["4"].name + ": Please, I need this.", "#453f4a");
     sendToLog("You are not touching that toad.");
     sendToLog("He looks disappointed, and solemnly places the toad back in his trenchcoat.");
-    sendClickLog(maps.dorms.keyData["4"].name + ": Well, perhaps I can interest you in [click:shadyClassmateA1_1]something else[/click]...", "#453f4a");
+    sendClickLog(mage.maps.dorms.keyData["4"].name + ": Well, perhaps I can interest you in [click:shadyClassmateA1_1]something else[/click]...", "#453f4a");
 }
 function shadyClassmateA1_1() {
     mapBox.classList.add("show");
@@ -373,12 +369,83 @@ function shadyClassmateA1_1() {
 }
 
 function shadyClassmateB() {
+    if (mage.mapManager.dialogue.shadyClassmate.affection > 0) {
+        sendClickLog(mage.maps.dorms.keyData["4"].name + ": Still working off that debt...", "#453f4a");
+    }
+    else {
+        sendToLog("Somehow, you can feel him narrowing his eyes at you from behind his shades.");
+        sendToLog("Other than that slight shift, he seems to completely ignore you.");
+    }
 }
 
 function shadyClassmateC() {
+    sendClickLog(maps.dorms.keyData["4"].name + ": Heh... as if someone like you could afford one of [click:shadyClassmateC1]these[/click].", "#453f4a");
+}
+
+function shadyClassmateC1() {
+    sendClickLog(mage.maps.dorms.keyData["4"].name + ": My [click:shadyClassmateC1_1]Arcane Goggles of Inscrutibility[/click]... they cost me so much... now I have to sell everything I can to pay off my debt.", "#453f4a");
+}
+
+function shadyClassmateC1_1() {
+    sendToLog("To be honest, they do look quite nice.")
+    sendClickLog(mage.maps.dorms.keyData["4"].name + ": They give me +10 defense against scrutibility, and enhance my <span style='color: #9900ffff;'> Shadow Magic</span> by 50%. Jealous?", "#453f4a");
+    choiceToLog("Yes...", shadyClassmateC1_1A)
+    choiceToLog("No.", shadyClassmateC1_1B)
+}
+
+function shadyClassmateC1_1A() {
+    sendToLog("He smirks condescendingly at you.");
+    mage.mapManager.dialogue.shadyClassmate.affection += 1;
+    mage.mapManager.dialogue.shadyClassmate.shades = true;
+}
+
+function shadyClassmateC1_1B() {
+    sendToLog("He frowns condescendingly at you.");
+    mage.mapManager.dialogue.shadyClassmate.affection -= 1;
+    mage.mapManager.dialogue.shadyClassmate.shades = true;
 }
 
 
+//Evil / Good classmate
+
+function clickEvilClassmate(position) {
+    sendPlayerUp(position);
+    if (mage.mapManager.dialogue.goodClassmate.alive && mage.mapManager.dialogue.evilClassmate.alive) {
+        sendClickLog("He appears to be in a duel with Good Classmate. Are you sure you want to [click:evilClassmateA]bother him?[/click]");
+    }
+    else if (mage.mapManager.dialogue.evilClassmate.alive && !mage.mapManager.dialogue.goodClassmate.alive) {
+        sendClickLog("He seems to be free from any distractions. Are you sure you want to [click:evilClassmateA]bother him?[/click]");
+    }
+}
+
+function clickGoodClassmate(position) {
+    sendPlayerUp(position);
+    if (mage.mapManager.dialogue.goodClassmate.alive && mage.mapManager.dialogue.evilClassmate.alive) {
+        sendClickLog("She appears to be in a duel with Evil Classmate. Are you sure you want to [click:goodClassmateA]bother her?[/click]");
+    }
+    else if (mage.mapManager.dialogue.goodClassmate.alive && !mage.mapManager.dialogue.evilClassmate.alive) {
+        sendClickLog("She seems to be free from any distractions. Are you sure you want to [click:goodClassmateA]bother her?[/click]");
+    }
+}
+
+function evilClassmateA() {
+    sendClickLog("Evil Classmate: Hey, what are you-", "#5700AE");
+    sendToLog("You watch as he is obliterated by a spell, his guts and giblets flying everywhere.");
+    setTile(5, 26, "x");
+    setKeys([[4,26], [3,26], [4,25], [5,24], [3,23]], "x");
+    setTiles([[4,26], [3,26], [4,25], [5,24], [3,23]], ",");
+    mage.mapManager.dialogue.evilClassmate.alive = false;
+    mage.maps.dorms.keyData["2"].hoverText = "He is very much dead.";
+    mage.maps.dorms.keyData["2"].fn = "ignore";
+}
+function goodClassmateA() {
+    setTile(6, 26, "x");
+    setKeys([[7,26], [8,26], [7,25], [6,24], [8,23]], "x");
+    setTiles([[7,26], [8,26], [7,25], [6,24], [8,23]], ",");
+    mage.mapManager.dialogue.evilClassmate.alive = false;
+    mage.maps.dorms.keyData["3"].hoverText = "She is very much dead.";
+    mage.maps.dorms.keyData["3"].fn = "ignore";
+}
 
 //Doors
 function checkLock(position) {
@@ -418,6 +485,7 @@ function killPlayer() {
     currentMap.tiles = replacedTiles;
     console.log(currentMap);
 }
+
 
 function sendPlayerDown(position) {
     killPlayer();
@@ -475,6 +543,26 @@ function sendPlayerRight(position) {
     fillMap(currentMap);
 }
 
+
+//Tile editors
+function setTile(x, y, newChar) {
+    let row = currentMap.tiles[y - 1];
+    currentMap.tiles[y - 1] = row.substring(0, x - 1) + newChar + row.substring(x);
+    fillMap(currentMap);
+}
+function setTiles(positions, newChar) {
+    positions.forEach(([x, y]) => setTile(x, y, newChar));
+}
+
+function setKey(x, y, newChar) {
+    let row = currentMap.keys[y - 1];
+    currentMap.keys[y - 1] = row.substring(0, x - 1) + newChar + row.substring(x);
+    fillMap(currentMap);
+}
+function setKeys(positions, newChar) {
+    positions.forEach(([x, y]) => setKey(x, y, newChar));
+}
+
 let mapFunctions = {
     clickPlayer: clickPlayer,
     doorHome: doorHome,
@@ -482,7 +570,11 @@ let mapFunctions = {
     doorDown: doorDown,
     clickFriendlyClassmate: clickFriendlyClassmate,
     clickShadyClassmate: clickShadyClassmate,
+    clickGoodClassmate: clickGoodClassmate,
+    clickEvilClassmate: clickEvilClassmate
 }
+
+
 
 //---------------------------//
 // Map Rendering             //
@@ -543,7 +635,7 @@ function fillMap(map) {
             }
 
             // Click logic
-            if (keyData.fn && mapFunctions[keyData.fn]) {
+            if (keyData.fn && mapFunctions[keyData.fn] && keyData.fn !== "ignore") {
                 allSpans[i].addEventListener("click", function () {
                     clearActives("worldmap"); 
                     mapFunctions[keyData.fn](i, keyData);
@@ -553,6 +645,26 @@ function fillMap(map) {
     }
 }
 
+// Load Map from window.mage.maps
+function loadMap(mapName) {
+    if (!window.mage.maps || !window.mage.maps[mapName]) {
+        console.error(`Map '${mapName}' not found in window.mage.maps.`);
+        return;
+    }
+    currentMap = window.mage.maps[mapName];
+    currentMapName = mapName;
+    console.log(`Loaded ${mapName}:`, currentMap);
+    fillMap(currentMap);
+}
+
+// Render the map as soon as the Map tab appears
+window.addEventListener('DOMContentLoaded', function () {
+    const mapDisplay = document.getElementById('worldMap');
+    if (mapDisplay) {
+        console.log("Map Display On Screen");
+        loadMap(currentMapName);
+    }
+});
 
 //---------------------------//
 // Hoverbox                  //
