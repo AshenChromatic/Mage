@@ -78,6 +78,22 @@
                         <span id="manaMax">10</span>
                     </div>
                 </div>
+                <div class="inkDisplay" id="inkDisplay">
+                    <div class="resourceTitle inkTitle">
+                        Ink:
+                    </div>
+                    <div class="resourceAmount" id="inkAmount">
+                        <span id="inkAmount">0</span>
+                    </div>
+                </div>
+                <div class="frogDisplay" id="frogDisplay">
+                    <div class="resourceTitle frogTitle">
+                        Frog:
+                    </div>
+                    <div class="resourceAmount" id="frogAmount">
+                        0
+                    </div>
+                </div>
             </div>
 
             <hr class="resourceDiv" id="orbDiv">
@@ -168,7 +184,7 @@
                         </div>
                         <!-- Shop Tab -->
                         <div class="shopTab" id="shopTab">
-                            <button class="shopBuyBtn" id="buyOrbBtn">Buy Orb</button>
+                            <button class="shopBuyBtn" data-item="orb" id="buyOrbBtn">Buy Orb</button>
                         </div>
                     </div>
                 </div>
@@ -272,6 +288,8 @@
                 <!-- Flavor text -->
             </div>
         </div>
+    </div>
+    <div class="hoverBox" id="hoverBox2">
         <!-- Hover box content for mousing over map icons-->
         <div class="hoverBoxMap" id="hoverBoxMap">
             <div class="hoverMapTitle" id="hoverMapTitle">
@@ -302,6 +320,7 @@
     <script src="script.js?v=8"></script>
     <script src="maps/maps.js?v=8"></script>
     <script src="maps/world.js?v=8"></script>
+    <script src="hoverBox.js?v=8"></script>
 </body>
 
 </html>

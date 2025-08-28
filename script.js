@@ -196,6 +196,18 @@ window.mage.resource = {
         max: 0,
         visible: false
     },
+    frog: {
+        name: 'frog',
+        amount: 0,
+        displayId: 'frogAmount',
+        visible: false
+    },
+    ink: {
+        name: 'ink',
+        amount: 0,
+        displayId: 'inkAmount',
+        visible: false
+    },
     garbageRune: {
         name: 'Garbage Rune',
         amount: 0,
@@ -452,8 +464,16 @@ function applySave(saveData) {
             }
         });
     }
+    // 5) Reload map
+    if (!mage.mapManager) {
+        mage.mapManager = {};
+    }
+    if (!mage.mapManager.currentMapName) {
+        mage.mapManager.currentMapName = "dorms";
+    }
+    loadMap(mage.mapManager.currentMapName);
 
-    // 5) Resume dialogue from where left off 
+    // 6) Resume dialogue from where left off 
     if (saveData.dialogue && typeof saveData.dialogue === "object") {
         try {
             // map fields to the in-memory dialogueManager (the one you showed earlier)
@@ -543,99 +563,6 @@ function researchClick() {
         }
     }
 }
-
-//---------------------------//
-// Buyers                    //
-//---------------------------//
-
-const buyer = {
-    orb: {
-        resourceNeed: ['gold'],
-        costs: [5],
-        resourceGet: ['orb']
-    }
-}
-
-function checkIfEnoughResources(resourceNeed, costs) {
-    if (!Array.isArray(resourceNeed)) resourceNeed = [resourceNeed];
-    if (!Array.isArray(costs)) costs = [costs];
-
-    if (resourceNeed.length !== costs.length) {
-        console.error('resources and costs not paired up');
-        return false;
-    }
-
-    // Check if the player has enough resources
-    for (let i = 0; i < resourceNeed.length; i++) {
-        if (resource[resourceNeed[i]].amount < costs[i]) {
-            console.error('You are too broke in ' + resource[resourceNeed[i]].name);
-            return false;
-        }
-        return true;
-    }
-}
-
-function buy(resourceNeed, costs, resourceGet) {
-    if (!checkIfEnoughResources(resourceNeed, costs)) {
-        console.error('Not enough resources to buy');
-        return;
-    }
-    // Deduct costs from resources and update the display
-    for (let i = 0; i < resourceNeed.length; i++) {
-        resource[resourceNeed[i]].amount -= costs[i];
-        const displayId = resource[resourceNeed[i]].displayId;
-        const displayElement = document.getElementById(displayId);
-        if (displayElement) {
-            displayElement.innerHTML = resource[resourceNeed[i]].amount;
-        }
-    }
-    // Add the resource gained
-    resource[resourceGet].amount += 1;
-    const displayId = resource[resourceGet].displayId;
-    const displayElement = document.getElementById(displayId);
-    if (displayElement) {
-        displayElement.innerHTML = resource[resourceGet].amount;
-    }
-    //Increase max resource if applicable
-    if (resource[resourceGet].increaseMax && resource[resourceGet].increaseMaxBy) {
-        const target = resource[resource[resourceGet].increaseMax];
-        if (target) {
-            target.max += resource[resourceGet].increaseMaxBy;
-            const maxDisplayId = target.displayMaxId;
-            const maxDisplayElement = document.getElementById(maxDisplayId);
-            if (maxDisplayElement) {
-                maxDisplayElement.innerHTML = target.max;
-            }
-        }
-    }
-
-    // Immediately update hover box state
-    const hoverBoxBuy = document.getElementById('hoverBoxBuy');
-    if (checkIfEnoughResources(resourceNeed, costs)) {
-        hoverBoxBuy.classList.remove('broke');
-    } else {
-        hoverBoxBuy.classList.add('broke');
-    }
-    return true;
-}
-
-document.getElementById('buyOrbBtn').addEventListener('click', function () {
-    const orbData = buyer.orb;
-    if (resource.orb.visible === false) {
-        if (buy(orbData.resourceNeed, orbData.costs, orbData.resourceGet[0]) === true) {
-            console.log('Attempting to show orb');
-            const orbDisplay = document.getElementById('orbDisplay');
-            const orbDiv = document.getElementById('orbDiv');
-            if (orbDiv) {
-                orbDiv.classList.add('show');
-            }
-            if (orbDisplay) {
-                orbDisplay.classList.add('show');
-                resource.orb.visible = true;
-            }
-        }
-    }
-});
 
 
 
@@ -756,71 +683,24 @@ document.getElementById('leaveHouseBtn').addEventListener('click', function (e) 
 function goOutside() {
     document.getElementById('insideHouse').classList.remove('show');
     document.getElementById('worldMap').classList.add('show');
-    document.getElementById('hoverBoxBuy').classList.remove('show');
-    document.getElementById('hoverBoxMap').classList.add('show');
     if (!progress.goneOutside) {
         progress.goneOutside = true;
         queueDialogue("goOutside", 0);
+    }
+    hoverMapOld = document.getElementById('hoverBoxMap');
+    if (!hoverMapOld.classList.contains('show')) {
+        hoverMapOld.classList.add('show');
     }
 }
 
 function goInside() {
     document.getElementById('worldMap').classList.remove('show');
     document.getElementById('insideHouse').classList.add('show');
-    document.getElementById('hoverBoxBuy').classList.add('show');
-    document.getElementById('hoverBoxMap').classList.remove('show');
-}
-
-//---------------------------//
-// Hoverbox                  //
-//---------------------------//
-
-const hoverBox = document.getElementById('hoverBox');
-const buyOrbBtn = document.getElementById('buyOrbBtn');
-
-
-function setBuyText(desc, cost, effect, flavor) {
-    const hoverBuyDesc = document.getElementById('hoverBuyDesc');
-    const hoverBuyCost = document.getElementById('hoverBuyCost');
-    const hoverBuyEffect = document.getElementById('hoverBuyEffect');
-    const hoverBuyFlavor = document.getElementById('hoverBuyFlavor');
-
-    hoverBuyDesc.innerHTML = desc;
-    hoverBuyCost.innerHTML = cost;
-    hoverBuyEffect.innerHTML = effect;
-    hoverBuyFlavor.innerHTML = flavor;
-}
-
-buyOrbBtn.addEventListener('mouseover', function () {
-    hoverBox.classList.add('show');
-    console.log('Hover box shown for Buy Orb button');
-    setBuyText(
-        'A mana orb that gathers and stores ambient mana from the environment.',
-        '5 gold',
-        '+1 Mana/s <br> +50 Max Mana',
-        'Surprisingly unponderable.'
-    );
-    const hoverBoxBuy = document.getElementById('hoverBoxBuy');
-    if (checkIfEnoughResources(buyer.orb.resourceNeed, buyer.orb.costs)) {
-        hoverBoxBuy.classList.remove('broke');
-    } else {
-        hoverBoxBuy.classList.add('broke');
+    hoverBuyOld = document.getElementById('hoverBoxBuy');
+    if (!hoverBuyOld.classList.contains('show')) {
+        hoverBuyOld.classList.add('show');
     }
-});
-
-buyOrbBtn.addEventListener('mousemove', function (e) {
-    hoverBox.style.left = (e.pageX + 10) + 'px';
-    hoverBox.style.top = (e.pageY + 10) + 'px';
-});
-
-buyOrbBtn.addEventListener('mouseleave', function () {
-    hoverBox.classList.remove('show');
-    console.log('Hover box hidden for Buy Orb button');
-});
-
-
-
-
+}
 
 //---------------------------//
 // Dialogs                   //

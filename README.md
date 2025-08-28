@@ -1,7 +1,7 @@
 # Mage
 A browser-based idle game inspired by my favorite minimalist web incrementals like [Kittens Game](https://kittensgame.com/web/), [Arcanum](https://mathiashjelm.gitlab.io/arcanum/), and [Universal Paperclips](https://www.decisionproblem.com/paperclips/). It is also largely inspired by the freakish hivemind of shitty discord roleplayers and the blessings they have instilled into my brain.
 
-Currently in alpha.
+Currently in pre-alpha.
 
 **[Play it here](https://ashenchromatic.github.io/Mage/)**
 

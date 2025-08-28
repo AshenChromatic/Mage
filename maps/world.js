@@ -1,7 +1,15 @@
+hoverBox2 = document.getElementById('hoverBox2');
 maps = mage.maps;
 
-let currentMap = {};
-let currentMapName = "";
+mage.mapManager = {};
+if (!mage.mapManager.currentMap) {
+    mage.mapManager.currentMap = {};
+}
+if (!mage.mapManager.currentMapName) {
+    mage.mapManager.currentMapName = "dorms";
+}
+let currentMap = mage.mapManager.currentMap;
+let currentMapName = mage.mapManager.currentMapName;
 function resolveGlobal(path) {
     return path.split('.').reduce(function (obj, prop) {
         return obj && obj[prop];
@@ -20,9 +28,6 @@ function loadMap(mapName) {
     fillMap(currentMap);
 }
 
-
-currentMapName = "dorms";
-
 // Render the map as soon as the Map tab appears
 window.addEventListener('DOMContentLoaded', function () {
     const mapDisplay = document.getElementById('worldMap');
@@ -35,11 +40,12 @@ window.addEventListener('DOMContentLoaded', function () {
 //---------------------------//
 // Dialogue Management       //
 //---------------------------//
-let mapDialogue = {
+mage.mapManager.dialogue = {
     gribbletharp: {
         comeHereOften: true
     }
 }
+let mapDialogue = mage.mapManager.dialogue;
 
 // helper: resolve a handler function for a node
 function resolveHandler(node) {
@@ -214,6 +220,37 @@ function delink(el, type, clicked) {
 }
 
 
+//---------------------------//
+// Map Box                   //
+//---------------------------//
+const mapBox = document.getElementById("mapBox");
+
+//Shady Shop
+const shadyShop = document.createElement("div");
+const shadyName = document.createElement("div");
+shadyName.textContent = 'Shady Shop';
+shadyName.style.color = "#453f4a";
+shadyShop.classList.add('mapShop');
+shadyShop.appendChild(shadyName);
+const shadyLine = document.createElement("hr");
+shadyLine.classList.add('hoverBuyDiv');
+shadyShop.appendChild(shadyLine);
+const shadyBuy1 = document.createElement("button");
+shadyBuy1.textContent = 'Buy Ink';
+shadyBuy1.classList.add('shopBuyBtn');
+shadyBuy1.dataset.item = 'shadyInk';
+shadyShop.appendChild(shadyBuy1);
+const shadyBuy2 = document.createElement("button");
+shadyBuy2.textContent = 'The Frog';
+shadyBuy2.classList.add('shopBuyBtn');
+shadyBuy2.dataset.item = 'shadyFrog';
+shadyShop.appendChild(shadyBuy2);
+shadyBuy1.addEventListener("click", function () {
+    buyInk();
+})
+shadyBuy2.addEventListener("click", function () {
+    buyFrog();
+});
 
 //---------------------------//
 // 1 Billion Functions       //
@@ -228,7 +265,7 @@ function clickPlayer() {
 function doorHome(position) {
     console.log("Clicked Home Door");
     doorUp(position);
-    document.getElementById('hoverBox').classList.remove('show');
+    document.getElementById('hoverBox2').classList.remove('show');
     goInside();
 }
 
@@ -253,6 +290,9 @@ function friendlyClassmate2A() {
     sendToLog("<span style='color: #399500;'>" + maps.dorms.keyData["1"].name + ": You don't remember me, dude? It's me, Gribbletharp, I live RIGHT next door, hello?</span>");
     sendToLog("You think that name sucks.");
     maps.dorms.keyData["1"].name = "Gribbletharp";
+    mage.maps.dorms.keyData["1"].name = "Gribbletharp";
+    mage.maps.dorms.keyData["1"].hoverTitle = "Gribbletharp";
+    maps.dorms.keyData["1"].hoverTitle = "Gribbletharp";
 }
 
 function friendlyClassmate2B() {
@@ -297,7 +337,7 @@ function clickShadyClassmate(position) {
 
 function shadyClassmateA() {
     sendToLog("He glances around for a moment, then cautiously opens up his trenchcoat.");
-    sendToLog("From within, he slowly pulls out a toad. A very warty toad.");
+    sendToLog("From within, he slowly pulls out a toad. It is very warty, and you do not like looking at it.");
     sendClickLog(maps.dorms.keyData["4"].name + ": I beg of you. Buy my [click:shadyClassmateA1]toad[/click]", "#453f4a");
 }
 
@@ -309,7 +349,8 @@ function shadyClassmateA1() {
     sendClickLog(maps.dorms.keyData["4"].name + ": Well, perhaps I can interest you in [click:shadyClassmateA1_1]something else[/click]...", "#453f4a");
 }
 function shadyClassmateA1_1() {
-
+    mapBox.classList.add("show");
+    mapBox.appendChild(shadyShop);
 }
 
 function shadyClassmateB() {
@@ -466,7 +507,7 @@ function fillMap(map) {
                     allSpans[i].style.cursor = "pointer";
                     allSpans[i].style.userSelect = "none";
                     allSpans[i].addEventListener("mouseover", function () {
-                        hoverBox.classList.add('show');
+                        hoverBox2.classList.add('show');
                         setMapText(keyData.hoverTitle, keyData.hoverText);
                     });
                 } else {
@@ -474,11 +515,11 @@ function fillMap(map) {
                     allSpans[i].style.userSelect = "none";
                 }
                 allSpans[i].addEventListener("mouseout", function () {
-                    hoverBox.classList.remove('show');
+                    hoverBox2.classList.remove('show');
                 });
                 allSpans[i].addEventListener('mousemove', function (e) {
-                    hoverBox.style.left = (e.pageX + 10) + 'px';
-                    hoverBox.style.top = (e.pageY + 10) + 'px';
+                    hoverBox2.style.left = (e.pageX + 10) + 'px';
+                    hoverBox2.style.top = (e.pageY + 10) + 'px';
                 });
             }
 
