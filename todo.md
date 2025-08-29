@@ -1,12 +1,11 @@
 # Mage TODO
 
-_Last updated: 2025-8-26_
+_Last updated: 2025-8-28_
 
 ## Currently Working On
-- [ ] 
+- [ ] New Room
 
 ## Features to Add
-- [ ] Add dialogue choices to map
 - [ ] Outside will have a phone which will slide out from the bottom right I think
 
 ---
@@ -22,7 +21,7 @@ _Last updated: 2025-8-26_
 - [ ] Make Rune XP visible
 - [ ] Add even more runes (esp some that unlock at certain levels)
 - [ ] Add check for save data + wipe save button
-- [ ] Add settings
+- [ ] Polish dorms dialogue
 
 ## Code garbagae
 
@@ -34,6 +33,8 @@ _Last updated: 2025-8-26_
 ---
 
 ## Done
+- [x] Add settings 8/28/25
+- [x] Add dialogue choices to map 8/28/25
 - [x] Change worldmap rune dialogue when runes are high enough 8/26/25
 - [x] Fix Debug Hoverbox 8/25/25
 - [x] Fix log gradient thingy 8/24/25
