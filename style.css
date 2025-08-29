@@ -17,6 +17,7 @@ html, body {
 
 .topBar {
     border-bottom: 1px solid black;
+    position: relative;
 }
 .bottomBar {
     border-top: 1px solid black;
@@ -26,6 +27,59 @@ html, body {
     font-style: italic;
     text-align: left;
 }
+
+.settingsContainer {
+  position: relative;
+  display: inline-block;
+}
+.settingsBtn {
+    color: gray;
+    text-decoration: none;
+}
+.settingsBtn:hover {
+    color:rgb(84, 84, 84);
+    white-space: pre;
+}
+.settings {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  display: none;
+  flex-direction: column;
+  background: white;
+  border: 1px solid #ccc;
+  z-index: 10;
+  min-width: max-content;
+}
+.settings.show {
+  display: flex;
+}
+.settings > div {
+  flex: 0 0 auto;         
+  white-space: nowrap;    
+  padding: 6px 16px;
+}
+.volumeDiv{
+  display:flex;
+  align-items:center; 
+  justify-content:center;
+  gap:8px;
+}
+.volumeDiv label{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;   
+  line-height:1;    
+  height:24px;      
+}
+.volumeDiv input[type="range"]{
+  margin:0;
+  height:24px;
+  box-sizing:content-box;
+  vertical-align:middle;
+}
+
 
 .gameMain {
     display: flex;

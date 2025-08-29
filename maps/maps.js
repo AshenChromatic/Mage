@@ -118,6 +118,7 @@ window.defaults = window.defaults || {};
         },
         "5": {
           type: "doorHome",
+          locked: false,
           color: "#00c0c0",
           hoverTitle: "Your Dorm",
           hoverText: "Click to go back home.",

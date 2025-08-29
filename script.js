@@ -394,12 +394,16 @@ function deepMergeDefaults(target, defaults, overrides) {
         }
     }
     //Manual overrides for Reasons
-    if (mage.maps.dorms.keyData["3"].name === "tbd") {
-        mage.maps.dorms.keyData["3"].name = "Good Classmate";
+    if (mage.maps.dorms.keyData["3"]) {
+        if (mage.maps.dorms.keyData["3"].name === "tbd") {
+            mage.maps.dorms.keyData["3"].name = "Good Classmate";
+        }
     }
-    if(mage.maps.dorms.keyData["2"].name === "tbd") {
-        mage.maps.dorms.keyData["2"].name = "Evil Classmate";
-    }
+    if (mage.maps.dorms.keyData["2"]) {
+        if(mage.maps.dorms.keyData["2"].name === "tbd") {
+            mage.maps.dorms.keyData["2"].name = "Evil Classmate";
+        }
+    }   
 }
 
 // applySave: given a parsed saveData object, apply it to the game state
@@ -722,6 +726,10 @@ document.getElementById('leaveHouseBtn').addEventListener('click', function (e) 
 
 });
 
+let mapTheme = new Audio('maps/map.mp3');
+let music = null; // Global reference to currently playing music
+let volume = 0.5;
+
 function goOutside() {
     document.getElementById('insideHouse').classList.remove('show');
     document.getElementById('worldMap').classList.add('show');
@@ -733,6 +741,17 @@ function goOutside() {
     if (!hoverMapOld.classList.contains('show')) {
         hoverMapOld.classList.add('show');
     }
+    playMusic(mapTheme);
+}
+
+function playMusic(musicTrack) {
+    if (music && music !== musicTrack) {
+        stopMusic(music);
+    }
+    music = musicTrack;
+    music.loop = true;
+    music.volume = volume; // Set initial volume
+    music.play();
 }
 
 function goInside() {
@@ -742,6 +761,12 @@ function goInside() {
     if (!hoverBuyOld.classList.contains('show')) {
         hoverBuyOld.classList.add('show');
     }
+    stopMusic(mapTheme);
+}
+
+function stopMusic(music) {
+    music.pause();
+music.currentTime = 0;
 }
 
 //---------------------------//
@@ -1309,6 +1334,27 @@ function gradeRune(drawnLines, rune) {
         enableRuneDrawing(canvas, ctx, newRandomRune);
     }
 }
+
+//---------------------------//
+// Options                   //
+//---------------------------//
+const settingsBtn = document.getElementById("settingsBtn");
+const settingsBox = document.getElementById("settingsBox");
+
+settingsBtn.addEventListener("click", e => {
+  e.preventDefault();
+  settingsBox.classList.toggle("show");
+});
+
+const slider = document.getElementById('volumeSlider');
+slider.addEventListener('input', function() {
+  const volume = parseFloat(this.value);
+  updateVolume(volume);
+});
+function updateVolume(volume) {
+    music.volume = volume;
+}
+
 
 //---------------------------//
 // Debug                     //

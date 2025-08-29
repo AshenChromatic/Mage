@@ -30,8 +30,16 @@
             <span class="tilde show" id="importSpace"> | </span>
             <a href="#" class="tabLink show" id="importBtn">Import Save</a>
         </div>
-        <div class="title">
-            <a href="#" class="settingsBtn" id="settingsBtn">Settings</a>
+        <div class="settingsContainer">
+            <div class="title">
+                <a href="#" class="settingsBtn" id="settingsBtn">Settings</a>
+            </div>
+            <div class="settings" id="settingsBox">
+                <div>Volume</div>
+                <div class="volumeDiv"><label for="volumeSlider">🔊</label>
+                    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
+                </div>
+            </div>
         </div>
     </div>
 
