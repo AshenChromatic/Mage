@@ -385,7 +385,7 @@ function shadyClassmateB() {
 }
 
 function shadyClassmateC() {
-    sendClickLog(maps.dorms.keyData["4"].name + ": Heh... as if someone like you could afford one of [click:shadyClassmateC1]these[/click].", "#453f4a");
+    sendClickLog(mage.maps.dorms.keyData["4"].name + ": Heh... as if someone like you could afford one of [click:shadyClassmateC1]these[/click].", "#453f4a");
 }
 
 function shadyClassmateC1() {
