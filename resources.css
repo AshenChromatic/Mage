@@ -7,7 +7,9 @@
 .garbageRuneDisplay,
 .okRuneDisplay,
 .goodRuneDisplay,
-.perfectRuneDisplay {
+.perfectRuneDisplay,
+.inkDisplay,
+.frogDisplay {
     display: flex;
     flex-direction: row;
     justify-content: left;
@@ -25,7 +27,9 @@
 .garbageRuneDisplay.show,
 .okRuneDisplay.show,
 .goodRuneDisplay.show,
-.perfectRuneDisplay.show {
+.perfectRuneDisplay.show,
+.inkDisplay.show,
+.frogDisplay.show {
     opacity: 1;
     visibility: visible;
     display: flex;
