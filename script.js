@@ -1,7 +1,10 @@
 const debug = false;
-window.mage = {
+window.mage = window.mage || {};
+window.defaults = window.defaults || {};
+defaults = {
     playerColor: "#ff0000ff",
-    slut: 0
+    slut: 0,
+    whatMusic: null
 };
 window.defaults = window.defaults || {};
 
@@ -555,6 +558,11 @@ function applySave(saveData) {
         runeLevelDisplay.textContent = `Rune Level: ${progress.runeLevel}`;
     }
 
+    //Play music
+    if (mage.whatMusic) {
+  playMusic(mage.whatMusic);
+}
+
     // Final: give a small notification
     console.log("Save imported successfully.");
 };
@@ -726,9 +734,7 @@ document.getElementById('leaveHouseBtn').addEventListener('click', function (e) 
 
 });
 
-let mapTheme = new Audio('maps/map.mp3');
-let music = null; // Global reference to currently playing music
-let volume = 0.5;
+
 
 function goOutside() {
     document.getElementById('insideHouse').classList.remove('show');
@@ -741,17 +747,7 @@ function goOutside() {
     if (!hoverMapOld.classList.contains('show')) {
         hoverMapOld.classList.add('show');
     }
-    playMusic(mapTheme);
-}
-
-function playMusic(musicTrack) {
-    if (music && music !== musicTrack) {
-        stopMusic(music);
-    }
-    music = musicTrack;
-    music.loop = true;
-    music.volume = volume; // Set initial volume
-    music.play();
+    playMusic('mapTheme');
 }
 
 function goInside() {
@@ -761,12 +757,50 @@ function goInside() {
     if (!hoverBuyOld.classList.contains('show')) {
         hoverBuyOld.classList.add('show');
     }
-    stopMusic(mapTheme);
+    stopMusic('mapTheme');
 }
 
-function stopMusic(music) {
+
+//---------------------------//
+// Music                     //
+//---------------------------//
+
+window.game = window.game || {};
+window.game.audioKeys = {
+  mapTheme: 'maps/map.mp3',
+  // add more keys and paths as needed
+};
+
+window.game.audio = {};
+for (const key in window.game.audioKeys) {
+  window.game.audio[key] = new Audio(window.game.audioKeys[key]);
+}
+let volume = 0.5;
+let music = null;
+function playMusic(key) {
+  if (music && typeof music.pause === 'function') {
+    stopMusic();
+  }
+  const audioObj = window.game.audio[key];
+  if (!audioObj) {
+    console.warn('No audio found for key:', key);
+    return;
+  }
+  music = audioObj;
+  music.currentTime = 0; // Optionally restart from beginning
+  music.loop = true;
+  music.volume = volume;
+  music.play();
+  mage.whatMusic = key;
+}
+
+  function stopMusic() {
+  if (music && typeof music.pause === 'function') {
     music.pause();
-music.currentTime = 0;
+    music.currentTime = 0;
+  }
+  music = null;
+  mage.whatMusic = null;
 }
 
 //---------------------------//

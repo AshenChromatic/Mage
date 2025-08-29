@@ -188,10 +188,11 @@ html, body {
 }
 .bottomLog {
     position:relative;
-    height: 199px;
+    min-height: 199px;
+    max-height: 299px;
     display: flex;
     flex-direction: column;
-    flex-shrink: 0;
+    flex: 1 1 0;
     border-top: 1px solid black;
 }
 

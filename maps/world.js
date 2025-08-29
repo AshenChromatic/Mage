@@ -17,6 +17,10 @@ function resolveGlobal(path) {
     }, window);
 }
 
+function getKeyData(mapName) {
+  return mage.maps[mapName].keyData;
+}
+
 
 //---------------------------//
 // Dialogue Management       //
@@ -47,6 +51,9 @@ defaults.mapManager.dialogue = {
         specialPlingus: false,
         killedHer: false,
     }
+}
+function getDialogue(character) {
+    return mage.mapManager.dialogue[character] || {};
 }
 
 // helper: resolve a handler function for a node
@@ -283,40 +290,40 @@ function doorHome(position, keyData) {
 function clickFriendlyClassmate(position) {
     console.log("Clicked Friendly Classmate");
     sendPlayerRight(position);
-    sendClickLog(mage.maps.dorms.keyData["1"].name + ": Hey man. You [click:friendlyClassmate1]need something[/click]?", "#399500");
+    sendClickLog(getKeyData("dorms")["1"].name + ": Hey man. You [click:friendlyClassmate1]need something[/click]?", "#399500");
 }
 
 function friendlyClassmate1() {
     console.log("Clicked Friendly Classmate 1");
-    if (mage.mapManager.dialogue.gribbletharp.named === false) {
+    if (getDialogue("gribbletharp").named === false) {
         choiceToLog("Who are you?", friendlyClassmate2A);
     };
     choiceToLog("How do I get money?", friendlyClassmate2B);
-    if (mage.mapManager.dialogue.gribbletharp.comeHereOften === true) {
+    if (getDialogue("gribbletharp").comeHereOften === true) {
         choiceToLog("Come here often?", friendlyClassmate2C);
     };
 }
 
 function friendlyClassmate2A() {
     console.log("Clicked Friendly Classmate 2A");
-    sendToLog("<span style='color: #399500;'>" + mage.maps.dorms.keyData["1"].name + ": You don't remember me, dude? It's me, Gribbletharp, I live RIGHT next door, hello?</span>");
+    sendToLog("<span style='color: #399500;'>" + getKeyData("dorms")["1"].name + ": You don't remember me, dude? It's me, Gribbletharp, I live RIGHT next door, hello?</span>");
     sendToLog("You think that name sucks.");
-    mage.maps.dorms.keyData["1"].name = "Gribbletharp";
-    mage.maps.dorms.keyData["1"].name = "Gribbletharp";
-    mage.maps.dorms.keyData["1"].hoverTitle = "Gribbletharp";
-    mage.maps.dorms.keyData["1"].hoverTitle = "Gribbletharp";
-    mage.mapManager.dialogue.gribbletharp.named = true;
+    getKeyData("dorms")["1"].name = "Gribbletharp";
+    getKeyData("dorms")["1"].name = "Gribbletharp";
+    getKeyData("dorms")["1"].hoverTitle = "Gribbletharp";
+    getKeyData("dorms")["1"].hoverTitle = "Gribbletharp";
+    getDialogue("gribbletharp").named = true;
 }
 
 function friendlyClassmate2B() {
     console.log("Clicked Friendly Classmate 2B");
-    sendToLog("<span style='color: #399500;'>" + mage.maps.dorms.keyData["1"].name + ": Uh, you get a job??? I'm not giving you any money, freak.</span>");
-    sendToLog("What a foolish idea. " + mage.maps.dorms.keyData["1"].name + " must be some type of moron.");
+    sendToLog("<span style='color: #399500;'>" + getKeyData("dorms")["1"].name + ": Uh, you get a job??? I'm not giving you any money, freak.</span>");
+    sendToLog("What a foolish idea. " + getKeyData("dorms")["1"].name + " must be some type of moron.");
 }
 
 function friendlyClassmate2C() {
     console.log("Clicked Friendly Classmate 2C");
-    sendToLog("<span style='color: #399500;'>" + mage.maps.dorms.keyData["1"].name + ": ...yes? I live here, idiot.</span>");
+    sendToLog("<span style='color: #399500;'>" + getKeyData("dorms")["1"].name + ": ...yes? I live here, idiot.</span>");
     choiceToLog("Woah, what a coincidence, I also live here! We should kiss...", friendlyClassmate3A);
     choiceToLog("That can't be true. I've never seen you before.", friendlyClassmate3B);
     choiceToLog("*leave*", friendlyClassmate3C);
@@ -324,33 +331,33 @@ function friendlyClassmate2C() {
 
 function friendlyClassmate3A() {
     mage.slut += 1;
-    sendToLog("<span style='color: #399500;'>" + mage.maps.dorms.keyData["1"].name + ": ???</span>");
+    sendToLog("<span style='color: #399500;'>" + getKeyData("dorms")["1"].name + ": ???</span>");
     sendToLog("He gives you a weird look. Thankfully, nobody else was watching. You decide to walk away and never speak of this again.");
-    mage.mapManager.dialogue.gribbletharp.comeHereOften = false;
+    getDialogue("gribbletharp").comeHereOften = false;
 }
 
 function friendlyClassmate3B() {
-    sendToLog("<span style='color: #399500;'>" + mage.maps.dorms.keyData["1"].name + ": Oh really? The shut-in mage hasn't seen me around? I'm truly baffled.</span>");
+    sendToLog("<span style='color: #399500;'>" + getKeyData("dorms")["1"].name + ": Oh really? The shut-in mage hasn't seen me around? I'm truly baffled.</span>");
     sendToLog("You appear to lack a counterargument to this.");
 }
 
 function friendlyClassmate3C() {
     sendToLog("You decide you do not care about this man's existence.")
-    mage.mapManager.dialogue.gribbletharp.comeHereOften = false;
+    getDialogue("gribbletharp").comeHereOften = false;
 }
 
 //shadyClassmate
 function clickShadyClassmate(position) {
     sendPlayerLeft(position);
     sendToLog("You approach the individual tucked away in the corner. Despite the sunglasses on his face, you can tell he's watching you as you walk up to him.");
-    if (!mage.mapManager.dialogue.shadyClassmate.shadyShop) {
+    if (!getDialogue("shadyClassmate").shadyShop) {
         choiceToLog("Why are you skulking around?", shadyClassmateA);
     };
-    if (mage.mapManager.dialogue.shadyClassmate.shadyShop) {
+    if (getDialogue("shadyClassmate").shadyShop) {
         choiceToLog("Show me the goods.", shadyClassmateA1_1);
     };
     choiceToLog("Hey man, what's up?", shadyClassmateB);
-    if (mage.mapManager.dialogue.shadyClassmate.shades !== true) {
+    if (getDialogue("shadyClassmate").shades !== true) {
         choiceToLog("Where can I get shades like that?", shadyClassmateC);
     }
 }
@@ -358,25 +365,25 @@ function clickShadyClassmate(position) {
 function shadyClassmateA() {
     sendToLog("He glances around for a moment, then cautiously opens up his trenchcoat.");
     sendToLog("From within, he slowly pulls out a toad. It is very warty, and you do not like looking at it.");
-    sendClickLog(mage.maps.dorms.keyData["4"].name + ": I beg of you. Buy my [click:shadyClassmateA1]toad[/click]", "#453f4a");
+    sendClickLog(getKeyData("dorms")["4"].name + ": I beg of you. Buy my [click:shadyClassmateA1]toad[/click]", "#453f4a");
 }
 
 function shadyClassmateA1() {
     sendToLog("He looks at you with pleading eyes.");
-    sendClickLog(mage.maps.dorms.keyData["4"].name + ": Please, I need this.", "#453f4a");
+    sendClickLog(getKeyData("dorms")["4"].name + ": Please, I need this.", "#453f4a");
     sendToLog("You are not touching that toad.");
     sendToLog("He looks disappointed, and solemnly places the toad back in his trenchcoat.");
-    sendClickLog(mage.maps.dorms.keyData["4"].name + ": Well, perhaps I can interest you in [click:shadyClassmateA1_1]something else[/click]...", "#453f4a");
+    sendClickLog(getKeyData("dorms")["4"].name + ": Well, perhaps I can interest you in [click:shadyClassmateA1_1]something else[/click]...", "#453f4a");
 }
 function shadyClassmateA1_1() {
     mapBox.classList.add("show");
     mapBox.appendChild(shadyShop);
-    mage.mapManager.dialogue.shadyClassmate.shadyShop = true;
+    getDialogue("shadyClassmate").shadyShop = true;
 }
 
 function shadyClassmateB() {
-    if (mage.mapManager.dialogue.shadyClassmate.affection > 0) {
-        sendClickLog(mage.maps.dorms.keyData["4"].name + ": Still working off that debt...", "#453f4a");
+    if (getDialogue("shadyClassmate").affection > 0) {
+        sendClickLog(getKeyData("dorms")["4"].name + ": Still working off that debt...", "#453f4a");
     }
     else {
         sendToLog("Somehow, you can feel him narrowing his eyes at you from behind his shades.");
@@ -385,30 +392,30 @@ function shadyClassmateB() {
 }
 
 function shadyClassmateC() {
-    sendClickLog(mage.maps.dorms.keyData["4"].name + ": Heh... as if someone like you could afford one of [click:shadyClassmateC1]these[/click].", "#453f4a");
+    sendClickLog(getKeyData("dorms")["4"].name + ": Heh... as if someone like you could afford one of [click:shadyClassmateC1]these[/click].", "#453f4a");
 }
 
 function shadyClassmateC1() {
-    sendClickLog(mage.maps.dorms.keyData["4"].name + ": My [click:shadyClassmateC1_1]Arcane Goggles of Inscrutibility[/click]... they cost me so much... now I have to sell everything I can to pay off my debt.", "#453f4a");
+    sendClickLog(getKeyData("dorms")["4"].name + ": My [click:shadyClassmateC1_1]Arcane Goggles of Inscrutibility[/click]... they cost me so much... now I have to sell everything I can to pay off my debt.", "#453f4a");
 }
 
 function shadyClassmateC1_1() {
     sendToLog("To be honest, they do look quite nice.")
-    sendClickLog(mage.maps.dorms.keyData["4"].name + ": They give me +10 defense against scrutibility, and enhance my <span style='color: #9900ffff;'> Shadow Magic</span> by 50%. Jealous?", "#453f4a");
+    sendClickLog(getKeyData("dorms")["4"].name + ": They give me +10 defense against scrutibility, and enhance my <span style='color: #9900ffff;'> Shadow Magic</span> by 50%. Jealous?", "#453f4a");
     choiceToLog("Yes...", shadyClassmateC1_1A)
     choiceToLog("No.", shadyClassmateC1_1B)
 }
 
 function shadyClassmateC1_1A() {
     sendToLog("He smirks condescendingly at you.");
-    mage.mapManager.dialogue.shadyClassmate.affection += 1;
-    mage.mapManager.dialogue.shadyClassmate.shades = true;
+    getDialogue("shadyClassmate").affection += 1;
+    getDialogue("shadyClassmate").shades = true;
 }
 
 function shadyClassmateC1_1B() {
     sendToLog("He frowns condescendingly at you.");
-    mage.mapManager.dialogue.shadyClassmate.affection -= 1;
-    mage.mapManager.dialogue.shadyClassmate.shades = true;
+    getDialogue("shadyClassmate").affection -= 1;
+    getDialogue("shadyClassmate").shades = true;
 }
 
 
@@ -416,12 +423,12 @@ function shadyClassmateC1_1B() {
 
 function clickEvilClassmate(position) {
     sendPlayerUp(position);
-    if (mage.mapManager.dialogue.goodClassmate.alive && mage.mapManager.dialogue.evilClassmate.alive) {
+    if (getDialogue("goodClassmate").alive && getDialogue("evilClassmate").alive) {
         sendClickLog("He appears to be in a duel with Good Classmate. Are you sure you want to [click:evilClassmateA]bother him?[/click]");
     }
-    else if (mage.mapManager.dialogue.evilClassmate.alive && !mage.mapManager.dialogue.goodClassmate.alive && mage.mapManager.dialogue.evilClassmate.first === true) {
-        sendClickLog(mage.maps.dorms.keyData["2"].name + ": Wow.", "#5700AE");
-        sendClickLog(mage.maps.dorms.keyData["2"].name + ": Was not expecting [click:evilClassmate1]that[/click] to happen. Get fucking owned I guess.", "#5700AE");
+    else if (getDialogue("evilClassmate").alive && !getDialogue("goodClassmate").alive && getDialogue("evilClassmate").first === true) {
+        sendClickLog(getKeyData("dorms")["2"].name + ": Wow.", "#5700AE");
+        sendClickLog(getKeyData("dorms")["2"].name + ": Was not expecting [click:evilClassmate1]that[/click] to happen. Get fucking owned I guess.", "#5700AE");
     }
     else {
         evilClassmate5();
@@ -433,66 +440,66 @@ function evilClassmateA() {
     setTile(5, 26, "x");
     setKeys([[4,26], [3,26], [4,25], [5,24], [3,23]], "x");
     setTiles([[4,26], [3,26], [4,25], [5,24], [3,23]], "`");
-    mage.mapManager.dialogue.evilClassmate.alive = false;
-    mage.maps.dorms.keyData["2"].hoverText = "He is very much dead.";
-    mage.maps.dorms.keyData["2"].fn = "ignore";
-    mage.maps.dorms.keyData["3"].hoverText = "No longer in a wizard duel.";
+    getDialogue("evilClassmate").alive = false;
+    getKeyData("dorms")["2"].hoverText = "He is very much dead.";
+    getKeyData("dorms")["2"].fn = "ignore";
+    getKeyData("dorms")["3"].hoverText = "No longer in a wizard duel.";
 }
 
 function evilClassmate1() {
-    sendClickLog(mage.maps.dorms.keyData["2"].name + ": I mean, exactly as I planned.", "#5700AE");
-    sendClickLog(mage.maps.dorms.keyData["2"].name + ": I knew you would distract her and get her killed. And this was definitely meant to be a [click:evilClassmate2]duel to the death[/click].", "#5700AE");
+    sendClickLog(getKeyData("dorms")["2"].name + ": I mean, exactly as I planned.", "#5700AE");
+    sendClickLog(getKeyData("dorms")["2"].name + ": I knew you would distract her and get her killed. And this was definitely meant to be a [click:evilClassmate2]duel to the death[/click].", "#5700AE");
 }
 
 function evilClassmate2() {
-    sendClickLog(mage.maps.dorms.keyData["2"].name + ": Don't you know? It's pretty common for wizards to settle [click:evilClassmate3]disputes[/click] with a duel...", "#5700AE");
+    sendClickLog(getKeyData("dorms")["2"].name + ": Don't you know? It's pretty common for wizards to settle [click:evilClassmate3]disputes[/click] with a duel...", "#5700AE");
 }
 
 function evilClassmate3() {
-    sendClickLog(mage.maps.dorms.keyData["2"].name + ": What were we fighting over? That BITCH was saying SHE should have custody of [click:evilClassmate4]Plingus[/click]...", "#5700AE");
+    sendClickLog(getKeyData("dorms")["2"].name + ": What were we fighting over? That BITCH was saying SHE should have custody of [click:evilClassmate4]Plingus[/click]...", "#5700AE");
 }
 
 function evilClassmate4() {
-    sendToLog(mage.maps.dorms.keyData["2"].name + " points to a cat slinking around by his feet");
-    sendClickLog(mage.maps.dorms.keyData["2"].name + ": I don't care what that BITCH says. Plingus is mine.", "#5700AE");
-    mage.mapManager.dialogue.evilClassmate.first = false;
+    sendToLog(getKeyData("dorms")["2"].name + " points to a cat slinking around by his feet");
+    sendClickLog(getKeyData("dorms")["2"].name + ": I don't care what that BITCH says. Plingus is mine.", "#5700AE");
+    getDialogue("evilClassmate").first = false;
     evilClassmate5();
 }
 
 function evilClassmate5() {
-    if (mage.mapManager.dialogue.evilClassmate.specialPlingus === false) {
+    if (getDialogue("evilClassmate").specialPlingus === false) {
         choiceToLog("What's so special about Plingus?", evilClassmate5A);
     }
-    if (mage.mapManager.dialogue.evilClassmate.killedHer === false) {
+    if (getDialogue("evilClassmate").killedHer === false) {
         choiceToLog("So you killed her???", evilClassmate5B);
     }
-    if (mage.mapManager.dialogue.evilClassmate.specialPlingus === true) {
+    if (getDialogue("evilClassmate").specialPlingus === true) {
         choiceToLog("Can I pet the Plingus?", evilClassmate5C);
     }
 }
 
 function evilClassmate5A() {
     sendToLog("He gives you a stern look.")
-    sendClickLog(mage.maps.dorms.keyData["2"].name + ": Just [click:evilClassmate5A1]look[/click] at him...", "#5700AE");
+    sendClickLog(getKeyData("dorms")["2"].name + ": Just [click:evilClassmate5A1]look[/click] at him...", "#5700AE");
 }
 
 function evilClassmate5A1 () {
     sendToLog("You look at Plingus.")
     sendToLog("He is currently eating Good Classmate's remains.")
-    mage.mapManager.dialogue.evilClassmate.specialPlingus = true;
-    mage.maps.dorms.keyData["3"].hoverText = "Plingus sits happily atop her corpse.";
+    getDialogue("evilClassmate").specialPlingus = true;
+    getKeyData("dorms")["3"].hoverText = "Plingus sits happily atop her corpse.";
 }
 
 function evilClassmate5B() {
-    sendClickLog(mage.maps.dorms.keyData["2"].name + ": Well of course. I assure you this was a school-sanctioned fight to the death.", "#5700AE");
-    mage.mapManager.dialogue.evilClassmate.killedHer = true;
+    sendClickLog(getKeyData("dorms")["2"].name + ": Well of course. I assure you this was a school-sanctioned fight to the death.", "#5700AE");
+    getDialogue("evilClassmate").killedHer = true;
 }
 
 function evilClassmate5C() {
     sendToLog("He looks you up and down.");
-    sendClickLog(mage.maps.dorms.keyData["2"].name + ": Of course. It's thanks to you that he is mine now after all.", "#5700AE");
+    sendClickLog(getKeyData("dorms")["2"].name + ": Of course. It's thanks to you that he is mine now after all.", "#5700AE");
     petThePlingus();
-    mage.maps.dorms.keyData["3"].fn = "petThePlingus";
+    getKeyData("dorms")["3"].fn = "petThePlingus";
     fillMap(currentMap);
 }
 
@@ -502,12 +509,12 @@ function petThePlingus() {
 
 function clickGoodClassmate(position) {
     sendPlayerUp(position);
-    if (mage.mapManager.dialogue.goodClassmate.alive && mage.mapManager.dialogue.evilClassmate.alive) {
+    if (getDialogue("goodClassmate").alive && getDialogue("evilClassmate").alive) {
         sendClickLog("She appears to be in a duel with Evil Classmate. Are you sure you want to [click:goodClassmateA]bother her?[/click]");
     }
-    else if (mage.mapManager.dialogue.goodClassmate.alive && !mage.mapManager.dialogue.evilClassmate.alive && mage.mapManager.dialogue.goodClassmate.first === true) {
-        sendClickLog(mage.maps.dorms.keyData["3"].name + ": Oh... oh my god...", "#ffb700");
-        sendClickLog(mage.maps.dorms.keyData["3"].name + ": Oh fuck oh fuck oh fuck. I- I didn't- this isn't [click:goodClassmate1] what I wanted[/click], I swear I- I don't- what do I do? oh god oh shit.", "#ffb700");
+    else if (getDialogue("goodClassmate").alive && !getDialogue("evilClassmate").alive && getDialogue("goodClassmate").first === true) {
+        sendClickLog(getKeyData("dorms")["3"].name + ": Oh... oh my god...", "#ffb700");
+        sendClickLog(getKeyData("dorms")["3"].name + ": Oh fuck oh fuck oh fuck. I- I didn't- this isn't [click:goodClassmate1] what I wanted[/click], I swear I- I don't- what do I do? oh god oh shit.", "#ffb700");
     }
     else {
         goodClassmate3();
@@ -520,10 +527,10 @@ function goodClassmateA() {
     setTile(6, 26, "x");
     setKeys([[7,26], [8,26], [7,25], [6,24], [8,23]], "x");
     setTiles([[7,26], [8,26], [7,25], [6,24], [8,23]], ",");
-    mage.mapManager.dialogue.goodClassmate.alive = false;
-    mage.maps.dorms.keyData["3"].hoverText = "She is very much dead.";
-    mage.maps.dorms.keyData["3"].fn = "ignore";
-    mage.maps.dorms.keyData["2"].hoverText = "No longer in a wizard duel.";
+    getDialogue("goodClassmate").alive = false;
+    getKeyData("dorms")["3"].hoverText = "She is very much dead.";
+    getKeyData("dorms")["3"].fn = "ignore";
+    getKeyData("dorms")["2"].hoverText = "No longer in a wizard duel.";
 }
 
 function goodClassmate1 () {
@@ -533,19 +540,19 @@ function goodClassmate1 () {
 function goodClassmate2 () {
     sendClickLog("Plingus... the cat that lives in our dorms...", "#ffb700");
     sendToLog("She points to a cat sitting atop Evil Classmate's remains.");
-    mage.mapManager.dialogue.goodClassmate.first = false;
-    mage.maps.dorms.keyData["2"].hoverText = "Plingus sits happily atop his corpse.";
+    getDialogue("goodClassmate").first = false;
+    getKeyData("dorms")["2"].hoverText = "Plingus sits happily atop his corpse.";
     goodClassmate3();
 }
 
 function goodClassmate3() {
-    if (mage.mapManager.dialogue.goodClassmate.specialPlingus === false) {
+    if (getDialogue("goodClassmate").specialPlingus === false) {
         choiceToLog("What's so special about Plingus?", goodClassmate3A);
     }
-    if (mage.mapManager.dialogue.goodClassmate.killedHim === false) {
+    if (getDialogue("goodClassmate").killedHim === false) {
         choiceToLog("So you killed him?", goodClassmate3B);
     }
-    if (mage.mapManager.dialogue.goodClassmate.specialPlingus === true) {
+    if (getDialogue("goodClassmate").specialPlingus === true) {
         choiceToLog("Can I pet him?", goodClassmate3C);
     }
 }
@@ -553,19 +560,19 @@ function goodClassmate3() {
 function goodClassmate3A() {
     sendClickLog("Good Classmate: Plingus is the best cat in the world!", "#ffb700");
     sendToLog("You look at Plingus. He has begun to eat Evil Classmate's remains.");
-    mage.mapManager.dialogue.goodClassmate.specialPlingus = true;
+    getDialogue("goodClassmate").specialPlingus = true;
 }
 
 function goodClassmate3B() {
     sendClickLog("Good Classmate: I- I didn't mean to! HE started the fight, but, oh god, it wasn't supposed to be like this...", "#ffb700");
     sendToLog("Ok.");
-    mage.mapManager.dialogue.goodClassmate.killedHim = true;
+    getDialogue("goodClassmate").killedHim = true;
 }
 
 function goodClassmate3C() {
     sendClickLog("Good Classmate: Of course you can pet him!", "#ffb700");
     petThePlingus();
-    mage.maps.dorms.keyData["2"].fn = "petThePlingus";
+    getKeyData("dorms")["2"].fn = "petThePlingus";
     fillMap(currentMap);
 }
 

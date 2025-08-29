@@ -1,14 +1,15 @@
 //---------------------------//
 // Hoverbox                  //
 //---------------------------//
-
-mage.shopItems = {
+window.game = window.game || {};
+game.shopItems = {
   orb: {
     desc: 'A mana orb that gathers and stores ambient mana from the environment.',
     effect: '+1 Mana/s <br> +50 Max Mana',
     flavor: 'Surprisingly unponderable.',
     resourceNeed: ['gold'],
     costs: [5],
+    ratio: 1.2,
     resourceGet: ['orb']
   },
   shadyInk: {
@@ -17,6 +18,7 @@ mage.shopItems = {
     flavor: 'ERROR: OUT OF CYAN. PLEASE REPLACE CARTRIDGE.',
     resourceNeed: ['gold'],
     costs: [1],
+    ratio: 1,
     resourceGet: ['Ink']
   },
   shadyFrog: {
@@ -32,12 +34,25 @@ mage.shopItems = {
   },
     resourceNeed: ['gold'],
     costs: [100],
+    ratio: 1,
     resourceGet: ['Frog']
   }
-
+};
+defaults.shopCount = {
+  orb: {
+    bought: 0
+  },
+  shadyInk: {
+    bought: 0
+  },
+  shadyFrog: {
+    bought: 0
+  }
 };
 
-let shopItems = mage.shopItems;
+deepMergeDefaults(window.mage, window.defaults);
+
+let shopItems = game.shopItems;
 
 
 const hoverBox = document.getElementById('hoverBox');
@@ -96,9 +111,20 @@ document.body.addEventListener('mouseover', function (e) {
   console.log('[mouseover] hoverBox shown');
   let desc = typeof item.desc === 'function' ? item.desc() : item.desc;
   let flavor = typeof item.flavor === 'function' ? item.flavor() : item.flavor;
-  setBuyText(desc, item.costs, item.effect, flavor, item.resourceNeed);
+  // Calculate dynamic costs
+  const bought = mage.shopCount[itemKey]?.bought || 0;
+  const dynamicCosts = item.costs.map((cost, i) => {
+    let ratio = 1;
+    if (Array.isArray(item.ratio)) {
+      ratio = item.ratio[i] !== undefined ? item.ratio[i] : 1;
+    } else if (typeof item.ratio === 'number') {
+      ratio = item.ratio;
+    }
+    return Math.floor(cost * Math.pow(ratio, bought));
+  });
+  setBuyText(desc, dynamicCosts, item.effect, flavor, item.resourceNeed);
   const hoverBoxBuy = document.getElementById('hoverBoxBuy');
-  if (checkIfEnoughResources(item.resourceNeed, item.costs)) {
+  if (checkIfEnoughResources(item.resourceNeed, dynamicCosts)) {
     hoverBoxBuy.classList.remove('broke');
     console.log('[mouseover] Player can afford item');
   } else {
@@ -149,8 +175,14 @@ document.body.addEventListener('click', function (e) {
     console.log('[click] No item found for key:', itemKey);
     return;
   }
+  // Calculate dynamic costs
+  const bought = mage.shopCount[itemKey]?.bought || 0;
+  const dynamicCosts = item.costs.map((cost, i) => {
+    const ratio = (item.ratio && item.ratio[i] !== undefined) ? item.ratio[i] : 1;
+    return Math.floor(cost * Math.pow(ratio, bought));
+  });
   // Attempt to buy
-  if (buy(item.resourceNeed, item.costs, item.resourceGet[0]) === true) {
+  if (buy(item.resourceNeed, dynamicCosts, item.resourceGet[0]) === true) {
     // For each resource gained, show its display if not already visible
     item.resourceGet.forEach(resName => {
       if (resource[resName] && resource[resName].displayId) {
@@ -181,7 +213,7 @@ setTimeout(() => {
 // Buyers                    //
 //---------------------------//
 
-const buyer = mage.shopItems;
+const buyer = game.shopItems;
 
 function checkIfEnoughResources(resourceNeed, costs) {
     if (!Array.isArray(resourceNeed)) resourceNeed = [resourceNeed];

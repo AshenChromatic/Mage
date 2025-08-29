@@ -13,7 +13,6 @@ _Last updated: 2025-8-28_
 ## Bugs / Fixes
 - [ ] Fuck the indefinite article bruh.
 - [ ] Tabs don't fade in anymore for some reason.
-
 ---
 
 ## Polish & Tweaks
@@ -33,6 +32,7 @@ _Last updated: 2025-8-28_
 ---
 
 ## Done
+- [x] Make audio play when loading into map 8/29/25
 - [x] Add settings 8/28/25
 - [x] Add dialogue choices to map 8/28/25
 - [x] Change worldmap rune dialogue when runes are high enough 8/26/25
