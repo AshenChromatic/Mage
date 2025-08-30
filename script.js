@@ -767,7 +767,7 @@ function goInside() {
 
 window.game = window.game || {};
 window.game.audioKeys = {
-  mapTheme: 'maps/map.mp3',
+  mapTheme: 'maps/map.wav',
   // add more keys and paths as needed
 };
 

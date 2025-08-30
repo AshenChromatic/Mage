@@ -28,28 +28,33 @@ function getKeyData(mapName) {
 defaults.mapManager = defaults.mapManager || {};
 defaults.mapManager.dialogue = {
     gribbletharp: {
-        comeHereOften: true,
         affection: 0,
-        named: false
+        comeHereOften: true,
+        named: false,
+        hideBody: true,
+        shadyGuy: false
     },
     shadyClassmate: {
-        shadyShop: false,
         affection: 0,
-        shades: false
+        shadyShop: false,
+        shades: false,
+        interacted: false
     },
     goodClassmate: {
-        alive: true,
         affection: 0,
+        alive: true,
         first: true,
         specialPlingus: false,
         killedHim: false
     },
     evilClassmate: {
-        alive: true,
         affection: 0,
+        alive: true,
         first: true,
         specialPlingus: false,
         killedHer: false,
+        acceptBribe: false,
+        denyBribe: false
     }
 }
 function getDialogue(character) {
@@ -302,6 +307,15 @@ function friendlyClassmate1() {
     if (getDialogue("gribbletharp").comeHereOften === true) {
         choiceToLog("Come here often?", friendlyClassmate2C);
     };
+    if (((getDialogue("goodClassmate").alive === false || getDialogue("evilClassmate").alive === false) && (getDialogue("goodClassmate").hideBody === true || getDialogue("evilClassmate").denyBribe === true)) && getDialogue("gribbletharp").hideBody === true) {
+        choiceToLog("How do I hide a body?", friendlyClassmate2D);
+    }
+    if (getDialogue("evilClassmate").acceptBribe === true && getDialogue("gribbletharp").hideBody === true) {
+        choiceToLog("Tyler killed someone.", friendlyClassmate2E);
+    }
+    if ((getDialogue("shadyClassmate").interacted === true || getDialogue("shadyClassmate").shadyShop === true) && getDialogue("gribbletharp").shadyGuy !== true) {
+        choiceToLog("What's with that shady guy in the corner?", friendlyClassmate2F);
+    }
 }
 
 function friendlyClassmate2A() {
@@ -327,6 +341,30 @@ function friendlyClassmate2C() {
     choiceToLog("Woah, what a coincidence, I also live here! We should kiss...", friendlyClassmate3A);
     choiceToLog("That can't be true. I've never seen you before.", friendlyClassmate3B);
     choiceToLog("*leave*", friendlyClassmate3C);
+}
+
+function friendlyClassmate2D() {
+    sendClickLog(getKeyData("dorms")["1"].name + ": Well, the first thing you should do is move it somewhere safe and clean up any blood.", "#399500");
+    sendClickLog(getKeyData("dorms")["1"].name + ": Then, after that, you should- hey, why do you need to know that?", "#399500");
+    sendClickLog(getKeyData("dorms")["1"].name + ": I hope that was a joke...", "#399500");
+    getDialogue("gribbletharp").hideBody = false;
+}
+
+function friendlyClassmate2E() {
+    sendClickLog(getKeyData("dorms")["1"].name + ": Ok.", "#399500");
+    getDialogue("gribbletharp").hideBody = false;
+}
+
+function friendlyClassmate2F() {
+    getKeyData("dorms")["4"].name = "Isaiah";
+    getKeyData("dorms")["4"].hoverTitle = "Isaiah";
+    sendClickLog(getKeyData("dorms")["1"].name + ": Who, Isaiah?", "#399500");
+    sendClickLog(getKeyData("dorms")["1"].name + ": He used to be a lot more plain last semester.", "#399500");
+    sendClickLog(getKeyData("dorms")["1"].name + ": But ever since he got those shades, he started to get all... different.", "#399500");
+    if (getDialogue("shadyClassmate").shades === true || getDialogue("shadyClassmate").shadyShop === true) {
+        sendToLog("Truly, this is the power of Arcane Goggles of Inscrutibility")
+    }
+    getDialogue("gribbletharp").shadyGuy = true;
 }
 
 function friendlyClassmate3A() {
@@ -363,6 +401,7 @@ function clickShadyClassmate(position) {
 }
 
 function shadyClassmateA() {
+    getDialogue("shadyClassmate").interacted = true;
     sendToLog("He glances around for a moment, then cautiously opens up his trenchcoat.");
     sendToLog("From within, he slowly pulls out a toad. It is very warty, and you do not like looking at it.");
     sendClickLog(getKeyData("dorms")["4"].name + ": I beg of you. Buy my [click:shadyClassmateA1]toad[/click]", "#453f4a");
@@ -492,7 +531,39 @@ function evilClassmate5A1 () {
 
 function evilClassmate5B() {
     sendClickLog(getKeyData("dorms")["2"].name + ": Well of course. I assure you this was a school-sanctioned fight to the death.", "#5700AE");
+    sendClickLog(getKeyData("dorms")["2"].name + ": I'll tell you what... I'll pay you 5 gold to keep your mouth open.", "#5700AE");
+    choiceToLog("Open?", evilClassmate5B1)
+}
+
+function evilClassmate5B1() {
+    sendClickLog(getKeyData("dorms")["2"].name + ": Yeah... let everyone know... not to mess with Tyler...", "#5700AE");
+    choiceToLog("Tyler?", evilClassmate5B2);
+}
+
+function evilClassmate5B2() {
+    sendClickLog(getKeyData("dorms")["2"].name + ": Tyler.", "#5700AE");
+    choiceToLog("Ok.", evilClassmate5B2A);
+    choiceToLog("I am not fucking doing that.", evilClassmate5B2B);
+}
+
+function evilClassmate5B2A() {
+    getKeyData("dorms")["2"].hoverTitle = "Tyler";
+    getKeyData("dorms")["2"].name = "Tyler"; 
+    sendToLog("You resolve to tell everyone that Tyler killed " + getKeyData("dorms")["3"].name + ".");
+    sendToLog("He hands you 5 gold, looking very proud of himself")
+    getDialogue("evilClassmate").acceptBribe = true;
     getDialogue("evilClassmate").killedHer = true;
+    
+}
+
+function evilClassmate5B2B() {
+    getKeyData("dorms")["2"].hoverTitle = "Tyler";
+    getKeyData("dorms")["2"].name = "Tyler"; 
+    sendToLog("You are not telling anybody you were an accessory to a murder. He shrugs.")
+    sendClickLog(getKeyData("dorms")["2"].name + ": Suit yourself.", "#5700AE");
+    getDialogue("evilClassmate").denyBribe = true;
+    getDialogue("evilClassmate").killedHer = true;
+    
 }
 
 function evilClassmate5C() {
