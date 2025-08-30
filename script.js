@@ -513,6 +513,13 @@ function applySave(saveData) {
             }
         });
     }
+
+    //Fallback if both inside and outside are hidden
+    if (!document.getElementById('insideHouse').classList.contains('show') &&
+        !document.getElementById('worldMap').classList.contains('show')) {
+        document.getElementById('insideHouse').classList.add('show');
+    }
+
     // 5) Reload map
     if (!mage.mapManager) {
         mage.mapManager = {};
@@ -562,10 +569,13 @@ function applySave(saveData) {
     if (mage.whatMusic) {
   playMusic(mage.whatMusic);
 }
+    //Set mage.version to current version for later save data management
+    mage.version = "0.2.7";
 
     // Final: give a small notification
     console.log("Save imported successfully.");
 };
+mage.version = "0.2.7"; // current version
 
 document.getElementById('saveBtn').addEventListener('click', saveGame);
 document.getElementById('exportBtn').addEventListener('click', exportGame);

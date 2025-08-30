@@ -21,6 +21,7 @@ _Last updated: 2025-8-29_
 - [ ] Add even more runes (esp some that unlock at certain levels)
 - [ ] Add check for save data + wipe save button
 - [ ] Polish dorms dialogue
+- [ ] Make better transparent favicon
 
 ## Code garbagae
 
