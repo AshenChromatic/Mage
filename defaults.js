@@ -1,5 +1,7 @@
 window.defaults = window.defaults || {};
 window.mage = window.mage || {};
+window.game = window.game || {};
+
 defaults.stuff = {
     playerColor: "#ff0000ff",
     slut: 0,
@@ -199,5 +201,7 @@ function deepMergeDefaults(target, defaults, overrides) {
     }
     }   
 }
+
+game.allBars = [];
 
 deepMergeDefaults(window.mage, window.defaults);

@@ -1,3 +1,15 @@
+.runeHeader {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.runeLevel {
+    text-align: left;
+    margin-left: 40px;
+    margin-right: 0;
+}
+
 .runeCanvas {
     display: block;
     margin: 0 auto 12px auto;
@@ -25,11 +37,4 @@
     min-height: 0;
     overflow-y: auto;
     box-sizing: border-box;
-}
-
-.runeLevel {
-    text-align: left;
-    width: 100%;
-    margin-left: 40px;
-    margin-right: 0;
 }

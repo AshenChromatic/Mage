@@ -1,5 +1,5 @@
 
-const debug = true;
+const debug = false;
 window.mage = window.mage || {};
 window.defaults = window.defaults || {};
 
@@ -20,57 +20,61 @@ function getRandomInt(min, max) {
 }
 
 class LinkedProgressBar {
-  /**
-   * @param {HTMLElement} container - where to place the bar
-   * @param {string} name - label to show (e.g., "Gold")
-   * @param {object} objRef - the object to read values from
-   *   Must have objRef.amount and objRef.max
-   */
-  constructor(container, name, objRef) {
-    this.name = name;
-    this.objRef = objRef;
+    /**
+     * @param {HTMLElement} container - where to place the bar
+     * @param {string} name - label to show (e.g., "Gold")
+     * @param {object} objRef - the object to read values from
+     *   Must have objRef.amount and objRef.max
+     */
+    constructor(container, name, objRef) {
+        this.name = name;
+        this.objRef = objRef;
 
-    // build DOM
-    this.outer = document.createElement("div");
-    this.outer.className = "bar";
+        // build DOM
+        this.outer = document.createElement("div");
+        this.outer.className = "progressBar";
 
-    this.fill = document.createElement("div");
-    this.fill.className = "fill";
+        this.fill = document.createElement("div");
+        this.fill.className = "barFill";
 
-    this.text = document.createElement("span");
-    this.text.className = "label";
+        this.text = document.createElement("span");
+        this.text.className = "barText";
 
-    this.outer.appendChild(this.fill);
-    this.outer.appendChild(this.text);
+        this.outer.appendChild(this.fill);
+        this.outer.appendChild(this.text);
 
-    container.appendChild(this.outer);
+        container.appendChild(this.outer);
 
-    this.render();
-  }
-
-  // just render the current values in objRef
-  tick() {
-    this.render();
-  }
-
-  render() {
-    const current = this.objRef.amount;
-    const max = this.objRef.max;
-
-    const percent = (current / max) * 100;
-    this.fill.style.width = percent + "%";
-    this.text.textContent = `${this.name}: ${current} / ${max}`;
-  }
-
-  remove() {
-    if (this.outer && this.outer.parentNode) {
-      this.outer.parentNode.removeChild(this.outer);
+        this.render();
     }
-    this.outer = null;
-    this.fill = null;
-    this.text = null;
-    this.objRef = null;
-  }
+
+    // just render the current values in objRef
+    tick() {
+        this.render();
+    }
+
+    render() {
+        const current = this.objRef.amount;
+        const max = this.objRef.max;
+
+        // clamp percentage between 0 and 100
+        let percent = (current / max) * 100;
+        if (percent > 100) percent = 100;
+        if (percent < 0) percent = 0;
+
+        this.fill.style.width = percent + "%";
+        this.text.textContent = `${this.name}: ${current} / ${max}`;
+    }
+
+    remove() {
+        if (this.outer && this.outer.parentNode) {
+            this.outer.parentNode.removeChild(this.outer);
+        }
+        this.outer = null;
+        this.fill = null;
+        this.text = null;
+        this.objRef = null;
+    }
 }
 
 
@@ -326,7 +330,7 @@ function applySave(saveData) {
         alert("Invalid save data.");
         return;
     }
-    
+
 
     // 1) Cancel any dialogue immediately
     try {
@@ -344,7 +348,7 @@ function applySave(saveData) {
     if (!saveData.main) {
         saveData.main = window.mage;
     }
-    
+
     // 2) Restore resources: overwrite fields for each resource and update displays
     //Fallback for old resource object
     if (saveData.resources && typeof saveData.resources === "object") {
@@ -484,13 +488,13 @@ function applySave(saveData) {
         playMusic(mage.stuff.whatMusic);
     }
     //Set mage.version to current version for later save data management
-    mage.version = "0.2.7";
+    mage.version = "0.2.8";
 
     // Final: give a small notification
     console.log("Save imported successfully.");
 };
 
-// Robust version comparison for save data
+// Version comparison for save data
 function isVersionLessThan(saveData, targetVersion) {
     // If no version present, treat as less than any target
     if (!saveData || !saveData.main || !saveData.main.version) return true;
@@ -525,10 +529,16 @@ function oldVersionManager(saveData) {
             delete saveData.main.playerColor;
         }
     }
+    // Set player color to new player color in stuff
+    if (isVersionLessThan(saveData, "0.2.8")) {
+        if (saveData.main && saveData.main.maps && saveData.main.maps.dorms.keyData["@"].color === "window.mage.playerColor") {
+            saveData.main.maps.dorms.keyData["@"].color = "window.mage.stuff.playerColor";
+        }
+    }
 }
 
 
-mage.version = "0.2.7"; // current version
+mage.version = "0.2.8"; // current version
 
 document.getElementById('saveBtn').addEventListener('click', saveGame);
 document.getElementById('exportBtn').addEventListener('click', exportGame);
@@ -641,10 +651,15 @@ function generatorTick() {
     }
 }
 
+function gameTick() {
+    //Runs 10 times per second
+    for (const bar of game.allBars) bar.tick();
+}
+
 
 // Run generatorTick every second
 setInterval(generatorTick, 1000);
-
+setInterval(gameTick, 100);
 
 
 //---------------------------//
@@ -744,40 +759,40 @@ function goInside() {
 
 window.game = window.game || {};
 window.game.audioKeys = {
-  mapTheme: 'maps/map.wav',
-  // add more keys and paths as needed
+    mapTheme: 'maps/map.wav',
+    // add more keys and paths as needed
 };
 
 window.game.audio = {};
 for (const key in window.game.audioKeys) {
-  window.game.audio[key] = new Audio(window.game.audioKeys[key]);
+    window.game.audio[key] = new Audio(window.game.audioKeys[key]);
 }
 let volume = 0.5;
 let music = null;
 function playMusic(key) {
-  if (music && typeof music.pause === 'function') {
-    stopMusic();
-  }
-  const audioObj = window.game.audio[key];
-  if (!audioObj) {
-    console.warn('No audio found for key:', key);
-    return;
-  }
-  music = audioObj;
-  music.currentTime = 0; // Optionally restart from beginning
-  music.loop = true;
-  music.volume = volume;
-  music.play();
-  mage.stuff.whatMusic = key;
+    if (music && typeof music.pause === 'function') {
+        stopMusic();
+    }
+    const audioObj = window.game.audio[key];
+    if (!audioObj) {
+        console.warn('No audio found for key:', key);
+        return;
+    }
+    music = audioObj;
+    music.currentTime = 0; // Optionally restart from beginning
+    music.loop = true;
+    music.volume = volume;
+    music.play();
+    mage.stuff.whatMusic = key;
 }
 
-  function stopMusic() {
-  if (music && typeof music.pause === 'function') {
-    music.pause();
-    music.currentTime = 0;
-  }
-  music = null;
-  mage.stuff.whatMusic = null;
+function stopMusic() {
+    if (music && typeof music.pause === 'function') {
+        music.pause();
+        music.currentTime = 0;
+    }
+    music = null;
+    mage.stuff.whatMusic = null;
 }
 
 //---------------------------//
@@ -990,6 +1005,19 @@ logForGradient.addEventListener("scroll", () => {
 //---------------------------//
 const runeXPBenchmarks = [0, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000];
 
+game.runeData = {
+    get amount() {
+        return mage.progress.runeXP; // always reads current XP
+    },
+    get max() {
+        return runeXPBenchmarks[mage.progress.runeLevel]; // always reads current level's max
+    }
+};
+
+const runeHeader = document.getElementById("runeHeader");
+// now you can make a LinkedProgressBar
+const runeBar = new LinkedProgressBar(runeHeader, "XP", game.runeData);
+game.allBars.push(runeBar);
 
 //Define rune line width and radius for accuracy check
 const RUNE_LINE_WIDTH = 6;
@@ -1115,33 +1143,14 @@ function renderRuneEndpoints(ctx, rune) {
 
 
 // Use IntersectionObserver to reset rune tab whenever the canvas becomes visible
-function resetRuneTab(retryCount = 0) {
+function resetRuneTab() {
     const canvas = document.getElementById('runeCanvas');
     if (!canvas) return;
-    const width = canvas.width;
-    const height = canvas.height;
-    // const cs = window.getComputedStyle(canvas);
-    // If canvas is not yet sized, retry after a short delay (max 10 tries)
-    if ((width === 0 || height === 0) && retryCount < 10) {
-        setTimeout(() => resetRuneTab(retryCount + 1), 50);
-        return;
-    }
-    // If still not sized after retries, log a warning
-    if (width === 0 || height === 0) {
-        console.warn('[RuneTab] Canvas still has zero size after retries, not rendering rune.');
-        return;
-    }
     const ctx = canvas.getContext('2d');
-    // Debug: fill canvas with a color to check if anything is drawn
-    ctx.save();
-    ctx.fillStyle = '#ffcccc';
-    ctx.fillRect(0, 0, width, height);
-    ctx.restore();
     pickRandomRune();
     renderRune(ctx, window.currentRune);
     renderRuneEndpoints(ctx, window.currentRune);
     enableRuneDrawing(canvas, ctx, window.currentRune);
-    console.log("reset rune tab");
 }
 
 // Set up IntersectionObserver for runeCanvas
@@ -1174,12 +1183,20 @@ document.addEventListener('DOMContentLoaded', setupRuneCanvasObserver);
 // Drawing logic
 function enableRuneDrawing(canvas, ctx, rune) {
     console.log('[enableRuneDrawing] Called for rune:', rune && rune.name, 'ctx:', ctx);
+    // Remove any previous listeners if present
+    if (canvas._runeHandlers) {
+        canvas.removeEventListener('mousedown', canvas._runeHandlers.onMouseDown);
+        canvas.removeEventListener('mousemove', canvas._runeHandlers.onMouseMove);
+        canvas.removeEventListener('mouseup', canvas._runeHandlers.onMouseUp);
+    }
+
     let drawing = false;
     let start = null;
     let currentLine = [];
     let drawnLines = [];
     const maxLines = rune.lineCount;
 
+    // Use named functions so we can remove them later
     function onMouseDown(e) {
         if (drawnLines.length >= maxLines) return;
         drawing = true;
@@ -1215,10 +1232,14 @@ function enableRuneDrawing(canvas, ctx, rune) {
             canvas.removeEventListener('mousedown', onMouseDown);
             canvas.removeEventListener('mousemove', onMouseMove);
             canvas.removeEventListener('mouseup', onMouseUp);
+            // Also clear _runeHandlers so future calls don't try to remove these
+            canvas._runeHandlers = null;
             gradeRune(drawnLines, window.currentRune);
         }
     }
 
+    // Store handlers on the canvas so we can remove them next time
+    canvas._runeHandlers = { onMouseDown, onMouseMove, onMouseUp };
     canvas.addEventListener('mousedown', onMouseDown);
     canvas.addEventListener('mousemove', onMouseMove);
     canvas.addEventListener('mouseup', onMouseUp);
@@ -1421,14 +1442,14 @@ const settingsBtn = document.getElementById("settingsBtn");
 const settingsBox = document.getElementById("settingsBox");
 
 settingsBtn.addEventListener("click", e => {
-  e.preventDefault();
-  settingsBox.classList.toggle("show");
+    e.preventDefault();
+    settingsBox.classList.toggle("show");
 });
 
 const slider = document.getElementById('volumeSlider');
-slider.addEventListener('input', function() {
-  const volume = parseFloat(this.value);
-  updateVolume(volume);
+slider.addEventListener('input', function () {
+    const volume = parseFloat(this.value);
+    updateVolume(volume);
 });
 function updateVolume(volume) {
     music.volume = volume;
