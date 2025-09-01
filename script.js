@@ -15,6 +15,72 @@ function sleep(ms) {
     });
 }
 
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+class LinkedProgressBar {
+  /**
+   * @param {HTMLElement} container - where to place the bar
+   * @param {string} name - label to show (e.g., "Gold")
+   * @param {object} objRef - the object to read values from
+   *   Must have objRef.amount and objRef.max
+   */
+  constructor(container, name, objRef) {
+    this.name = name;
+    this.objRef = objRef;
+
+    // build DOM
+    this.outer = document.createElement("div");
+    this.outer.className = "bar";
+
+    this.fill = document.createElement("div");
+    this.fill.className = "fill";
+
+    this.text = document.createElement("span");
+    this.text.className = "label";
+
+    this.outer.appendChild(this.fill);
+    this.outer.appendChild(this.text);
+
+    container.appendChild(this.outer);
+
+    this.render();
+  }
+
+  // just render the current values in objRef
+  tick() {
+    this.render();
+  }
+
+  render() {
+    const current = this.objRef.amount;
+    const max = this.objRef.max;
+
+    const percent = (current / max) * 100;
+    this.fill.style.width = percent + "%";
+    this.text.textContent = `${this.name}: ${current} / ${max}`;
+  }
+
+  remove() {
+    if (this.outer && this.outer.parentNode) {
+      this.outer.parentNode.removeChild(this.outer);
+    }
+    this.outer = null;
+    this.fill = null;
+    this.text = null;
+    this.objRef = null;
+  }
+}
+
+
+
+
+//---------------------------//
+// Log Managers              //
+//---------------------------//
+
+
 //Put text in the journal
 function sendToJournal(message) {
     const logDiv = document.getElementById('gameLog');
@@ -137,12 +203,6 @@ function choiceToLog(message, handler) {
     }, 10); // Short delay to ensure the element is added before transition
     attachDialogueHandlers("choice");
 }
-
-
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
 
 //---------------------------//
 // Saving                    //
