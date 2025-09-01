@@ -1,6 +1,6 @@
 # Mage TODO
 
-_Last updated: 2025-8-31_
+_Last updated: 2025-9-1_
 
 ## Currently Working On
 - [ ] New Room
@@ -16,7 +16,6 @@ _Last updated: 2025-8-31_
 
 ## Polish & Tweaks
 - [ ] Add bars to resources
-- [ ] Make Rune XP visible
 - [ ] Add even more runes (esp some that unlock at certain levels)
 - [ ] Add check for save data + wipe save button
 - [ ] Polish dorms dialogue
@@ -32,6 +31,7 @@ _Last updated: 2025-8-31_
 ---
 
 ## Done
+- [x] Make Rune XP visible 9/1/25
 - [x] Fixed Tabs don't fade in anymore for some reason. 8/31/25
 - [x] Make audio play when loading into map 8/29/25
 - [x] Add settings 8/28/25
