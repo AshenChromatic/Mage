@@ -4,7 +4,19 @@
     align-items: center;
     justify-content: center;
     padding: 10px;
-    min-height: 0;
+    height: 0;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 1s ease;
+    overflow: hidden;
+}
+
+.subTabSelector.show {
+    padding: 10px;
+    visibility: visible;
+    opacity: 1;
+    height: auto;
+    overflow: visible;
 }
 
 .mainTabSelector {
@@ -43,20 +55,25 @@
 
 .tabLink {
     color: gray;
-    display: none;
+    display: inline-block; /* Always rendered */
     opacity: 0;
+    pointer-events: none;  /* Prevent interaction when hidden */
     transition: opacity 1s ease;
     text-decoration: none;
+    height: 0;
+    width: 0;
+}
+
+.tabLink.show {
+    opacity: 1;
+    pointer-events: auto;
+    height: auto;
+    width: auto;
 }
 
 .tabLink:hover {
     color:rgb(84, 84, 84);
     white-space: pre;
-}
-
-.tabLink.show {
-    display: inline-block;
-    opacity: 1;
 }
 
 

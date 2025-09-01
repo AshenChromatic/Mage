@@ -1,12 +1,8 @@
-const debug = false;
+
+const debug = true;
 window.mage = window.mage || {};
 window.defaults = window.defaults || {};
-defaults = {
-    playerColor: "#ff0000ff",
-    slut: 0,
-    whatMusic: null
-};
-window.defaults = window.defaults || {};
+
 
 //This function is for waiiiting
 function sleep(ms) {
@@ -149,112 +145,8 @@ function getRandomInt(min, max) {
 
 
 //---------------------------//
-// Resources                 //
-//---------------------------//
-window.mage.resource = {
-    dummyResource: {
-        name: 'dummyResource',
-        amount: 0,
-        displayId: 'dummyResourceAmountVal',
-        max: 10,
-        visible: false
-    },
-    dummyGenerator: {
-        name: 'dummyGenerator',
-        amount: 1,
-        displayId: 'dummyGeneratorAmount',
-        generator: true,
-        generate: 'dummyResource',
-        rate: 1,
-        visible: false
-    },
-    knowledge: {
-        name: 'knowledge',
-        amount: 0,
-        displayId: 'knowledgeAmount',
-        visible: false
-    },
-    gold: {
-        name: 'gold',
-        amount: 5,
-        displayId: 'goldAmount',
-        visible: false
-    },
-    orb: {
-        name: 'orb',
-        amount: 0,
-        displayId: 'orbAmount',
-        generator: true,
-        generate: 'mana',
-        rate: 1,
-        increaseMax: 'mana',
-        increaseMaxBy: 50,
-        visible: false
-    },
-    mana: {
-        name: 'mana',
-        amount: 0,
-        displayId: 'manaAmountVal',
-        displayMaxId: 'manaMax',
-        max: 0,
-        visible: false
-    },
-    frog: {
-        name: 'frog',
-        amount: 0,
-        displayId: 'frogAmount',
-        visible: false
-    },
-    ink: {
-        name: 'ink',
-        amount: 0,
-        displayId: 'inkAmount',
-        visible: false
-    },
-    garbageRune: {
-        name: 'Garbage Rune',
-        amount: 0,
-        displayId: 'garbageRuneAmount',
-        visible: false
-    },
-    okRune: {
-        name: 'Ok Rune',
-        amount: 0,
-        displayId: 'okRuneAmount',
-        visible: false
-    },
-    goodRune: {
-        name: 'Good Rune',
-        amount: 0,
-        displayId: 'goodRuneAmount',
-        visible: false
-    },
-    perfectRune: {
-        name: 'Perfect Rune',
-        amount: 0,
-        displayId: 'perfectRuneAmount',
-        visible: false
-    }
-};
-let resource = window.mage.resource;
-
-//---------------------------//
 // Saving                    //
 //---------------------------//
-
-window.mage.progress = {
-    orbUnlock: false,
-    runeUnlock: false,
-    runeTwo: false,
-    runeFive: false,
-    runeTen: false,
-    runeLevel: 1,
-    runeXP: 0,
-    unlockDoor: false,
-    mainSelector: false,
-    goneOutside: false,
-    deskRunes: false,
-};
 let progress = window.mage.progress;
 
 function saveGame() {
@@ -322,6 +214,8 @@ function getElementStates() {
     return result;
 }
 
+
+
 // importSave: allow loading from localStorage (key "myGameSave") or from a JSON file.
 // After loading the JSON it calls applySave(saveData) to do the actual work.
 function importGame() {
@@ -366,55 +260,13 @@ function importGame() {
     input.click();
 }
 
-function deepMergeDefaults(target, defaults, overrides) {
-    for (const key in defaults) {
-        if (
-            typeof defaults[key] === 'object' &&
-            defaults[key] !== null &&
-            !Array.isArray(defaults[key])
-        ) {
-            if (!target[key]) target[key] = {};
-            deepMergeDefaults(target[key], defaults[key]);
-        } else if (!(key in target)) {
-            target[key] = defaults[key];
-        }
-    }
-    // If overrides is provided, merge its properties into target, overwriting existing data
-    if (overrides && typeof overrides === 'object') {
-        for (const key in overrides) {
-            if (
-                typeof overrides[key] === 'object' &&
-                overrides[key] !== null &&
-                !Array.isArray(overrides[key])
-            ) {
-                if (!target[key] || typeof target[key] !== 'object') {
-                    target[key] = {};
-                }
-                deepMergeDefaults(target[key], {}, overrides[key]);
-            } else {
-                target[key] = overrides[key];
-            }
-        }
-    }
-    //Manual overrides for Reasons
-    if (mage.maps.dorms.keyData["3"]) {
-        if (mage.maps.dorms.keyData["3"].name === "tbd") {
-            mage.maps.dorms.keyData["3"].name = "Good Classmate";
-        }
-    }
-    if (mage.maps.dorms.keyData["2"]) {
-        if(mage.maps.dorms.keyData["2"].name === "tbd") {
-            mage.maps.dorms.keyData["2"].name = "Evil Classmate";
-        }
-    }   
-}
-
 // applySave: given a parsed saveData object, apply it to the game state
 function applySave(saveData) {
     if (!saveData || typeof saveData !== "object") {
         alert("Invalid save data.");
         return;
     }
+    
 
     // 1) Cancel any dialogue immediately
     try {
@@ -443,29 +295,31 @@ function applySave(saveData) {
         console.log("Copied old resource data successfully:", saveData.main.resource);
     }
     if (saveData.main.resource && typeof saveData.main.resource === "object") {
+        // Always use window.mage.resources for live reference
+        const resources = window.mage.resources;
         Object.keys(saveData.main.resource).forEach(function (resName) {
             const saved = saveData.main.resource[resName];
             // If you already have a resource object, copy saved properties into it; otherwise create it
-            if (typeof resource[resName] === "object") {
+            if (typeof resources[resName] === "object") {
                 // Overwrite existing values with saved ones
-                Object.assign(resource[resName], saved);
+                Object.assign(resources[resName], saved);
             } else {
                 // Create new resource entry in the resource table
-                resource[resName] = Object.assign({}, saved);
+                resources[resName] = Object.assign({}, saved);
             }
 
             // Update display(s) for this resource
-            if (resource[resName].displayId) {
-                var el = document.getElementById(resource[resName].displayId);
+            if (resources[resName].displayId) {
+                var el = document.getElementById(resources[resName].displayId);
                 if (el) {
-                    el.textContent = resource[resName].amount;
+                    el.textContent = resources[resName].amount;
                 }
             }
             // If there is a displayMaxId and max, update that too
-            if (resource[resName].displayMaxId && typeof resource[resName].max !== 'undefined') {
-                var maxEl = document.getElementById(resource[resName].displayMaxId);
+            if (resources[resName].displayMaxId && typeof resources[resName].max !== 'undefined') {
+                var maxEl = document.getElementById(resources[resName].displayMaxId);
                 if (maxEl) {
-                    maxEl.textContent = resource[resName].max;
+                    maxEl.textContent = resources[resName].max;
                 }
             }
         });
@@ -483,7 +337,7 @@ function applySave(saveData) {
         window.mage = saveData.main;
         deepMergeDefaults(window.mage, window.defaults, window.forceDefaults);
         progress = window.mage.progress;
-        
+        oldVersionManager(saveData);
     }
     // 3.5) Restore dialogue queue
     if (Array.isArray(saveData.dialogueQueue)) {
@@ -566,15 +420,54 @@ function applySave(saveData) {
     }
 
     //Play music
-    if (mage.whatMusic) {
-  playMusic(mage.whatMusic);
-}
+    if (mage.stuff.whatMusic) {
+        playMusic(mage.stuff.whatMusic);
+    }
     //Set mage.version to current version for later save data management
     mage.version = "0.2.7";
 
     // Final: give a small notification
     console.log("Save imported successfully.");
 };
+
+// Robust version comparison for save data
+function isVersionLessThan(saveData, targetVersion) {
+    // If no version present, treat as less than any target
+    if (!saveData || !saveData.main || !saveData.main.version) return true;
+    const v1 = String(saveData.main.version).split('.').map(Number);
+    const v2 = String(targetVersion).split('.').map(Number);
+    for (let i = 0; i < Math.max(v1.length, v2.length); i++) {
+        const numA = v1[i] || 0;
+        const numB = v2[i] || 0;
+        if (numA < numB) return true;
+        if (numA > numB) return false;
+    }
+    return false; // equal or greater
+}
+
+// Migrate old save data format to new format
+function oldVersionManager(saveData) {
+    //Move whatMusic, slut, and playerColor to stuff
+    if (isVersionLessThan(saveData, "0.2.7")) {
+        if (saveData.main && saveData.main.whatMusic) {
+            saveData.main.stuff = saveData.main.stuff || {};
+            saveData.main.stuff.whatMusic = saveData.main.whatMusic;
+            delete saveData.main.whatMusic;
+        }
+        if (saveData.main && saveData.main.slut) {
+            saveData.main.stuff = saveData.main.stuff || {};
+            saveData.main.stuff.slut = saveData.main.slut;
+            delete saveData.main.slut;
+        }
+        if (saveData.main && saveData.main.playerColor) {
+            saveData.main.stuff = saveData.main.stuff || {};
+            saveData.main.stuff.playerColor = saveData.main.playerColor;
+            delete saveData.main.playerColor;
+        }
+    }
+}
+
+
 mage.version = "0.2.7"; // current version
 
 document.getElementById('saveBtn').addEventListener('click', saveGame);
@@ -586,6 +479,7 @@ document.getElementById('importBtn').addEventListener('click', importGame);
 document.getElementById('researchBtn').addEventListener('click', researchClick);
 
 function researchClick() {
+    let resource = window.mage.resources;
     //Knowledge visiblizer
     if (!resource.knowledge.visible) {
         const knowledgeDisplay = document.getElementById('knowledgeDisplay');
@@ -595,13 +489,13 @@ function researchClick() {
         }
     }
     //Knowledge increaserizer
-    resource.knowledge.amount += 1;
-    const knowledgeAmount = document.getElementById(resource.knowledge.displayId);
+    getResource('knowledge').amount += 1;
+    const knowledgeAmount = document.getElementById(getResource('knowledge').displayId);
     if (knowledgeAmount !== null) {
-        knowledgeAmount.innerHTML = resource.knowledge.amount;
+        knowledgeAmount.innerHTML = getResource('knowledge').amount;
     }
     //Orb unlocker
-    if (progress.orbUnlock === false && resource.knowledge.amount >= 10) {
+    if (progress.orbUnlock === false && getResource('knowledge').amount >= 10) {
         let orbUnlockRandom = getRandomInt(1, 30);
         if (orbUnlockRandom !== 1) {
             console.log('failed orb unlock check');
@@ -613,8 +507,8 @@ function researchClick() {
         }
     }
     //Rune unlocker
-    if (progress.runeUnlock === false && resource.knowledge.amount >= 100 && resource.orb.amount > 0) {
-        let runeChance = Math.max(1, 100 - Math.floor((resource.knowledge.amount - 100)));
+    if (progress.runeUnlock === false && getResource('knowledge').amount >= 100 && getResource('orb').amount > 0) {
+        let runeChance = Math.max(1, 100 - Math.floor((getResource('knowledge').amount - 100)));
         let runeUnlockRandom = getRandomInt(1, runeChance);
         if (runeUnlockRandom !== 1) {
             console.log('failed rune unlock check');
@@ -628,6 +522,18 @@ function researchClick() {
     }
 }
 
+function addResource(amount, name) {
+    resource = mage.resources[name];
+    if (resource) {
+        resource.amount += amount;
+        const displayId = resource.displayId;
+        const displayElement = document.getElementById(displayId);
+        if (displayElement) {
+            displayElement.innerHTML = resource.amount;
+        }
+    }
+}
+
 
 
 
@@ -637,6 +543,7 @@ function researchClick() {
 
 function generatorTick() {
     //search for all resources that generate
+    let resource = window.mage.resources;
     for (const prop in resource) {
         if (resource.hasOwnProperty(prop)) {
             const obj = resource[prop];
@@ -667,7 +574,7 @@ function generatorTick() {
         }
     }
     // Check various unlocks
-    if (!progress.doorUnlock && resource.mana.amount >= 30) {
+    if (!progress.doorUnlock && mage.resources.mana.amount >= 30) {
         progress.doorUnlock = true;
         console.log("Door unlocked!");
         queueDialogue("unlockDoor", 0);
@@ -801,7 +708,7 @@ function playMusic(key) {
   music.loop = true;
   music.volume = volume;
   music.play();
-  mage.whatMusic = key;
+  mage.stuff.whatMusic = key;
 }
 
   function stopMusic() {
@@ -810,13 +717,13 @@ function playMusic(key) {
     music.currentTime = 0;
   }
   music = null;
-  mage.whatMusic = null;
+  mage.stuff.whatMusic = null;
 }
 
 //---------------------------//
 // Dialogs                   //
 //---------------------------//
-let dialogues = {
+window.game.dialogues = {
     startGame: [
         { type: 'line', text: 'You sit at your desk, the white-ish light of your computer monitor illuminating your face.', time: 4000 },
         { type: 'line', text: 'You spent most of the day doing what can only be described as', time: 2000 },
@@ -881,6 +788,7 @@ let dialogues = {
         { type: 'line', text: 'You have no idea how you\'re going to get money from these goobers.', time: 4000 },
     ]
 }
+let dialogues = window.game.dialogues;
 
 let dialogueManager = {
     currentDialogue: null,
@@ -903,6 +811,7 @@ function unlockOrb() {
     document.getElementById('shopSpace').classList.add('show');
     document.getElementById('shopTabBtn').classList.add('show');
     document.getElementById('goldDisplay').classList.add('show');
+    document.getElementById('pcTabSelector').classList.add('show');
 }
 
 // Rune unlock
@@ -1028,7 +937,7 @@ const RUNE_CIRCLE_RADIUS = 12;
 
 
 //All runes are stored as lines here
-const runes = {
+window.game.runes = {
     thorn: {
         name: "thorn", // halfway between b and p
         lines: [
@@ -1078,22 +987,42 @@ const runes = {
     },
     // Add more runes here
 };
+let runes = window.game.runes;
 
-//Pull a random rune
-const runeKeys = Object.keys(runes);
-const randomRune = runes[runeKeys[Math.floor(Math.random() * runeKeys.length)]];
+
+// Helper to pick and set a new random rune
+function pickRandomRune() {
+    const runeKeys = Object.keys(runes);
+    const randomRune = runes[runeKeys[Math.floor(Math.random() * runeKeys.length)]];
+    window.currentRune = randomRune;
+    return randomRune;
+}
+
+// Always use window.currentRune for the current rune
+window.currentRune = pickRandomRune();
 
 function renderRune(ctx, rune) {
+    console.log(ctx);
+    console.log('[renderRune] Called with rune:', rune && rune.name, rune);
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.lineWidth = RUNE_LINE_WIDTH;
     ctx.strokeStyle = "#888";
     ctx.lineCap = "round"; // Make line tips rounded
-    for (const seg of rune.lines) {
+    if (!rune || !Array.isArray(rune.lines)) {
+        console.warn('[renderRune] Invalid rune or lines:', rune);
+        return;
+    }
+    rune.lines.forEach((seg, i) => {
+        if (!seg || !Array.isArray(seg.start) || !Array.isArray(seg.end)) {
+            console.warn(`[renderRune] Invalid segment at index ${i}:`, seg);
+            return;
+        }
         ctx.beginPath();
         ctx.moveTo(seg.start[0], seg.start[1]);
         ctx.lineTo(seg.end[0], seg.end[1]);
         ctx.stroke();
-    }
+        console.log(`[renderRune] Drew line ${i}: start=${seg.start}, end=${seg.end}`);
+    });
     // Draw invisible circles for logic (not rendered, but for hit detection)
     // You can store these for later use in grading
 }
@@ -1124,19 +1053,67 @@ function renderRuneEndpoints(ctx, rune) {
     ctx.restore();
 };
 
-// Render a rune as soon as the Rune tab appears
-window.addEventListener('DOMContentLoaded', function () {
+
+// Use IntersectionObserver to reset rune tab whenever the canvas becomes visible
+function resetRuneTab(retryCount = 0) {
     const canvas = document.getElementById('runeCanvas');
-    if (canvas) {
-        const ctx = canvas.getContext('2d');
-        renderRune(ctx, randomRune);
-        renderRuneEndpoints(ctx, randomRune);
-        enableRuneDrawing(canvas, ctx, randomRune);
+    if (!canvas) return;
+    const width = canvas.width;
+    const height = canvas.height;
+    // const cs = window.getComputedStyle(canvas);
+    // If canvas is not yet sized, retry after a short delay (max 10 tries)
+    if ((width === 0 || height === 0) && retryCount < 10) {
+        setTimeout(() => resetRuneTab(retryCount + 1), 50);
+        return;
     }
-});
+    // If still not sized after retries, log a warning
+    if (width === 0 || height === 0) {
+        console.warn('[RuneTab] Canvas still has zero size after retries, not rendering rune.');
+        return;
+    }
+    const ctx = canvas.getContext('2d');
+    // Debug: fill canvas with a color to check if anything is drawn
+    ctx.save();
+    ctx.fillStyle = '#ffcccc';
+    ctx.fillRect(0, 0, width, height);
+    ctx.restore();
+    pickRandomRune();
+    renderRune(ctx, window.currentRune);
+    renderRuneEndpoints(ctx, window.currentRune);
+    enableRuneDrawing(canvas, ctx, window.currentRune);
+    console.log("reset rune tab");
+}
+
+// Set up IntersectionObserver for runeCanvas
+function setupRuneCanvasObserver() {
+    const canvas = document.getElementById('runeCanvas');
+    if (!canvas) return;
+    // Only single render on initial load
+    if (canvas.offsetParent !== null) {
+        resetRuneTab();
+    }
+    const observer = new window.IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                if (!window.game.runeTabFirstLoad) {
+                    window.game.runeTabFirstLoad = true;
+                    resetRuneTab();
+                    setTimeout(resetRuneTab, 50);
+                } else {
+                    resetRuneTab();
+                }
+            }
+        });
+    }, { threshold: 0.01 });
+    observer.observe(canvas);
+}
+
+// Wait for DOMContentLoaded to set up observer (but not for rendering logic)
+document.addEventListener('DOMContentLoaded', setupRuneCanvasObserver);
 
 // Drawing logic
 function enableRuneDrawing(canvas, ctx, rune) {
+    console.log('[enableRuneDrawing] Called for rune:', rune && rune.name, 'ctx:', ctx);
     let drawing = false;
     let start = null;
     let currentLine = [];
@@ -1178,7 +1155,7 @@ function enableRuneDrawing(canvas, ctx, rune) {
             canvas.removeEventListener('mousedown', onMouseDown);
             canvas.removeEventListener('mousemove', onMouseMove);
             canvas.removeEventListener('mouseup', onMouseUp);
-            gradeRune(drawnLines, rune);
+            gradeRune(drawnLines, window.currentRune);
         }
     }
 
@@ -1287,40 +1264,40 @@ function gradeRune(drawnLines, rune) {
 
     //Step 3: Return rune of whatever grade
     if (grade === "garbage") {
-        resource.garbageRune.amount += 1;
+        getResource('garbageRune').amount += 1;
         console.log("Rune graded as garbage");
-        const garbageRuneAmount = document.getElementById(resource.garbageRune.displayId);
+        const garbageRuneAmount = document.getElementById(getResource('garbageRune').displayId);
         if (garbageRuneAmount) {
-            garbageRuneAmount.textContent = resource.garbageRune.amount;
+            garbageRuneAmount.textContent = getResource('garbageRune').amount;
         }
     }
     if (grade === "ok") {
-        resource.okRune.amount += 1;
+        getResource('okRune').amount += 1;
         console.log("Rune graded as ok");
-        const okRuneAmount = document.getElementById(resource.okRune.displayId);
+        const okRuneAmount = document.getElementById(getResource('okRune').displayId);
         if (okRuneAmount) {
-            okRuneAmount.textContent = resource.okRune.amount;
+            okRuneAmount.textContent = getResource('okRune').amount;
         }
     }
     if (grade === "good") {
-        resource.goodRune.amount += 1;
+        getResource('goodRune').amount += 1;
         console.log("Rune graded as good");
-        const goodRuneAmount = document.getElementById(resource.goodRune.displayId);
+        const goodRuneAmount = document.getElementById(getResource('goodRune').displayId);
         if (goodRuneAmount) {
-            goodRuneAmount.textContent = resource.goodRune.amount;
+            goodRuneAmount.textContent = getResource('goodRune').amount;
         }
     }
     if (grade === "perfect") {
-        resource.perfectRune.amount += 1;
+        getResource('perfectRune').amount += 1;
         console.log("Rune graded as perfect");
-        const perfectRuneAmount = document.getElementById(resource.perfectRune.displayId);
+        const perfectRuneAmount = document.getElementById(getResource('perfectRune').displayId);
         if (perfectRuneAmount) {
-            perfectRuneAmount.textContent = resource.perfectRune.amount;
+            perfectRuneAmount.textContent = getResource('perfectRune').amount;
         }
     }
 
     // After grading, check if rune resources are visible; if not, show them
-    if (!resource.garbageRune.visible || !resource.okRune.visible || !resource.goodRune.visible || !resource.perfectRune.visible) {
+    if (!getResource('garbageRune').visible || !getResource('okRune').visible || !getResource('goodRune').visible || !getResource('perfectRune').visible) {
         console.log("Showing rune resources");
         const runeDiv = document.getElementById('runeDiv');
         if (runeDiv) runeDiv.classList.add('show');
@@ -1332,13 +1309,13 @@ function gradeRune(drawnLines, rune) {
         if (goodRuneDisplay) goodRuneDisplay.classList.add('show');
         const perfectRuneDisplay = document.getElementById('perfectRuneDisplay');
         if (perfectRuneDisplay) perfectRuneDisplay.classList.add('show');
-        resource.garbageRune.visible = true;
-        resource.okRune.visible = true;
-        resource.goodRune.visible = true;
-        resource.perfectRune.visible = true;
+        getResource('garbageRune').visible = true;
+        getResource('okRune').visible = true;
+        getResource('goodRune').visible = true;
+        getResource('perfectRune').visible = true;
     }
     //Change desk dialogue at 100 total runes
-    if (!progress.deskRunes && (resource.garbageRune.amount + resource.okRune.amount + resource.goodRune.amount + resource.perfectRune.amount) >= 100) {
+    if (!progress.deskRunes && (getResource('garbageRune').amount + getResource('okRune').amount + getResource('goodRune').amount + getResource('perfectRune').amount) >= 100) {
         maps.dorms.keyData["D"].hoverText = "Has seen a some use lately. A stack of paper sits neatly on one side, while a heap of runes you have drawn is scattered across the other."
         progress.deskRunes = true;
     }
@@ -1369,13 +1346,11 @@ function gradeRune(drawnLines, rune) {
     const canvas = document.getElementById('runeCanvas');
     if (canvas) {
         const ctx = canvas.getContext('2d');
-        // Pick a new random rune
-        const runeKeys = Object.keys(runes);
-        const newRandomRune = runes[runeKeys[Math.floor(Math.random() * runeKeys.length)]];
-        // Clear and render new rune
-        renderRune(ctx, newRandomRune);
-        renderRuneEndpoints(ctx, newRandomRune);
-        enableRuneDrawing(canvas, ctx, newRandomRune);
+        // Pick and set a new random rune
+        pickRandomRune();
+        renderRune(ctx, window.currentRune);
+        renderRuneEndpoints(ctx, window.currentRune);
+        enableRuneDrawing(canvas, ctx, window.currentRune);
     }
 }
 
@@ -1515,23 +1490,23 @@ function skipToRunes() {
         unlockRune();
     }
     // Set knowledge to 101
-    resource.knowledge.amount = 101;
-    const knowledgeAmount = document.getElementById(resource.knowledge.displayId);
+    mage.resources.knowledge.amount = 101;
+    const knowledgeAmount = document.getElementById(mage.resources.knowledge.displayId);
     if (knowledgeAmount) {
-        knowledgeAmount.innerHTML = resource.knowledge.amount;
+        knowledgeAmount.innerHTML = mage.resources.knowledge.amount;
     }
     // Set orbs to 1
-    resource.orb.amount = 1;
-    const orbAmount = document.getElementById(resource.orb.displayId);
+    mage.resources.orb.amount = 1;
+    const orbAmount = document.getElementById(mage.resources.orb.displayId);
     if (orbAmount) {
-        orbAmount.innerHTML = resource.orb.amount;
+        orbAmount.innerHTML = mage.resource.orb.amount;
     }
     // Show orb display if not visible
-    if (!resource.orb.visible) {
+    if (!mage.resources.orb.visible) {
         const orbDisplay = document.getElementById('orbDisplay');
         if (orbDisplay) {
             orbDisplay.classList.add('show');
-            resource.orb.visible = true;
+            mage.resources.orb.visible = true;
         }
         const orbDiv = document.getElementById('orbDiv');
         if (orbDiv) {
@@ -1539,11 +1514,11 @@ function skipToRunes() {
         }
     }
     // Show knowledge display if not visible
-    if (!resource.knowledge.visible) {
+    if (!mage.resources.knowledge.visible) {
         const knowledgeDisplay = document.getElementById('knowledgeDisplay');
         if (knowledgeDisplay) {
             knowledgeDisplay.classList.add('show');
-            resource.knowledge.visible = true;
+            mage.resources.knowledge.visible = true;
         }
     }
 }
@@ -1551,16 +1526,16 @@ function skipToRunes() {
 
 //Show dummy resources
 if (DEBUG_MODE.dummies) {
-    resource.dummyResource.visible = true;
-    resource.dummyGenerator.visible = true;
+    mage.resources.dummyResource.visible = true;
+    mage.resources.dummyGenerator.visible = true;
 }
-if (resource.dummyResource.visible === true) {
+if (mage.resources.dummyResource.visible === true) {
     const dummyDisplay = document.getElementById('dummyDisplay');
     if (dummyDisplay) {
         dummyDisplay.classList.add('show');
     }
 }
-if (resource.dummyGenerator.visible === true) {
+if (mage.resources.dummyGenerator.visible === true) {
     const dummyGenDisplay = document.getElementById('dummyGenDisplay');
     if (dummyGenDisplay) {
         dummyGenDisplay.classList.add('show');

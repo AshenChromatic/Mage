@@ -2,7 +2,7 @@ hoverBox2 = document.getElementById('hoverBox2');
 maps = mage.maps;
 window.defaults = window.defaults || {};
 
-mage.mapManager = {};
+mage.mapManager = mage.mapManager || {};
 if (!mage.mapManager.currentMap) {
     mage.mapManager.currentMap = {};
 }
@@ -25,38 +25,6 @@ function getKeyData(mapName) {
 //---------------------------//
 // Dialogue Management       //
 //---------------------------//
-defaults.mapManager = defaults.mapManager || {};
-defaults.mapManager.dialogue = {
-    gribbletharp: {
-        affection: 0,
-        comeHereOften: true,
-        named: false,
-        hideBody: true,
-        shadyGuy: false
-    },
-    shadyClassmate: {
-        affection: 0,
-        shadyShop: false,
-        shades: false,
-        interacted: false
-    },
-    goodClassmate: {
-        affection: 0,
-        alive: true,
-        first: true,
-        specialPlingus: false,
-        killedHim: false
-    },
-    evilClassmate: {
-        affection: 0,
-        alive: true,
-        first: true,
-        specialPlingus: false,
-        killedHer: false,
-        acceptBribe: false,
-        denyBribe: false
-    }
-}
 function getDialogue(character) {
     return mage.mapManager.dialogue[character] || {};
 }
@@ -267,12 +235,6 @@ shadyBuy2.textContent = 'The Frog';
 shadyBuy2.classList.add('shopBuyBtn');
 shadyBuy2.dataset.item = 'shadyFrog';
 shadyShop.appendChild(shadyBuy2);
-shadyBuy1.addEventListener("click", function () {
-    buyInk();
-})
-shadyBuy2.addEventListener("click", function () {
-    buyFrog();
-});
 
 //---------------------------//
 // 1 Billion Functions       //
@@ -291,7 +253,12 @@ function doorHome(position, keyData) {
     goInside();
 }
 
-//Friendly Classmate
+function petThePlingus() {
+    sendToLog("You reach down towards where Plingus sits atop Good Classmate's remains and pet him. He purrs contentedly.");
+}
+
+
+// #region Friendly Classmate
 function clickFriendlyClassmate(position) {
     console.log("Clicked Friendly Classmate");
     sendPlayerRight(position);
@@ -368,7 +335,7 @@ function friendlyClassmate2F() {
 }
 
 function friendlyClassmate3A() {
-    mage.slut += 1;
+    mage.stuff.slut += 1;
     sendToLog("<span style='color: #399500;'>" + getKeyData("dorms")["1"].name + ": ???</span>");
     sendToLog("He gives you a weird look. Thankfully, nobody else was watching. You decide to walk away and never speak of this again.");
     getDialogue("gribbletharp").comeHereOften = false;
@@ -383,8 +350,9 @@ function friendlyClassmate3C() {
     sendToLog("You decide you do not care about this man's existence.")
     getDialogue("gribbletharp").comeHereOften = false;
 }
+// #endregion
 
-//shadyClassmate
+// #region Shady Classmate
 function clickShadyClassmate(position) {
     sendPlayerLeft(position);
     sendToLog("You approach the individual tucked away in the corner. Despite the sunglasses on his face, you can tell he's watching you as you walk up to him.");
@@ -456,10 +424,9 @@ function shadyClassmateC1_1B() {
     getDialogue("shadyClassmate").affection -= 1;
     getDialogue("shadyClassmate").shades = true;
 }
+// #endregion
 
-
-//Evil / Good classmate
-
+// #region Evil Classmate
 function clickEvilClassmate(position) {
     sendPlayerUp(position);
     if (getDialogue("goodClassmate").alive && getDialogue("evilClassmate").alive) {
@@ -551,6 +518,7 @@ function evilClassmate5B2A() {
     getKeyData("dorms")["2"].name = "Tyler"; 
     sendToLog("You resolve to tell everyone that Tyler killed " + getKeyData("dorms")["3"].name + ".");
     sendToLog("He hands you 5 gold, looking very proud of himself")
+    addResource(5, "gold");
     getDialogue("evilClassmate").acceptBribe = true;
     getDialogue("evilClassmate").killedHer = true;
     
@@ -573,11 +541,9 @@ function evilClassmate5C() {
     getKeyData("dorms")["3"].fn = "petThePlingus";
     fillMap(currentMap);
 }
+// #endregion
 
-function petThePlingus() {
-    sendToLog("You reach down towards where Plingus sits atop Good Classmate's remains and pet him. He purrs contentedly.");
-}
-
+// #region Good Classmate
 function clickGoodClassmate(position) {
     sendPlayerUp(position);
     if (getDialogue("goodClassmate").alive && getDialogue("evilClassmate").alive) {
@@ -646,6 +612,7 @@ function goodClassmate3C() {
     getKeyData("dorms")["2"].fn = "petThePlingus";
     fillMap(currentMap);
 }
+// #endregion
 
 //Doors
 function checkLock(keyData) {
@@ -858,13 +825,23 @@ function loadMap(mapName) {
     fillMap(currentMap);
 }
 
-// Render the map as soon as the Map tab appears
+// Render the map when #worldMap gets the 'show' class
 window.addEventListener('DOMContentLoaded', function () {
     const mapDisplay = document.getElementById('worldMap');
-    if (mapDisplay) {
-        console.log("Map Display On Screen");
-        loadMap(currentMapName);
-    }
+    if (!mapDisplay) return;
+
+    // Observe class changes to #worldMap
+    const observer = new MutationObserver((mutationsList) => {
+        for (const mutation of mutationsList) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                if (mapDisplay.classList.contains('show')) {
+                    console.log("Map Display On Screen (show class added)");
+                    loadMap(currentMapName);
+                }
+            }
+        }
+    });
+    observer.observe(mapDisplay, { attributes: true, attributeFilter: ['class'] });
 });
 
 //---------------------------//

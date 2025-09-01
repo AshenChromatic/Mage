@@ -1,7 +1,9 @@
 
-
-window.defaults = window.defaults || {};
-  defaults.maps = {
+window.test = {
+  test: true
+}
+window.defaults = {}
+defaults.maps = {
     dorms: {
       name: "dorms",
       tiles: [
@@ -75,7 +77,7 @@ window.defaults = window.defaults || {};
       keyData: {
         "@": {
           type: "player",
-          color: "window.mage.playerColor",
+          color: "window.mage.stuff.playerColor",
           hoverTitle: "You",
           hoverText: "It's you! You've not seen nearly enough use lately.",
           fn: "clickPlayer"

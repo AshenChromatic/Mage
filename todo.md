@@ -1,6 +1,6 @@
 # Mage TODO
 
-_Last updated: 2025-8-29_
+_Last updated: 2025-8-31_
 
 ## Currently Working On
 - [ ] New Room
@@ -12,7 +12,6 @@ _Last updated: 2025-8-29_
 
 ## Bugs / Fixes
 - [ ] Fuck the indefinite article bruh.
-- [ ] Tabs don't fade in anymore for some reason.
 ---
 
 ## Polish & Tweaks
@@ -33,6 +32,7 @@ _Last updated: 2025-8-29_
 ---
 
 ## Done
+- [x] Fixed Tabs don't fade in anymore for some reason. 8/31/25
 - [x] Make audio play when loading into map 8/29/25
 - [x] Add settings 8/28/25
 - [x] Add dialogue choices to map 8/28/25
